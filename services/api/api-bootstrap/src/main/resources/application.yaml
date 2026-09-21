@@ -1,0 +1,70 @@
+# ==========================
+# Spring 核心配置
+# ==========================
+server:
+  # 统一 /api 前缀是前后端 REST 契约的一部分，所有环境一致；
+  # Nginx 网关将 ^~ /api/ 原样转发（含前缀），由 context-path 消费
+  servlet:
+    context-path: /api
+
+spring:
+  application:
+    name: po-app
+  # 激活开发环境配置
+  profiles:
+    active:
+      - local
+
+  # JPA / Hibernate 配置
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    open-in-view: true
+
+  # 文件上传限制配置
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 100MB
+      enabled: true
+
+  # 静态资源配置（file:uploads/ 用于暴露本地上传的文件，如头像 /api/avatars/**）
+  web:
+    resources:
+      static-locations: classpath:/static/,classpath:/public/,file:uploads/
+      cache:
+        period: 3600
+
+# ==========================
+# Actuator 监控配置
+# ==========================
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  info:
+    env:
+      enabled: true
+
+# ==========================
+# 自定义业务配置
+# ==========================
+app:
+  name: po
+  version: 1.0.0
+  description: 破
+
+# ==========================
+# JWT 配置
+# ==========================
+# 密钥不落库不入库：生产用环境变量 JWT_SECRET 注入（Base64），
+# 本地开发值放在 application-local.yaml（已被 .gitignore 排除）。
+jwt:
+  secret: ${JWT_SECRET:}
+  expiration: ${JWT_EXPIRATION:86400000}

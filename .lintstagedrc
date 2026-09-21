@@ -1,0 +1,8 @@
+{
+  "apps/admin-web/**/*.{js,jsx,tsx,ts,css,less}": [
+    "pnpm --dir apps/admin-web exec biome check --write"
+  ],
+  "apps/admin-web/src/**/*.md": [
+    "pnpm --dir apps/admin-web exec biome check --write"
+  ]
+}

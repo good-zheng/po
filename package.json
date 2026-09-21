@@ -1,0 +1,26 @@
+{
+  "name": "po",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@10.28.1",
+  "engines": {
+    "node": ">=22.0.0",
+    "pnpm": ">=10.0.0"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @po/types build && pnpm --filter @po/admin dev",
+    "build": "pnpm --filter @po/types build && pnpm --filter @po/admin build",
+    "lint": "pnpm --filter @po/admin lint",
+    "test": "pnpm --filter @po/admin test",
+    "typecheck": "pnpm --filter @po/types build && pnpm --filter @po/admin build && pnpm --filter @po/admin tsc",
+    "api:verify": "mvn -f services/api/pom.xml verify",
+    "chat:test": "python -m pytest services/chat/tests",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^21.2.1",
+    "@commitlint/config-conventional": "^21.2.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.3.0"
+  }
+}

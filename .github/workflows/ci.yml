@@ -1,0 +1,117 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  frontend:
+    name: Frontend (pnpm)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.28.1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      # HUSKY=0 跳过 git hooks 安装，CI 内无需
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        env:
+          HUSKY: 0
+
+      # admin 的 tsc 依赖 @po/types 产物，先构建共享类型包
+      - name: Build shared types
+        run: pnpm --filter @po/types build
+
+      - name: Lint (biome + tsc)
+        run: pnpm lint
+
+      - name: Test (vitest)
+        run: pnpm test
+
+      - name: Build admin bundle
+        run: pnpm build
+
+  api:
+    name: API (Java 17 + Maven)
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: po
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+    env:
+      # application-local.yaml 被 .gitignore 排除，CI 用环境变量注入等价配置
+      SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1:3306/po?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=utf-8&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_DATA_REDIS_HOST: 127.0.0.1
+      SPRING_DATA_REDIS_PORT: 6379
+      # 占位密钥，仅供 CI 测试（与 .env.example 中的开发占位值相同）
+      JWT_SECRET: cG8tbG9jYWwtZGV2LWp3dC1zZWNyZXQtY2hhbmdlLW1lLTAxMjM0NTY3ODlhYmNkZWY=
+      JWT_EXPIRATION: 86400000
+      APP_SEED_DEFAULT_ADMIN: 'false'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: maven
+          cache-dependency-path: 'services/api/**/pom.xml'
+
+      - name: Verify (unit tests + context load)
+        run: mvn -B -f services/api/pom.xml verify
+
+  chat:
+    name: Chat (Python 3.11 + pytest)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: services/chat
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: services/chat/pyproject.toml
+
+      - name: Install package with dev extras
+        run: pip install -e '.[dev]'
+
+      - name: Test (pytest)
+        run: python -m pytest tests

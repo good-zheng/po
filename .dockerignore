@@ -1,0 +1,20 @@
+# 适用于以仓库根为上下文的构建（apps/admin-web/Dockerfile）
+.git/
+.github/
+node_modules/
+**/node_modules/
+apps/admin-web/dist/
+apps/admin-web/src/.umi/
+apps/admin-web/node_modules/
+apps/admin-web/.umi/
+packages/types/dist/
+packages/types/node_modules/
+services/
+infra/
+.env
+.env.*
+!.env.example
+**/application-local.yaml
+*.log
+logs/
+uploads/

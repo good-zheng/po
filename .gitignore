@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+package-lock.json
+
+# Build output
+apps/*/dist/
+apps/*/.umi*/
+packages/*/dist/
+services/api/**/target/
+services/chat/.pytest_cache/
+services/chat/**/__pycache__/
+services/chat/*.egg-info/
+
+# Runtime state and secrets
+.env
+.env.*
+!.env.example
+services/api/src/main/resources/application-local.yaml
+services/api/api-bootstrap/src/main/resources/application-local.yaml
+services/api/uploads/
+services/chat/.venv/
+
+# Tooling and OS files
+.DS_Store
+.idea/
+.vscode/
+*.log
+coverage/
+.wrangler/

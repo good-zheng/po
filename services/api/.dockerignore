@@ -1,0 +1,5 @@
+# 防止本地凭据进入构建上下文与镜像（application-local.yaml 含本地数据库/Redis/JWT 密钥）
+**/application-local.yaml
+**/target/
+HELP.md
+.mvn/wrapper/maven-wrapper.jar
