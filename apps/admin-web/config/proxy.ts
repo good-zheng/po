@@ -14,8 +14,8 @@ export default {
   dev: {
     // localhost:8000/api/** -> https://preview.pro.ant.design/api/**
     '/api/': {
-      // 要代理的地址
-      target: process.env.UMI_APP_API_BASE_URL,
+      // 要代理的地址（.env 缺失时兜底为本地后端默认地址）
+      target: process.env.UMI_APP_API_BASE_URL || 'http://127.0.0.1:8080',
       // 配置了这个可以从 http 代理到 https
       // 依赖 origin 的功能可能需要这个，比如 cookie
       changeOrigin: true,

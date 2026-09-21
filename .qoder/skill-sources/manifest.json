@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "policy": "Upstream skill sources are vendored read-only. Keep adapters in .qoder/skills and update sources only through scripts/sync-skill-sources.ps1.",
+  "sources": [
+    {
+      "id": "ant-design-cli",
+      "repository": "https://github.com/ant-design/ant-design-cli.git",
+      "commit": "d1862fd1b395db29f468981612661f4dd0641871",
+      "sparsePaths": ["skills/antd", "LICENSE"],
+      "license": "MIT",
+      "target": "ant-design-cli"
+    },
+    {
+      "id": "vercel-composition-patterns",
+      "repository": "https://github.com/vercel-labs/agent-skills.git",
+      "commit": "063bee94c3f4df8453406c830b0a7df0f2860278",
+      "sparsePaths": ["skills/composition-patterns"],
+      "license": "MIT declared in the imported skill metadata; repository-level license is not declared",
+      "target": "vercel-agent-skills"
+    },
+    {
+      "id": "spring-boot-4",
+      "repository": "https://github.com/rrezartprebreza/spring-boot-skills.git",
+      "commit": "c43b0b6b7937f63b7e86ab1e19cc229cdc63ddd8",
+      "sparsePaths": ["skills/spring-boot-4", "LICENSE"],
+      "license": "MIT",
+      "target": "spring-boot-skills"
+    },
+    {
+      "id": "fastapi",
+      "repository": "https://github.com/fastapi/fastapi.git",
+      "commit": "50113da16fec53b66b80d75e80a89296de4fa5a5",
+      "sparsePaths": ["fastapi/.agents/skills/fastapi", "LICENSE"],
+      "license": "MIT",
+      "target": "fastapi"
+    }
+  ]
+}
