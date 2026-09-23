@@ -63,6 +63,8 @@ declare namespace API {
     password?: string;
     autoLogin?: boolean;
     type?: string;
+    /** 登录来源：管理后台固定传 admin，后端据此拒绝普通用户登录 */
+    client?: 'admin' | 'app';
   };
 
   type ErrorResponse = {

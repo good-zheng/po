@@ -4,13 +4,14 @@ import com.goodzheng.po.shared.dto.Result;
 import com.goodzheng.po.recipe.entity.RecipeCategory;
 import com.goodzheng.po.recipe.service.RecipeCategoryService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/recipe-categories")
-@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class RecipeCategoryController {
 

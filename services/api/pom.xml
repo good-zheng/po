@@ -21,6 +21,9 @@
 
     <properties>
         <java.version>17</java.version>
+        <!-- 只有 api-bootstrap 是可执行应用，其余模块（含本聚合 POM）跳过 spring-boot:run，
+             这样 `-pl api-bootstrap -am spring-boot:run` 才能在 reactor 内构建依赖模块并只启动应用 -->
+        <spring-boot.run.skip>true</spring-boot.run.skip>
     </properties>
 
     <modules>
@@ -30,6 +33,23 @@
         <module>novel</module>
         <module>api-bootstrap</module>
     </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- Spring Boot 4 未托管 MyBatis-Plus，版本在此统一声明 -->
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-spring-boot4-starter</artifactId>
+                <version>3.5.17</version>
+            </dependency>
+            <!-- 3.5.9 起分页插件拆分为独立模块（PaginationInnerInterceptor 在这里） -->
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-jsqlparser</artifactId>
+                <version>3.5.17</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <pluginManagement>

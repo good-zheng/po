@@ -3,6 +3,7 @@ import type {
   Ingredient,
   PageResponse,
   Recipe,
+  RecipeAuditRequest,
   RecipeCategory,
   RecipeRequest,
   Result,
@@ -89,6 +90,39 @@ export async function deleteRecipe(
 ) {
   return request<Result<string>>(`/api/recipes/${id}`, {
     method: 'DELETE',
+    ...(options || {}),
+  });
+}
+
+// ── Review（管理端审核） ─────────────────────────────────────────────────────
+
+/** 管理端审核队列 */
+export async function getReviewRecipes(
+  params: {
+    page?: number;
+    size?: number;
+    status?: string;
+    keyword?: string;
+  },
+  options?: Record<string, unknown>,
+) {
+  return request<Result<PageResponse<Recipe>>>('/api/recipes/review', {
+    method: 'GET',
+    params,
+    ...(options || {}),
+  });
+}
+
+/** 管理端审核（通过/驳回） */
+export async function auditRecipe(
+  id: number,
+  body: RecipeAuditRequest,
+  options?: Record<string, unknown>,
+) {
+  return request<Result<Recipe>>(`/api/recipes/${id}/audit`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    data: body,
     ...(options || {}),
   });
 }

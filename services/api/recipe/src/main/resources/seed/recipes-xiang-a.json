@@ -1,0 +1,855 @@
+{
+  "region": "湘菜",
+  "recipes": [
+    {
+      "title": "东安子鸡",
+      "description": "湘菜首席名菜，源自永州东安县。嫩母鸡煮至七成熟斩条，与姜醋辣椒同炒，酸辣鲜香、鸡条细嫩，醋香是这道菜的灵魂。",
+      "difficulty": 2, "servings": 4, "prepTime": 25, "cookTime": 15, "totalTime": 40,
+      "tags": "经典,宴客,酸辣,鸡肉", "flavorProfile": "酸辣鲜香",
+      "calories": 420, "protein": 32.0, "fat": 24.0, "carbs": 6.0,
+      "tips": "鸡只煮到七成熟，煮老了肉柴；醋分两次放，起锅前沿锅边再淋半勺，香气更足。",
+      "cover": { "slug": "xiang-donganzi-ji", "visual": "glossy stir-fried chicken strips with red chilies, ginger shreds and scallions on a dark ceramic plate, Hunan classic" },
+      "ingredients": [
+        ["土鸡", "1", "只(约1200g)", true],
+        ["干红辣椒", "8", "个", true],
+        ["生姜", "50", "g", true],
+        ["青辣椒", "2", "根", false],
+        ["陈醋", "30", "ml", true],
+        ["料酒", "20", "ml", true],
+        ["花椒", "2", "g", true],
+        ["小葱", "3", "根", false],
+        ["食用油", "50", "ml", true],
+        ["盐", "3", "g", true]
+      ],
+      "steps": [
+        ["整鸡冷水下锅，加姜片、料酒煮约15分钟至七成熟，捞出晾凉后斩成小条", 15],
+        ["干辣椒切段，生姜切丝，青辣椒切斜片，葱切段", 5],
+        ["锅烧热油，下花椒、干辣椒段、姜丝爆香", 1],
+        ["下鸡条中火翻炒2分钟，沿锅边烹入料酒和一半的醋", 3],
+        ["加青辣椒片翻炒，加少许煮鸡的汤，中小火焖2分钟", 3],
+        ["大火收汁，出锅前淋入剩下的醋，撒葱段翻匀装盘", 1]
+      ]
+    },
+    {
+      "title": "腊味合蒸",
+      "description": "湖南年菜经典，腊肉、腊鱼、腊鸡三味同蒸，腊香交融、咸鲜油润，是湘菜蒸菜的代表。",
+      "difficulty": 1, "servings": 4, "prepTime": 15, "cookTime": 60, "totalTime": 75,
+      "tags": "经典,年菜,蒸菜,腊味", "flavorProfile": "腊香咸鲜",
+      "calories": 520, "protein": 30.0, "fat": 40.0, "carbs": 4.0,
+      "tips": "腊味先用温水洗净表面烟尘，蒸的时候垫姜片去腥；想要更润可加一勺鸡汤同蒸。",
+      "cover": { "slug": "xiang-lawei-hezheng", "visual": "steamed platter of sliced cured pork, cured fish and cured chicken garnished with chilies and ginger, glossy amber color" },
+      "ingredients": [
+        ["腊肉", "200", "g", true],
+        ["腊鱼", "150", "g", true],
+        ["腊鸡", "150", "g", false],
+        ["干红辣椒", "5", "个", true],
+        ["生姜", "20", "g", true],
+        ["白糖", "5", "g", false],
+        ["食用油", "15", "ml", false]
+      ],
+      "steps": [
+        ["腊肉、腊鱼、腊鸡用温水刷洗干净，上锅蒸20分钟后取出", 20],
+        ["三种腊味分别切成厚薄均匀的片", 8],
+        ["取大碗，腊味相间码入碗中，铺上姜丝、干辣椒段，淋少许油和糖", 5],
+        ["上锅大火蒸40分钟至腊味软亮出油，倒扣入盘中即可", 40]
+      ]
+    },
+    {
+      "title": "麻辣子鸡",
+      "description": "长沙传统名菜，嫩鸡斩丁配干辣椒花椒火爆，外焦里嫩、麻辣透香，是湘菜\"麻辣\"一路的代表作。",
+      "difficulty": 2, "servings": 3, "prepTime": 15, "cookTime": 10, "totalTime": 25,
+      "tags": "经典,下饭,麻辣,鸡肉", "flavorProfile": "麻辣",
+      "calories": 480, "protein": 28.0, "fat": 32.0, "carbs": 6.0,
+      "tips": "鸡丁要炸两次，第一次定型、第二次逼出油分，才能达到外焦里嫩。",
+      "cover": { "slug": "xiang-mala-ziji", "visual": "crispy deep-fried diced chicken tossed with plenty of dried red chilies and Sichuan peppercorns, glossy dark red" },
+      "ingredients": [
+        ["鸡腿", "2", "只", true],
+        ["干红辣椒", "15", "g", true],
+        ["花椒", "3", "g", true],
+        ["红辣椒", "1", "根", false],
+        ["大蒜", "20", "g", true],
+        ["料酒", "15", "ml", true],
+        ["生抽", "15", "ml", true],
+        ["陈醋", "10", "ml", true],
+        ["白糖", "5", "g", false],
+        ["淀粉", "20", "g", true],
+        ["食用油", "500", "ml", false]
+      ],
+      "steps": [
+        ["鸡腿去骨切1.5厘米丁，加料酒、生抽、淀粉抓匀腌15分钟", 15],
+        ["干辣椒切段去籽，红椒切小片，蒜切片", 3],
+        ["油烧至六成热，下鸡丁炸至微黄捞出；油温升到八成热复炸20秒至酥脆", 4],
+        ["锅留底油，小火煸香干辣椒段和花椒，下蒜片、红椒片", 2],
+        ["倒入鸡丁大火翻炒，烹入料酒、陈醋，加少许糖炒匀即可", 2]
+      ]
+    },
+    {
+      "title": "永州血鸭",
+      "description": "湘南名肴，麻鸭斩块爆炒，起锅前拌入用白醋防凝的鲜鸭血，酱红油亮、鸭肉紧实，血香独特。",
+      "difficulty": 3, "servings": 4, "prepTime": 25, "cookTime": 35, "totalTime": 60,
+      "tags": "经典,地方名菜,鸭肉,下饭", "flavorProfile": "香辣",
+      "calories": 560, "protein": 34.0, "fat": 38.0, "carbs": 6.0,
+      "tips": "鲜鸭血必须立刻与白醋混合搅散防凝，最后下锅翻匀即起，久炒会变渣。",
+      "cover": { "slug": "xiang-yongzhou-xueya", "visual": "braised duck chunks coated in dark glossy duck-blood sauce with chilies and ginger, deep reddish brown" },
+      "ingredients": [
+        ["鸭", "1", "只(约1500g)", true],
+        ["鲜鸭血", "100", "ml", true],
+        ["白醋", "10", "ml", true],
+        ["生姜", "30", "g", true],
+        ["大蒜", "30", "g", true],
+        ["干红辣椒", "10", "g", true],
+        ["青辣椒", "3", "根", false],
+        ["料酒", "30", "ml", true],
+        ["生抽", "20", "ml", true],
+        ["盐", "4", "g", true]
+      ],
+      "steps": [
+        ["鲜鸭血与白醋混合搅散防凝备用", 2],
+        ["鸭子斩小块，冷水下锅焯水后沥干", 8],
+        ["锅中放油，下鸭块中火煸炒至水分收干、出油微黄", 10],
+        ["下姜片、蒜粒、干辣椒爆香，烹料酒、加生抽和适量热水，焖15分钟", 15],
+        ["大火收汁至浓稠，倒入鸭血快速翻匀，血裹匀鸭块立即出锅", 2]
+      ]
+    },
+    {
+      "title": "洪江血粑鸭",
+      "description": "湘西洪江名菜，鸭块与糯米血粑同焖。血粑吸饱鸭汁油润咸香，鸭肉紧实入味，一菜两吃是它的妙处。",
+      "difficulty": 2, "servings": 4, "prepTime": 20, "cookTime": 40, "totalTime": 60,
+      "tags": "经典,地方名菜,鸭肉,下饭", "flavorProfile": "咸香微辣",
+      "calories": 640, "protein": 30.0, "fat": 36.0, "carbs": 28.0,
+      "tips": "血粑先用油炸定型再与鸭同焖，既不散又能吸汁；买不到血粑可用糯米血肠代替。",
+      "cover": { "slug": "xiang-hongjiang-xueba-ya", "visual": "braised duck pieces with dark glutinous rice blood cakes, chili and scallions in a rustic clay dish" },
+      "ingredients": [
+        ["鸭", "半只(约750g)", "", true],
+        ["糯米血粑", "300", "g", true],
+        ["生姜", "30", "g", true],
+        ["大蒜", "30", "g", true],
+        ["干红辣椒", "10", "g", true],
+        ["料酒", "20", "ml", true],
+        ["生抽", "20", "ml", true],
+        ["白糖", "5", "g", false],
+        ["食用油", "500", "ml", false]
+      ],
+      "steps": [
+        ["血粑切成1.5厘米厚的片；鸭斩块焯水沥干", 8],
+        ["油烧至六成热，下血粑片炸至外壳定型微黄，捞出沥油", 5],
+        ["锅留底油，下鸭块煸炒至出油，加姜蒜、干辣椒爆香", 6],
+        ["烹料酒、加生抽、糖和热水没过鸭块，中小火焖20分钟", 20],
+        ["下炸好的血粑翻匀，继续焖5分钟，大火收汁装盘", 6]
+      ]
+    },
+    {
+      "title": "芷江鸭",
+      "description": "怀化芷江侗乡名菜，本地麻鸭配老姜米酒焖炒，鸭肉酥嫩、姜香浓郁，是湘西南待客的招牌菜。",
+      "difficulty": 2, "servings": 4, "prepTime": 20, "cookTime": 40, "totalTime": 60,
+      "tags": "经典,地方名菜,鸭肉,宴客", "flavorProfile": "咸鲜香辣",
+      "calories": 520, "protein": 32.0, "fat": 34.0, "carbs": 4.0,
+      "tips": "老姜用量要足，与鸭油同煸出香；米酒代替清水焖煮，去腥提鲜两不误。",
+      "cover": { "slug": "xiang-zhijiang-ya", "visual": "golden braised duck chunks with lots of ginger shreds, chilies and scallions in a clay pot" },
+      "ingredients": [
+        ["鸭", "1", "只(约1500g)", true],
+        ["生姜", "80", "g", true],
+        ["干红辣椒", "10", "g", true],
+        ["米酒", "100", "ml", true],
+        ["生抽", "20", "ml", true],
+        ["老抽", "5", "ml", false],
+        ["大蒜", "30", "g", true],
+        ["小葱", "3", "根", false],
+        ["食用油", "30", "ml", true]
+      ],
+      "steps": [
+        ["鸭子斩块，冷水下锅焯水后沥干；老姜一半切片、一半切丝", 10],
+        ["锅中放油，下鸭块大火煸炒10分钟至表面焦黄、出油", 10],
+        ["下姜片、蒜粒、干辣椒炒香，加生抽、老抽上色", 3],
+        ["倒入米酒和适量热水，没过鸭块，小火焖20分钟", 20],
+        ["大火收汁，撒姜丝和葱段翻匀出锅", 3]
+      ]
+    },
+    {
+      "title": "长沙口味虾",
+      "description": "长沙夜宵之王。小龙虾配豆瓣酱、花椒、紫苏大火焖制，麻、辣、鲜、香层层递进，吮指才够味。",
+      "difficulty": 2, "servings": 3, "prepTime": 30, "cookTime": 25, "totalTime": 55,
+      "tags": "夜宵,麻辣,小龙虾,宴客", "flavorProfile": "麻辣",
+      "calories": 380, "protein": 30.0, "fat": 18.0, "carbs": 12.0,
+      "tips": "小龙虾用刷子逐只刷净腹部，剪头去腮抽虾线；紫苏最后放，久煮香气会散。",
+      "cover": { "slug": "xiang-kouwei-xia", "visual": "a big platter of bright red braised crayfish with dried chilies, perilla leaves and scallions, street food style" },
+      "ingredients": [
+        ["小龙虾", "1000", "g", true],
+        ["郫县豆瓣酱", "40", "g", true],
+        ["干红辣椒", "15", "g", true],
+        ["花椒", "5", "g", true],
+        ["紫苏", "50", "g", true],
+        ["生姜", "30", "g", true],
+        ["大蒜", "50", "g", true],
+        ["啤酒", "330", "ml", true],
+        ["白糖", "8", "g", false],
+        ["生抽", "15", "ml", true]
+      ],
+      "steps": [
+        ["小龙虾刷洗干净，剪去头部前端、抽出虾线", 20],
+        ["姜切片、蒜拍碎、紫苏洗净摘叶备用", 5],
+        ["锅中放油，下豆瓣酱小火炒出红油，加干辣椒、花椒、姜蒜爆香", 4],
+        ["下小龙虾大火翻炒至变红，倒入啤酒，加生抽、糖，中火焖15分钟", 15],
+        ["撒入紫苏叶翻匀，再煮2分钟关火，连汤汁浸泡10分钟更入味", 12]
+      ]
+    },
+    {
+      "title": "长沙臭豆腐",
+      "description": "火宫殿名小吃，黑豆腐胚炸至外酥里嫩，浇上蒜水辣汁，闻着臭吃着香，长沙街头的味道名片。",
+      "difficulty": 1, "servings": 2, "prepTime": 10, "cookTime": 10, "totalTime": 20,
+      "tags": "小吃,街头美食,油炸,素食", "flavorProfile": "酸辣咸鲜",
+      "calories": 320, "protein": 14.0, "fat": 22.0, "carbs": 16.0,
+      "tips": "买市售黑色臭豆腐生胚最稳妥；炸到外壳鼓起变硬再翻面，浇汁前用筷子戳洞让汤汁渗入。",
+      "cover": { "slug": "xiang-chou-doufu", "visual": "black crispy fried stinky tofu cubes with red chili sauce, garlic water and cilantro on a small plate" },
+      "ingredients": [
+        ["臭豆腐胚", "12", "块", true],
+        ["大蒜", "30", "g", true],
+        ["辣椒面", "10", "g", true],
+        ["生抽", "20", "ml", true],
+        ["陈醋", "10", "ml", false],
+        ["香菜", "15", "g", false],
+        ["榨菜", "20", "g", false],
+        ["食用油", "500", "ml", false]
+      ],
+      "steps": [
+        ["大蒜压成蒜泥，加少许温开水调成蒜水；榨菜切末", 3],
+        ["辣椒面放入碗中，浇一勺热油激成辣椒油，加生抽、陈醋、蒜水调成料汁", 3],
+        ["油烧至七成热，下臭豆腐胚炸至外壳变硬鼓起、捞出", 5],
+        ["复炸30秒至外酥，捞出装盘，用筷子在每块上戳一个小洞", 1],
+        ["浇上料汁，撒榨菜末和香菜即可", 1]
+      ]
+    },
+    {
+      "title": "糖油粑粑",
+      "description": "长沙传统甜味小吃，糯米饼在糖油里慢煮，外脆内糯、甜而不腻，\"毛泽东也排队\"的老口子记忆。",
+      "difficulty": 1, "servings": 2, "prepTime": 15, "cookTime": 15, "totalTime": 30,
+      "tags": "小吃,甜点,街头美食,素食", "flavorProfile": "香甜",
+      "calories": 460, "protein": 6.0, "fat": 8.0, "carbs": 92.0,
+      "tips": "糖油用红糖加白糖更出琥珀色；粑粑下锅后用锅铲轻压，糖浆才能裹得均匀。",
+      "cover": { "slug": "xiang-tyou-baba", "visual": "golden brown glutinous rice cakes glazed in caramelized sugar syrup, piled in a paper tray" },
+      "ingredients": [
+        ["糯米粉", "300", "g", true],
+        ["红糖", "50", "g", true],
+        ["白糖", "30", "g", true],
+        ["食用油", "150", "ml", false]
+      ],
+      "steps": [
+        ["糯米粉加温水揉成光滑面团，分成小剂子，搓圆压成1厘米厚的饼", 10],
+        ["锅中放油和糖，小火慢慢熬至糖融化起泡", 4],
+        ["下糯米饼，中小火煎炸，不断翻面并淋糖油", 8],
+        ["炸至两面金黄、糖浆浓稠裹匀，出锅趁热吃", 2]
+      ]
+    },
+    {
+      "title": "葱油粑粑",
+      "description": "长沙早餐摊的老味道，米浆调葱花入勺油炸，外壳金黄酥脆、内里软嫩，一口一个停不下来。",
+      "difficulty": 2, "servings": 3, "prepTime": 120, "cookTime": 15, "totalTime": 135,
+      "tags": "小吃,早餐,油炸,素食", "flavorProfile": "咸香",
+      "calories": 350, "protein": 7.0, "fat": 12.0, "carbs": 52.0,
+      "tips": "米浆要提前磨好静置发酵2小时以上才有香气；圆勺先入油烫热再倒浆，粑粑才能完整脱模。",
+      "cover": { "slug": "xiang-congyou-baba", "visual": "golden crispy fried rice cakes with visible scallion bits, stacked on bamboo tray, Chinese breakfast" },
+      "ingredients": [
+        ["大米", "300", "g", true],
+        ["糯米", "50", "g", true],
+        ["小葱", "50", "g", true],
+        ["盐", "4", "g", true],
+        ["食用油", "500", "ml", false]
+      ],
+      "steps": [
+        ["大米和糯米混合，加水浸泡4小时后打成细米浆", 10],
+        ["米浆加盖静置发酵2小时，至表面起小泡", 120],
+        ["拌入盐和葱花搅匀；圆勺入油锅中烫热", 3],
+        ["勺内舀入一层米浆，连勺浸入七成热油中，定型后轻抖脱模", 4],
+        ["炸至金黄浮起捞出，稍凉即食", 3]
+      ]
+    },
+    {
+      "title": "火宫殿姊妹团子",
+      "description": "长沙火宫殿传统名点，糯米皮一甜一咸成\"姊妹\"：糖馅流沙细嫩，肉馅鲜香多汁，蒸得晶莹透亮。",
+      "difficulty": 2, "servings": 3, "prepTime": 40, "cookTime": 15, "totalTime": 55,
+      "tags": "小吃,点心,蒸点,糯米", "flavorProfile": "香甜咸鲜",
+      "calories": 420, "protein": 10.0, "fat": 10.0, "carbs": 70.0,
+      "tips": "糯米粉团要揉到不裂不粘手，包馅时收口捏紧；蒸的时候垫油纸防粘。",
+      "cover": { "slug": "xiang-zimei-tuanzi", "visual": "translucent white glutinous rice dumplings in a bamboo steamer, some dusted with sugar, delicate dim sum" },
+      "ingredients": [
+        ["糯米粉", "250", "g", true],
+        ["粘米粉", "50", "g", true],
+        ["猪瘦肉", "150", "g", true],
+        ["白糖", "60", "g", true],
+        ["红枣", "30", "g", true],
+        ["生抽", "10", "ml", true],
+        ["香油", "8", "ml", false],
+        ["桂花糖", "10", "g", false]
+      ],
+      "steps": [
+        ["糯米粉与粘米粉混合，加温水和成软硬适中的粉团", 10],
+        ["猪瘦肉剁成肉末，加生抽、香油搅打上劲成肉馅", 8],
+        ["红枣去核切碎，与白糖、桂花糖拌匀成糖馅", 5],
+        ["粉团分剂，一半包肉馅、一半包糖馅，收口搓圆", 10],
+        ["垫油纸上锅，水开后蒸12分钟至皮色透亮", 12]
+      ]
+    },
+    {
+      "title": "蒜薹炒腊肉",
+      "description": "湖南家常下饭王。烟熏腊肉肥瘦透亮，配脆嫩蒜薹大火同炒，腊香裹着蒜香，一碗饭不够吃。",
+      "difficulty": 1, "servings": 3, "prepTime": 15, "cookTime": 10, "totalTime": 25,
+      "tags": "家常,下饭,腊味,快手菜", "flavorProfile": "腊香咸鲜",
+      "calories": 480, "protein": 18.0, "fat": 40.0, "carbs": 8.0,
+      "tips": "腊肉先蒸或煮10分钟再切片，既去咸味又好切；蒜薹先干煸去生辣味更香。",
+      "cover": { "slug": "xiang-suantai-laorou", "visual": "stir-fried cured pork belly slices with crisp green garlic scapes and dried chilies, glossy and appetizing" },
+      "ingredients": [
+        ["腊肉", "250", "g", true],
+        ["蒜薹", "250", "g", true],
+        ["干红辣椒", "5", "个", false],
+        ["生抽", "5", "ml", false],
+        ["食用油", "10", "ml", false]
+      ],
+      "steps": [
+        ["腊肉上锅蒸10分钟，晾凉后切薄片；蒜薹掐段洗净", 12],
+        ["锅烧热不放油，下蒜薹煸至表皮起皱，盛出", 3],
+        ["锅中下腊肉片中火煸出油，加干辣椒段炒香", 3],
+        ["倒入蒜薹大火翻炒，淋少许生抽调味即可", 2]
+      ]
+    },
+    {
+      "title": "干豆角炒腊肉",
+      "description": "湖南乡下经典搭配，干豆角吸饱腊肉的油香，嚼起来干香有韧劲，越嚼越香的\"外婆味道\"。",
+      "difficulty": 1, "servings": 3, "prepTime": 30, "cookTime": 12, "totalTime": 42,
+      "tags": "家常,下饭,腊味,乡村风味", "flavorProfile": "腊香",
+      "calories": 460, "protein": 16.0, "fat": 36.0, "carbs": 12.0,
+      "tips": "干豆角用温水泡发到回软即可，泡太久会失去干香；炒时借腊肉的油，不必另放油。",
+      "cover": { "slug": "xiang-gandoujiao-laorou", "visual": "stir-fried dried cowpea strips with cured pork slices and chilies, earthy brown tones, rustic home dish" },
+      "ingredients": [
+        ["腊肉", "250", "g", true],
+        ["干豆角", "100", "g", true],
+        ["干红辣椒", "5", "个", true],
+        ["大蒜", "20", "g", true],
+        ["生抽", "5", "ml", false]
+      ],
+      "steps": [
+        ["干豆角温水泡发30分钟，洗净切段", 30],
+        ["腊肉煮软切薄片，蒜切片", 8],
+        ["锅热下腊肉煸出油，下蒜片、干辣椒爆香", 3],
+        ["下干豆角中火翻炒3分钟，淋少许生抽和一勺水，炒干水汽即可", 4]
+      ]
+    },
+    {
+      "title": "萝卜干炒腊肉",
+      "description": "咸香的萝卜干遇上油润的腊肉，一脆一韧，是湖南人秋冬餐桌最落胃的一盘炒菜。",
+      "difficulty": 1, "servings": 3, "prepTime": 20, "cookTime": 10, "totalTime": 30,
+      "tags": "家常,下饭,腊味,快手菜", "flavorProfile": "咸香",
+      "calories": 450, "protein": 16.0, "fat": 36.0, "carbs": 10.0,
+      "tips": "萝卜干本身很咸，泡水后先尝一下再决定要不要放盐。",
+      "cover": { "slug": "xiang-luobogan-laorou", "visual": "stir-fried chewy dried radish chunks with glossy cured pork slices, red chilies, rustic plate" },
+      "ingredients": [
+        ["萝卜干", "120", "g", true],
+        ["腊肉", "250", "g", true],
+        ["干红辣椒", "5", "个", true],
+        ["大蒜", "15", "g", true],
+        ["青辣椒", "2", "根", false]
+      ],
+      "steps": [
+        ["萝卜干温水泡20分钟洗净，切成小丁；腊肉煮软切片", 20],
+        ["锅热下腊肉煸炒出油，下蒜片、干辣椒段爆香", 3],
+        ["下萝卜干丁大火翻炒2分钟", 2],
+        ["加青辣椒片翻炒断生即可出锅", 2]
+      ]
+    },
+    {
+      "title": "湘西蕨菜炒腊肉",
+      "description": "山野蕨菜配湘西烟熏腊肉，蕨菜滑嫩带山气，腊肉烟香浓郁，是湘西待客的风味硬菜。",
+      "difficulty": 1, "servings": 3, "prepTime": 30, "cookTime": 10, "totalTime": 40,
+      "tags": "家常,山珍,腊味,湘西", "flavorProfile": "腊香微辣",
+      "calories": 430, "protein": 15.0, "fat": 34.0, "carbs": 9.0,
+      "tips": "干蕨菜要泡发足够久并多换水，去掉涩味后再炒；鲜蕨菜必须焯水去原蕨苷。",
+      "cover": { "slug": "xiang-juecai-laorou", "visual": "stir-fried fern shoots with cured pork slices, dried chilies and garlic, dark green and amber colors" },
+      "ingredients": [
+        ["干蕨菜", "80", "g", true],
+        ["腊肉", "250", "g", true],
+        ["干红辣椒", "6", "个", true],
+        ["生姜", "15", "g", true],
+        ["大蒜", "15", "g", true],
+        ["盐", "1", "g", false]
+      ],
+      "steps": [
+        ["干蕨菜温水泡发4小时，多换几次水，切段", 30],
+        ["腊肉煮软切片，姜蒜切片", 8],
+        ["锅热下腊肉煸出油，下姜蒜片、干辣椒爆香", 3],
+        ["下蕨菜大火翻炒3分钟，尝味后酌情加盐，炒匀出锅", 4]
+      ]
+    },
+    {
+      "title": "攸县香干炒肉",
+      "description": "株洲攸县名产香干，豆香浓郁有嚼劲，配土猪肉片大火快炒，是湘菜馆点单率最高的小炒之一。",
+      "difficulty": 1, "servings": 3, "prepTime": 15, "cookTime": 10, "totalTime": 25,
+      "tags": "家常,下饭,豆制品,快手菜", "flavorProfile": "咸香",
+      "calories": 420, "protein": 26.0, "fat": 28.0, "carbs": 8.0,
+      "tips": "香干先煎至两面起泡再炒，豆香才足；五花肉煸出的油正是香干最好的伴侣。",
+      "cover": { "slug": "xiang-youxian-xianggan", "visual": "stir-fried brown smoked tofu slices with pork slices, garlic sprouts and chilies, glossy brown" },
+      "ingredients": [
+        ["香干", "300", "g", true],
+        ["五花肉", "150", "g", true],
+        ["青蒜苗", "50", "g", true],
+        ["干红辣椒", "4", "个", false],
+        ["生抽", "15", "ml", true],
+        ["大蒜", "15", "g", true],
+        ["食用油", "15", "ml", false]
+      ],
+      "steps": [
+        ["香干切三角片，五花肉切薄片，青蒜苗切段", 8],
+        ["锅放少许油，下香干片中火煎至两面金黄起泡，盛出", 4],
+        ["下五花肉片煸出油，加蒜片、干辣椒段爆香", 3],
+        ["倒回香干，加生抽大火翻炒，下蒜苗段炒断生即可", 3]
+      ]
+    },
+    {
+      "title": "擂辣椒皮蛋",
+      "description": "湘味经典凉菜。青辣椒烧出虎皮后与皮蛋同入擂钵，加蒜擂碎，煳香、辣香、蛋香浑然一体，下饭一绝。",
+      "difficulty": 1, "servings": 2, "prepTime": 5, "cookTime": 10, "totalTime": 15,
+      "tags": "凉菜,下饭,素菜,快手菜", "flavorProfile": "煳辣咸鲜",
+      "calories": 220, "protein": 10.0, "fat": 14.0, "carbs": 10.0,
+      "tips": "辣椒干烧或干烙至整只起虎皮再撕皮，煳香味才正；擂的时候加一小撮盐更出味。",
+      "cover": { "slug": "xiang-lei-jiaojiao-pidan", "visual": "charred peeled green chilies mashed with century egg and garlic in a rustic stone bowl, Hunan cold dish" },
+      "ingredients": [
+        ["青辣椒", "300", "g", true],
+        ["皮蛋", "2", "个", true],
+        ["大蒜", "20", "g", true],
+        ["生抽", "15", "ml", true],
+        ["芝麻香油", "5", "ml", false],
+        ["盐", "2", "g", true]
+      ],
+      "steps": [
+        ["青辣椒整只洗净，干锅（不放油）中小火烙至全身起虎皮发软", 8],
+        ["烙好的辣椒撕去外皮，去蒂备用", 3],
+        ["皮蛋剥壳切瓣，与辣椒、蒜瓣、盐一起放入擂钵（或用擀面杖在碗中代替）", 3],
+        ["擂至辣椒起茸、皮蛋碎与蒜融合，加生抽、香油拌匀装盘", 2]
+      ]
+    },
+    {
+      "title": "家常红烧鳊鱼",
+      "description": "洞庭湖区的家常烧鱼。鳊鱼肉厚刺少，煎香后加姜蒜辣椒红烧，酱汁浓郁，鱼肉细嫩入味。",
+      "difficulty": 2, "servings": 3, "prepTime": 15, "cookTime": 20, "totalTime": 35,
+      "tags": "家常,下饭,河鲜,宴客", "flavorProfile": "咸鲜微辣",
+      "calories": 380, "protein": 32.0, "fat": 20.0, "carbs": 8.0,
+      "tips": "煎鱼前把鱼身水分擦干，热锅凉油不破皮；烧的过程中用勺把汁不断浇到鱼背上。",
+      "cover": { "slug": "xiang-hongshaio-bianyu", "visual": "whole braised bream fish in rich brown soy sauce with chilies, ginger and scallions on a fish plate" },
+      "ingredients": [
+        ["鳊鱼", "1", "条(约750g)", true],
+        ["生姜", "20", "g", true],
+        ["大蒜", "20", "g", true],
+        ["干红辣椒", "6", "个", true],
+        ["小葱", "3", "根", false],
+        ["生抽", "20", "ml", true],
+        ["老抽", "10", "ml", true],
+        ["料酒", "20", "ml", true],
+        ["白糖", "5", "g", false],
+        ["食用油", "60", "ml", false]
+      ],
+      "steps": [
+        ["鳊鱼去鳞去鳃去内脏，两面打斜花刀，擦干水分，抹少许盐和料酒腌10分钟", 12],
+        ["油烧至七成热，下鳊鱼中火煎至两面金黄定型", 6],
+        ["下姜蒜片、干辣椒段爆香，烹料酒、加生抽老抽、糖和热水没过鱼身一半", 2],
+        ["中火烧10分钟，期间不断把汤汁浇到鱼背上", 10],
+        ["大火收汁至浓稠，撒葱花出锅", 3]
+      ]
+    },
+    {
+      "title": "紫苏炒田螺",
+      "description": "长沙夜宵摊的\"唆螺\"。田螺吐净泥沙剪尾，与紫苏、辣椒、姜蒜爆炒，一颗一颗唆着吃才过瘾。",
+      "difficulty": 2, "servings": 3, "prepTime": 240, "cookTime": 20, "totalTime": 260,
+      "tags": "夜宵,下酒,河鲜,小吃", "flavorProfile": "香辣",
+      "calories": 260, "protein": 22.0, "fat": 10.0, "carbs": 10.0,
+      "tips": "田螺买回后清水养半天吐沙，滴几滴香油吐得更干净；剪掉螺尾更容易入味和吸食。",
+      "cover": { "slug": "xiang-zisu-tianluo", "visual": "stir-fried river snails with perilla leaves, chilies and garlic in a metal tray, night market food" },
+      "ingredients": [
+        ["田螺", "800", "g", true],
+        ["紫苏", "50", "g", true],
+        ["干红辣椒", "15", "g", true],
+        ["生姜", "25", "g", true],
+        ["大蒜", "30", "g", true],
+        ["啤酒", "200", "ml", false],
+        ["生抽", "15", "ml", true],
+        ["盐", "3", "g", true],
+        ["食用油", "40", "ml", false]
+      ],
+      "steps": [
+        ["田螺清水养半天吐净泥沙，逐只刷净剪去螺尾", 240],
+        ["姜切末、蒜切末、干辣椒剪段、紫苏摘叶洗净", 5],
+        ["锅热油，下姜蒜末、干辣椒段爆香，倒入田螺大火翻炒", 3],
+        ["加生抽、盐和啤酒，盖盖焖煮8分钟", 8],
+        ["下紫苏叶大火翻炒2分钟至香气扑鼻，出锅", 2]
+      ]
+    },
+    {
+      "title": "酸辣鸡杂",
+      "description": "鸡胗鸡心脆嫩弹牙，配酸豆角、小米辣猛火爆炒，酸辣冲鼻，是湖南人\"重口味\"下饭菜的代表。",
+      "difficulty": 1, "servings": 2, "prepTime": 15, "cookTime": 8, "totalTime": 23,
+      "tags": "家常,下饭,快手菜,酸辣", "flavorProfile": "酸辣",
+      "calories": 280, "protein": 24.0, "fat": 14.0, "carbs": 8.0,
+      "tips": "鸡杂切薄片后加料酒和淀粉抓洗去腥，全程大火快炒，一变色就下调料，久了会老。",
+      "cover": { "slug": "xiang-suanla-jiza", "visual": "stir-fried chicken giblets with sour yardlong beans, red chilies and garlic, bright glossy red-green" },
+      "ingredients": [
+        ["鸡杂", "300", "g", true],
+        ["酸豆角", "100", "g", true],
+        ["小米辣", "15", "g", true],
+        ["生姜", "15", "g", true],
+        ["大蒜", "20", "g", true],
+        ["料酒", "15", "ml", true],
+        ["生抽", "10", "ml", true],
+        ["陈醋", "5", "ml", false],
+        ["淀粉", "10", "g", true]
+      ],
+      "steps": [
+        ["鸡杂洗净切薄片，加料酒、淀粉抓匀腌10分钟；酸豆角切小段", 12],
+        ["小米辣切圈，姜蒜切末", 3],
+        ["锅烧热油，大火下鸡杂爆炒至变色断生", 2],
+        ["下姜蒜末、小米辣、酸豆角大火翻炒2分钟", 2],
+        ["淋生抽、几滴陈醋，翻匀立即出锅", 1]
+      ]
+    },
+    {
+      "title": "湘味爆炒猪肝",
+      "description": "猪肝切得极薄，猛火快炒断生即起，嫩得像豆腐，配上青蒜辣椒的锅气，是检验火候的湘菜基本功。",
+      "difficulty": 2, "servings": 2, "prepTime": 20, "cookTime": 5, "totalTime": 25,
+      "tags": "家常,下饭,快手菜,爆炒", "flavorProfile": "咸香微辣",
+      "calories": 320, "protein": 26.0, "fat": 16.0, "carbs": 8.0,
+      "tips": "猪肝泡水去血水后要彻底沥干；滑油时五六成热下锅，变色就捞，全靠回锅那十几秒入味。",
+      "cover": { "slug": "xiang-baochao-zhugan", "visual": "stir-fried thin pork liver slices with green garlic sprouts and chilies, glossy brown, wok hei" },
+      "ingredients": [
+        ["猪肝", "300", "g", true],
+        ["青蒜苗", "50", "g", true],
+        ["红辣椒", "1", "根", false],
+        ["生姜", "15", "g", true],
+        ["大蒜", "15", "g", true],
+        ["料酒", "15", "ml", true],
+        ["生抽", "15", "ml", true],
+        ["淀粉", "15", "g", true],
+        ["白胡椒粉", "1", "g", false],
+        ["食用油", "300", "ml", false]
+      ],
+      "steps": [
+        ["猪肝切2毫米薄片，清水浸泡20分钟去血水，捞出挤干", 20],
+        ["猪肝加料酒、生抽、淀粉、白胡椒粉抓匀腌5分钟", 5],
+        ["油烧至五成热，下猪肝快速滑散，变色立即捞出", 1],
+        ["锅留底油，下姜蒜片、红辣椒片爆香", 1],
+        ["倒回猪肝，下青蒜苗段，大火翻炒十几秒，调少许生抽即可", 1]
+      ]
+    },
+    {
+      "title": "酸辣腰花",
+      "description": "猪腰打上麦穗花刀，配泡椒姜蒜猛火爆炒，脆嫩无腥，酸辣汁裹着腰花，湘菜火候菜的看家本领。",
+      "difficulty": 3, "servings": 2, "prepTime": 20, "cookTime": 5, "totalTime": 25,
+      "tags": "家常,下饭,爆炒,酸辣", "flavorProfile": "酸辣",
+      "calories": 300, "protein": 24.0, "fat": 16.0, "carbs": 8.0,
+      "tips": "腰臊（白色筋膜）必须片干净才能去腥；花刀深浅一致，焯或炒的时候才会卷成漂亮的腰花。",
+      "cover": { "slug": "xiang-suanla-yaohua", "visual": "crisp stir-fried pork kidney flowers with pickled peppers, garlic sprouts, bright red and green" },
+      "ingredients": [
+        ["猪腰", "2", "个", true],
+        ["泡红椒", "30", "g", true],
+        ["小米辣", "10", "g", false],
+        ["生姜", "15", "g", true],
+        ["大蒜", "15", "g", true],
+        ["青蒜苗", "30", "g", false],
+        ["陈醋", "10", "ml", true],
+        ["料酒", "15", "ml", true],
+        ["淀粉", "10", "g", true],
+        ["生抽", "10", "ml", true]
+      ],
+      "steps": [
+        ["猪腰剖开片净腰臊，斜刀打十字花刀后切成小块", 10],
+        ["腰花加料酒抓洗，再冲水沥干，拌少许淀粉备用", 8],
+        ["泡红椒切碎、姜蒜切末、青蒜苗切段", 3],
+        ["锅大火烧油至冒烟，下腰花爆炒10秒至打卷", 1],
+        ["下泡椒末、姜蒜末、蒜苗炒香，烹陈醋和生抽，翻匀立即出锅", 1]
+      ]
+    },
+    {
+      "title": "虎皮青椒",
+      "description": "整只青椒干烙出虎皮斑，再用糖醋蒜香汁一焖，皮皱肉软、酸辣回甜，最下饭的素菜没有之一。",
+      "difficulty": 1, "servings": 2, "prepTime": 5, "cookTime": 10, "totalTime": 15,
+      "tags": "家常,下饭,素菜,快手菜", "flavorProfile": "酸辣回甜",
+      "calories": 160, "protein": 3.0, "fat": 9.0, "carbs": 12.0,
+      "tips": "青椒选皮薄肉厚的螺丝椒最好；烙的时候用锅铲压平，虎皮才均匀。",
+      "cover": { "slug": "xiang-hupi-qingjiao", "visual": "blistered tiger-skin green peppers glazed with glossy sweet-sour sauce with garlic, home style" },
+      "ingredients": [
+        ["青辣椒", "300", "g", true],
+        ["大蒜", "20", "g", true],
+        ["生抽", "20", "ml", true],
+        ["陈醋", "15", "ml", true],
+        ["白糖", "10", "g", true],
+        ["食用油", "15", "ml", false]
+      ],
+      "steps": [
+        ["青椒洗净去柄，用刀背轻拍裂；蒜切末", 3],
+        ["干锅小火将青椒烙至两面起虎皮斑、变软", 6],
+        ["加少许油、蒜末炒香，烹入生抽、陈醋、白糖和小半碗水", 1],
+        ["中火焖1分钟让虎皮吸汁，大火收浓即可", 2]
+      ]
+    },
+    {
+      "title": "湖南啤酒鸭",
+      "description": "湘人家宴常客。鸭块煸出油，与姜蒜辣椒同炒后整瓶啤酒焖烧，酒香去腥、汤汁浓郁，越焖越香。",
+      "difficulty": 2, "servings": 4, "prepTime": 15, "cookTime": 50, "totalTime": 65,
+      "tags": "家常,宴客,鸭肉,下饭", "flavorProfile": "香辣",
+      "calories": 520, "protein": 30.0, "fat": 32.0, "carbs": 10.0,
+      "tips": "鸭子皮下的油要煸出来，成菜才不腻；啤酒要用整瓶，不额外加水。",
+      "cover": { "slug": "xiang-pijiu-ya", "visual": "braised duck chunks in glossy dark beer sauce with chilies, garlic and ginger in a deep pan" },
+      "ingredients": [
+        ["鸭", "半只(约800g)", "", true],
+        ["啤酒", "500", "ml", true],
+        ["生姜", "30", "g", true],
+        ["大蒜", "30", "g", true],
+        ["干红辣椒", "10", "g", true],
+        ["八角", "2", "个", false],
+        ["生抽", "20", "ml", true],
+        ["老抽", "10", "ml", true],
+        ["青蒜苗", "30", "g", false]
+      ],
+      "steps": [
+        ["鸭子斩块，冷水下锅焯水后沥干", 10],
+        ["锅不放油，下鸭块中火煸炒10分钟至出油微黄", 10],
+        ["下姜片、蒜粒、干辣椒、八角爆香，加生抽、老抽炒上色", 3],
+        ["倒入整瓶啤酒，大火烧开后转小火焖35分钟", 35],
+        ["大火收汁，撒青蒜苗段翻匀出锅", 3]
+      ]
+    },
+    {
+      "title": "常德津市牛肉粉",
+      "description": "常德米粉的头牌。牛腩炖到酥烂作码子，红油骨汤浇在烫熟的圆粉上，一碗管饱，\"嗦粉\"的至高形态。",
+      "difficulty": 2, "servings": 2, "prepTime": 20, "cookTime": 120, "totalTime": 140,
+      "tags": "主食,米粉,牛肉,地方名吃", "flavorProfile": "香辣",
+      "calories": 620, "protein": 30.0, "fat": 22.0, "carbs": 72.0,
+      "tips": "牛肉炖前先焯水，加香料小火炖足2小时才酥；米粉烫十几秒即可，久烫会软烂。",
+      "cover": { "slug": "xiang-jinshi-nurou-fen", "visual": "a big bowl of rice noodles topped with braised beef slices in red spicy broth, cilantro and scallions" },
+      "ingredients": [
+        ["牛腩", "500", "g", true],
+        ["干米粉", "300", "g", true],
+        ["猪筒骨", "300", "g", true],
+        ["干红辣椒", "15", "g", true],
+        ["生姜", "30", "g", true],
+        ["八角", "2", "个", true],
+        ["桂皮", "1", "小段", false],
+        ["生抽", "20", "ml", true],
+        ["老抽", "10", "ml", true],
+        ["辣椒油", "15", "ml", false],
+        ["小葱", "2", "根", false],
+        ["香菜", "10", "g", false]
+      ],
+      "steps": [
+        ["牛腩和筒骨冷水下锅焯水，洗净后放入汤锅", 10],
+        ["加姜片、干辣椒、八角、桂皮、生抽老抽，加足量水大火烧开转小火炖2小时", 120],
+        ["牛腩捞出稍凉切薄片，汤中加盐调味保持微滚", 5],
+        ["米粉入沸水烫15秒，捞入大碗", 1],
+        ["码上牛肉片，浇滚烫骨汤，按口味加辣椒油，撒葱花香菜", 2]
+      ]
+    },
+    {
+      "title": "栖凤渡鱼粉",
+      "description": "郴州栖凤渡名吃，鲜鱼现熬白汤再冲辣椒红汤，鲜、辣、烫一体，鱼香锁在每一根粉里。",
+      "difficulty": 2, "servings": 2, "prepTime": 15, "cookTime": 40, "totalTime": 55,
+      "tags": "主食,米粉,河鲜,地方名吃", "flavorProfile": "鲜辣",
+      "calories": 520, "protein": 28.0, "fat": 16.0, "carbs": 64.0,
+      "tips": "鱼头鱼骨先煎再熬，汤才白；红汤辣椒要用热油现泼，趁烫浇粉风味最正。",
+      "cover": { "slug": "xiang-qifengdu-yufen", "visual": "rice noodles in milky white fish broth with fried fish pieces and red chili oil, scallions, Chenzhou style" },
+      "ingredients": [
+        ["鳙鱼", "1", "条(约750g)", true],
+        ["干米粉", "300", "g", true],
+        ["豆膏", "20", "g", false],
+        ["干红辣椒", "20", "g", true],
+        ["生姜", "30", "g", true],
+        ["大蒜", "30", "g", true],
+        ["辣椒油", "15", "ml", true],
+        ["小葱", "3", "根", true],
+        ["食用油", "50", "ml", false],
+        ["白胡椒粉", "2", "g", true]
+      ],
+      "steps": [
+        ["鳙鱼取下两侧鱼肉切片，鱼头鱼骨剁块", 10],
+        ["锅热油，下鱼头鱼骨煎至金黄，加开水和姜片，大火熬20分钟至汤色奶白", 22],
+        ["干红辣椒剪碎，用热油泼成红汤辣子；豆浆菜（豆膏）调散备用", 4],
+        ["鱼片用盐、白胡椒粉略腌，放入白汤中烫熟", 3],
+        ["米粉烫熟装碗，浇滚烫鱼汤和鱼片，冲入红汤辣子和豆膏汁，撒葱花", 3]
+      ]
+    },
+    {
+      "title": "长沙刮凉粉",
+      "description": "夏天的长沙街头，凉粉刮出细条，浇上蒜水辣椒油和酸甜汁，冰冰凉凉，酸辣开胃，一块钱的老快乐。",
+      "difficulty": 1, "servings": 2, "prepTime": 10, "cookTime": 5, "totalTime": 15,
+      "tags": "小吃,凉菜,夏日,素食", "flavorProfile": "酸辣",
+      "calories": 240, "protein": 3.0, "fat": 10.0, "carbs": 34.0,
+      "tips": "刮凉粉专用的刮子买不到，用刨丝器或切条都行；所有调料汁先兑好再浇，拌匀马上吃。",
+      "cover": { "slug": "xiang-gua-liangfen", "visual": "white scraped rice jelly noodles in a bowl with red chili oil, garlic sauce, pickled radish bits and scallions" },
+      "ingredients": [
+        ["大米凉粉", "400", "g", true],
+        ["大蒜", "20", "g", true],
+        ["辣椒油", "20", "ml", true],
+        ["陈醋", "15", "ml", true],
+        ["生抽", "15", "ml", true],
+        ["芝麻香油", "5", "ml", false],
+        ["萝卜干", "20", "g", false],
+        ["小葱", "2", "根", false]
+      ],
+      "steps": [
+        ["大蒜压泥加凉开水兑成蒜水；萝卜干切细丁，葱切花", 5],
+        ["凉粉用刮子刮成细条入碗（或切成筷子粗的条）", 3],
+        ["加蒜水、生抽、陈醋、辣椒油、芝麻香油", 2],
+        ["撒上萝卜干丁和葱花，拌匀即食", 1]
+      ]
+    },
+    {
+      "title": "湘西米豆腐",
+      "description": "凤凰古城名小吃。米浆点灰水做成米豆腐，切丁浇上酸辣红汤，滑嫩弹韧，一口回到沱江边。",
+      "difficulty": 2, "servings": 2, "prepTime": 15, "cookTime": 25, "totalTime": 40,
+      "tags": "小吃,地方名吃,素食,酸辣", "flavorProfile": "酸辣",
+      "calories": 280, "protein": 5.0, "fat": 8.0, "carbs": 48.0,
+      "tips": "米豆腐下锅前用凉水冲净表面碱味；红汤要用菜籽油炒辣子才出湘西风味。",
+      "cover": { "slug": "xiang-mi-doufu", "visual": "yellowish rice tofu cubes in red sour spicy broth with scallions and pickled vegetables, Fenghuang snack" },
+      "ingredients": [
+        ["米豆腐", "400", "g", true],
+        ["酸豆角", "30", "g", true],
+        ["干红辣椒", "10", "g", true],
+        ["大蒜", "20", "g", true],
+        ["陈醋", "10", "ml", true],
+        ["生抽", "15", "ml", true],
+        ["小葱", "2", "根", false],
+        ["食用油", "20", "ml", false]
+      ],
+      "steps": [
+        ["米豆腐冲净，切成1.5厘米小丁；酸豆角切末、蒜切末、葱切花", 6],
+        ["锅热油，下干辣椒段、蒜末爆香，加一大碗水烧开", 3],
+        ["下米豆腐丁煮2分钟，加酸豆角末、生抽、陈醋", 3],
+        ["连汤装碗，撒葱花趁烫吃", 1]
+      ]
+    },
+    {
+      "title": "干锅茶树菇",
+      "description": "湘菜馆人气素荤搭配。茶树菇干香有嚼头，配五花肉片和干辣椒在干锅里越煮越香，下酒又下饭。",
+      "difficulty": 1, "servings": 3, "prepTime": 30, "cookTime": 15, "totalTime": 45,
+      "tags": "家常,下饭,菌菇,干锅", "flavorProfile": "香辣",
+      "calories": 340, "protein": 14.0, "fat": 22.0, "carbs": 16.0,
+      "tips": "干茶树菇泡发后一定要挤干水分再煸炒，香味才浓缩；垫洋葱的干锅上桌时点小蜡烛保温。",
+      "cover": { "slug": "xiang-ganguo-chashugu", "visual": "dry-pot tea tree mushrooms with pork belly slices, chilies and onions in a black dry pot, glossy" },
+      "ingredients": [
+        ["干茶树菇", "100", "g", true],
+        ["五花肉", "150", "g", true],
+        ["洋葱", "1", "个", false],
+        ["干红辣椒", "10", "g", true],
+        ["大蒜", "20", "g", true],
+        ["青蒜苗", "30", "g", false],
+        ["生抽", "15", "ml", true],
+        ["食用油", "20", "ml", false]
+      ],
+      "steps": [
+        ["干茶树菇温水泡发30分钟，去根洗净切段，挤干水分", 30],
+        ["五花肉切薄片，洋葱切丝垫入干锅底", 5],
+        ["锅热少许油，下五花肉片煸出油，加蒜片、干辣椒段爆香", 4],
+        ["下茶树菇中火煸炒4分钟至干香，加生抽炒匀", 5],
+        ["盛入垫洋葱的干锅，撒蒜苗段，小火加热上桌", 2]
+      ]
+    },
+    {
+      "title": "干锅肥肠",
+      "description": "湘菜馆招牌硬菜。卤肥肠煸得外焦里嫩，加辣椒蒜瓣在干锅里咕嘟，肥而不腻、越嚼越香。",
+      "difficulty": 2, "servings": 3, "prepTime": 20, "cookTime": 30, "totalTime": 50,
+      "tags": "下饭,下酒,干锅,宴客", "flavorProfile": "香辣",
+      "calories": 560, "protein": 20.0, "fat": 46.0, "carbs": 10.0,
+      "tips": "肥肠清洗时翻面撕掉内壁多余油脂，用面粉+陈醋反复揉搓去黏液异味，焯煮后再卤，风味才正。",
+      "cover": { "slug": "xiang-ganguo-feichang", "visual": "dry-pot braised pork intestines with chilies, garlic cloves and green peppers, deep red-brown, glossy" },
+      "ingredients": [
+        ["猪肥肠", "500", "g", true],
+        ["干红辣椒", "15", "g", true],
+        ["红辣椒", "1", "根", false],
+        ["洋葱", "1", "个", false],
+        ["生姜", "20", "g", true],
+        ["大蒜", "30", "g", true],
+        ["生抽", "20", "ml", true],
+        ["料酒", "30", "ml", true],
+        ["八角", "2", "个", true],
+        ["面粉", "30", "g", true]
+      ],
+      "steps": [
+        ["肥肠用面粉、陈醋里外揉搓洗净，冷水下锅加料酒、姜片、八角煮40分钟至软，捞出切小段", 40],
+        ["锅热油，下肥肠段中火煸至表面焦香", 6],
+        ["下姜蒜片、干辣椒段爆香，加生抽、少许卤汤焖5分钟", 6],
+        ["洋葱丝垫干锅底，倒入肥肠，小火加热上桌", 2]
+      ]
+    },
+    {
+      "title": "桃江擂茶",
+      "description": "益阳桃江待客古俗。茶叶、芝麻、花生、生姜入擂钵擂成糊，滚水一冲，再抓一把炒米，咸香暖胃。",
+      "difficulty": 1, "servings": 4, "prepTime": 15, "cookTime": 5, "totalTime": 20,
+      "tags": "饮品,待客,养生,地方风味", "flavorProfile": "咸香",
+      "calories": 220, "protein": 8.0, "fat": 12.0, "carbs": 20.0,
+      "tips": "没有擂钵可用料理机加少量温水打成糊，但擂的风味更足；炒米最后放，保持脆感。",
+      "cover": { "slug": "xiang-taojiang-leicha", "visual": "a bowl of creamy greenish ground tea soup with peanuts, sesame and puffed rice on top, rustic wooden table" },
+      "ingredients": [
+        ["绿茶", "15", "g", true],
+        ["白芝麻", "30", "g", true],
+        ["花生米", "50", "g", true],
+        ["生姜", "15", "g", true],
+        ["大米", "50", "g", true],
+        ["盐", "2", "g", true]
+      ],
+      "steps": [
+        ["大米炒成金黄的炒米，盛出备用", 8],
+        ["茶叶、白芝麻、花生米（留少许整粒）、生姜放入擂钵，加少许温水和盐擂成细糊", 8],
+        ["滚烫开水冲入擂钵，搅散成茶汤", 2],
+        ["分碗盛入，每碗撒炒米和留用的花生、芝麻即可", 2]
+      ]
+    },
+    {
+      "title": "泥鳅钻豆腐",
+      "description": "洞庭湖区的传统名菜，泥鳅与嫩豆腐同锅炖煮，汤白如奶、泥鳅鲜嫩、豆腐吸味，老少皆宜的滋补菜。",
+      "difficulty": 2, "servings": 3, "prepTime": 240, "cookTime": 30, "totalTime": 270,
+      "tags": "汤羹,河鲜,滋补,家常", "flavorProfile": "咸鲜",
+      "calories": 320, "protein": 28.0, "fat": 14.0, "carbs": 8.0,
+      "tips": "泥鳅买回清水养2天吐净泥沙；\"钻豆腐\"本是传说，实际做法是先炖豆腐再下泥鳅，汤一样鲜。",
+      "cover": { "slug": "xiang-niqiu-zuandoufu", "visual": "milky white soup with loaches and soft tofu cubes, ginger slices and scallions, homey clay pot" },
+      "ingredients": [
+        ["泥鳅", "300", "g", true],
+        ["嫩豆腐", "400", "g", true],
+        ["生姜", "20", "g", true],
+        ["小葱", "3", "根", true],
+        ["干红辣椒", "5", "个", false],
+        ["白胡椒粉", "2", "g", true],
+        ["食用油", "20", "ml", false],
+        ["盐", "4", "g", true]
+      ],
+      "steps": [
+        ["泥鳅清水静养2天，中途换水吐净泥沙", 240],
+        ["嫩豆腐切大块，姜切片、葱切花", 5],
+        ["锅中放油，下姜片、干辣椒段爆香，加足量开水", 2],
+        ["下豆腐块中火炖10分钟至汤微白，放入泥鳅", 10],
+        ["加盖炖12分钟至汤色奶白、泥鳅熟透，加盐和白胡椒粉，撒葱花出锅", 13]
+      ]
+    },
+    {
+      "title": "长沙凉面",
+      "description": "三伏天的长沙味道。碱水面过凉水抖散，蒜水、香醋、辣椒油、芝麻酱层层浇上，酸辣爽利不糊口。",
+      "difficulty": 1, "servings": 2, "prepTime": 10, "cookTime": 8, "totalTime": 18,
+      "tags": "小吃,主食,夏日,快手菜", "flavorProfile": "酸辣",
+      "calories": 520, "protein": 12.0, "fat": 18.0, "carbs": 76.0,
+      "tips": "面条煮至断生立即过凉开水并拌油抖散，根根分明才够\"凉面\"的格；芝麻酱先用香油澥开再浇。",
+      "cover": { "slug": "xiang-liangmian", "visual": "cold alkaline noodles in a bowl with sesame paste, chili oil, cucumber shreds and peanuts, summer street food" },
+      "ingredients": [
+        ["碱水面", "300", "g", true],
+        ["黄瓜", "1", "根", false],
+        ["大蒜", "20", "g", true],
+        ["辣椒油", "20", "ml", true],
+        ["陈醋", "15", "ml", true],
+        ["生抽", "15", "ml", true],
+        ["芝麻酱", "20", "g", true],
+        ["绿豆芽", "100", "g", false],
+        ["芝麻香油", "10", "ml", false],
+        ["萝卜干", "20", "g", false]
+      ],
+      "steps": [
+        ["大蒜压泥加凉开水兑成蒜水；芝麻酱用香油澥开", 5],
+        ["碱水面入沸水煮2分钟至断生，捞出过凉开水，拌香油抖散", 8],
+        ["黄瓜切细丝，绿豆芽焯熟过凉，萝卜干切末", 5],
+        ["面条装碗，铺黄瓜丝、豆芽，浇蒜水、生抽、陈醋、芝麻酱、辣椒油", 3],
+        ["撒萝卜干末，拌匀开吃", 1]
+      ]
+    }
+  ]
+}

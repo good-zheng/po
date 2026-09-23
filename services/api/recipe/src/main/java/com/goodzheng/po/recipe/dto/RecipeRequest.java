@@ -50,6 +50,7 @@ public class RecipeRequest {
         private String unit;
         private Boolean isEssential = true;
         private Integer sortOrder = 0;
+        private String imageUrl;
     }
 
     @Data

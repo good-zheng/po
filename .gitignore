@@ -11,6 +11,12 @@ services/api/**/target/
 services/chat/.pytest_cache/
 services/chat/**/__pycache__/
 services/chat/*.egg-info/
+services/agent-core/.venv/
+services/agent-core/.pytest_cache/
+services/agent-core/**/__pycache__/
+services/agent-core/build/
+*.egg-info/
+.agent-core/
 
 # Runtime state and secrets
 .env
@@ -20,6 +26,14 @@ services/api/src/main/resources/application-local.yaml
 services/api/api-bootstrap/src/main/resources/application-local.yaml
 services/api/uploads/
 services/chat/.venv/
+services/chat/agent_*.json
+**/logs/
+
+# Scratch and generated asset sources
+vibe_images/
+/covers-list.tsv
+/ingredients-count.txt
+/ingredients-image-list.tsv
 
 # Tooling and OS files
 .DS_Store

@@ -62,8 +62,9 @@ describe('app getInitialState', () => {
     const { getInitialState } = await import('./app');
     mockQueryCurrentUser.mockResolvedValue({
       data: {
-        name: 'Test User',
-        access: 'admin',
+        id: 1,
+        username: 'root',
+        role: 'admin',
       },
     });
 
@@ -71,8 +72,9 @@ describe('app getInitialState', () => {
 
     expect(mockQueryCurrentUser).toHaveBeenCalled();
     expect(state.currentUser).toEqual({
-      name: 'Test User',
-      access: 'admin',
+      id: 1,
+      username: 'root',
+      role: 'admin',
     });
     expect(state.settingDrawerOpen).toBe(false);
     expect(state.fetchUserInfo).toBeDefined();
@@ -124,7 +126,7 @@ describe('app getInitialState', () => {
   it('should include default settings in initial state', async () => {
     const { getInitialState } = await import('./app');
     mockQueryCurrentUser.mockResolvedValue({
-      data: { name: 'User' },
+      data: { username: 'root', role: 'admin' },
     });
 
     const state = await getInitialState();
@@ -135,12 +137,28 @@ describe('app getInitialState', () => {
   it('fetchUserInfo should return user data on success', async () => {
     const { getInitialState } = await import('./app');
     mockQueryCurrentUser.mockResolvedValue({
-      data: { name: 'Fetched User', access: 'user' },
+      data: { id: 2, username: 'operator', role: 'admin' },
     });
 
     const state = await getInitialState();
 
     const user = await state.fetchUserInfo?.();
-    expect(user).toEqual({ name: 'Fetched User', access: 'user' });
+    expect(user).toEqual({ id: 2, username: 'operator', role: 'admin' });
+  });
+
+  it('fetchUserInfo should reject a normal user token', async () => {
+    const { getInitialState } = await import('./app');
+    localStorage.setItem('token', 'user-token');
+    mockQueryCurrentUser.mockResolvedValue({
+      data: { id: 3, username: 'chef', role: 'user' },
+    });
+
+    const state = await getInitialState();
+
+    expect(state.currentUser).toBeUndefined();
+    expect(localStorage.getItem('token')).toBeNull();
+    expect(mockReplace).toHaveBeenCalledWith(
+      expect.stringContaining('/user/login?redirect='),
+    );
   });
 });

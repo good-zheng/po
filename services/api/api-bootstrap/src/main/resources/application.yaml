@@ -15,13 +15,10 @@ spring:
     active:
       - local
 
-  # JPA / Hibernate 配置
-  jpa:
-    database-platform: org.hibernate.dialect.MySQLDialect
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-    open-in-view: true
+  # 建表脚本：替代原 JPA ddl-auto: update，启动时执行 schema.sql（幂等，CREATE TABLE IF NOT EXISTS）
+  sql:
+    init:
+      mode: always
 
   # 文件上传限制配置
   servlet:
@@ -30,12 +27,30 @@ spring:
       max-request-size: 100MB
       enabled: true
 
-  # 静态资源配置（file:uploads/ 用于暴露本地上传的文件，如头像 /api/avatars/**）
+  # 静态资源配置（file:uploads/ 用于暴露本地上传的文件，如头像 /api/avatars/**；
+  # classpath:/static/ 用于种子图片，如菜谱封面 /api/covers/**、食材图 /api/ingredients/**）
   web:
     resources:
       static-locations: classpath:/static/,classpath:/public/,file:uploads/
       cache:
         period: 3600
+
+# ==========================
+# MyBatis-Plus 配置
+# ==========================
+mybatis-plus:
+  # XML mapper 位置：各业务模块 src/main/resources/mapper/*.xml，与 Mapper 接口同名
+  mapper-locations: classpath*:mapper/**/*.xml
+  global-config:
+    banner: false
+    db-config:
+      # 主键自增（等价 @TableId(type = IdType.AUTO)）
+      id-type: auto
+      # 更新策略 always：等价原 JPA merge 全字段语义（全部字段无条件写入，createTime 等由实体上 updateStrategy=NEVER 兜底）
+      update-strategy: always
+  configuration:
+    # 打印 SQL（等价原 JPA show-sql: true）
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 # ==========================
 # Actuator 监控配置

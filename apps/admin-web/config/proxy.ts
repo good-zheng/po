@@ -15,14 +15,14 @@ export default {
     // localhost:8000/api/** -> https://preview.pro.ant.design/api/**
     '/api/': {
       // 要代理的地址（.env 缺失时兜底为本地后端默认地址）
-      target: process.env.UMI_APP_API_BASE_URL || 'http://127.0.0.1:8080',
+      target: process.env.UMI_APP_API_BASE_URL,
       // 配置了这个可以从 http 代理到 https
       // 依赖 origin 的功能可能需要这个，比如 cookie
       changeOrigin: true,
     },
-    // localhost:8000/ws/** -> py_server WebSocket (FastAPI 5090)
+    // localhost:8000/ws/** -> py_server WebSocket（.env 缺失时兜底为 FastAPI 默认地址）
     '/ws': {
-      target: 'http://127.0.0.1:5090',
+      target: process.env.UMI_APP_WS_BASE_URL,
       changeOrigin: true,
       ws: true,
     },

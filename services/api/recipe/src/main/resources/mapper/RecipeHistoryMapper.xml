@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.goodzheng.po.recipe.repository.RecipeHistoryMapper">
+
+    <!-- 记录浏览：唯一键 (user_id, recipe_id) 冲突时覆盖 viewed_at，重复浏览只保留最近一次 -->
+    <insert id="upsertView">
+        INSERT INTO recipe_history (user_id, recipe_id, viewed_at)
+        VALUES (#{userId}, #{recipeId}, NOW())
+        ON DUPLICATE KEY UPDATE viewed_at = NOW()
+    </insert>
+
+    <!-- 我的浏览历史：JOIN 菜谱主表，按最近浏览时间倒序 -->
+    <select id="selectHistoryPage" resultType="com.goodzheng.po.recipe.entity.Recipe">
+        SELECT
+            r.id AS id,
+            r.title AS title,
+            r.description AS description,
+            r.cover_image_url AS coverImageUrl,
+            r.prep_time AS prepTime,
+            r.cook_time AS cookTime,
+            r.total_time AS totalTime,
+            r.difficulty AS difficulty,
+            r.servings AS servings,
+            r.category AS category,
+            r.tags AS tags,
+            r.author_id AS authorId,
+            r.is_public AS isPublic,
+            r.likes_count AS likesCount,
+            r.calories AS calories,
+            r.protein AS protein,
+            r.fat AS fat,
+            r.carbs AS carbs,
+            r.tips AS tips,
+            r.flavor_profile AS flavorProfile,
+            r.status AS status,
+            r.reject_reason AS rejectReason,
+            r.created_at AS createdAt,
+            r.updated_at AS updatedAt,
+            h.viewed_at AS viewedAt
+        FROM recipe_history h
+        JOIN recipe r ON r.id = h.recipe_id
+        WHERE h.user_id = #{userId}
+          AND r.deleted_at IS NULL
+        ORDER BY h.viewed_at DESC
+    </select>
+
+</mapper>

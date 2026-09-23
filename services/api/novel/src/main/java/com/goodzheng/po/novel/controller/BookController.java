@@ -4,35 +4,35 @@ import com.goodzheng.po.novel.constant.NovelGenres;
 import com.goodzheng.po.novel.dto.BookRequest;
 import com.goodzheng.po.shared.dto.Result;
 import com.goodzheng.po.novel.entity.Book;
-import com.goodzheng.po.identity.repository.UserRepository;
+import com.goodzheng.po.identity.security.AuthUser;
 import com.goodzheng.po.novel.service.BookService;
-import com.goodzheng.po.identity.security.JwtUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * 小说接口。
+ * 访问控制由 SecurityConfig 统一完成：浏览公开，写操作仅管理端管理员。
+ */
 @RestController
 @RequestMapping("/books")
-@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class BookController {
 
     private final BookService bookService;
-    private final JwtUtil jwtUtil;
-    private final UserRepository userRepository;
 
-    // ── 创建书籍 ──────────────────────────────────────────
+    // ── 创建书籍（管理端） ────────────────────────────────
     @PostMapping
-    public Result<Book> create(@RequestHeader("Authorization") String auth,
+    public Result<Book> create(@AuthenticationPrincipal AuthUser principal,
             @Valid @RequestBody BookRequest request) {
         try {
-            Long authorId = resolveUserId(auth);
-            return Result.success(bookService.create(request, authorId));
+            return Result.success(bookService.create(request, principal.id()));
         } catch (RuntimeException e) {
             return Result.error(400, e.getMessage());
         }
@@ -66,38 +66,25 @@ public class BookController {
         return Result.success(bookService.list(keyword, genre, status, pageRequest));
     }
 
-    // ── 更新书籍 ──────────────────────────────────────────
+    // ── 更新书籍（管理端） ────────────────────────────────
     @PutMapping("/{id}")
     public Result<Book> update(@PathVariable Long id,
-            @RequestHeader("Authorization") String auth,
             @Valid @RequestBody BookRequest request) {
         try {
-            Long authorId = resolveUserId(auth);
-            return Result.success(bookService.update(id, request, authorId));
+            return Result.success(bookService.update(id, request));
         } catch (RuntimeException e) {
             return Result.error(400, e.getMessage());
         }
     }
 
-    // ── 删除书籍（级联软删除章节和角色） ──────────────────
+    // ── 删除书籍（管理端，级联软删除章节和角色） ──────────
     @DeleteMapping("/{id}")
-    public Result<String> delete(@PathVariable Long id,
-            @RequestHeader("Authorization") String auth) {
+    public Result<String> delete(@PathVariable Long id) {
         try {
-            Long authorId = resolveUserId(auth);
-            bookService.delete(id, authorId);
+            bookService.delete(id);
             return Result.success("删除成功", null);
         } catch (RuntimeException e) {
             return Result.error(400, e.getMessage());
         }
-    }
-
-    // ── 工具：从 JWT 解析用户 ID ─────────────────────────
-    private Long resolveUserId(String authHeader) {
-        String token = authHeader.replace("Bearer ", "");
-        String username = jwtUtil.getUsernameFromToken(token);
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("用户不存在"))
-                .getId();
     }
 }

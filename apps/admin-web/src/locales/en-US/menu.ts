@@ -4,6 +4,7 @@ export default {
   'menu.recipes.detail': 'Recipes Detail',
   'menu.recipes.create': 'Create Recipes',
   'menu.recipes.edit': 'Edit Recipes',
+  'menu.recipes.review': 'Recipe Review',
 
   'menu.books': 'Novels',
   'menu.books.list': 'Books List',

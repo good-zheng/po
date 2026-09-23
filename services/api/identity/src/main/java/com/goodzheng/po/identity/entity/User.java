@@ -1,59 +1,50 @@
 package com.goodzheng.po.identity.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-@Entity
-@Table(name = "sys_user", uniqueConstraints = @UniqueConstraint(columnNames = "username"))
+@TableName("sys_user")
 public class User {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @TableId(type = IdType.AUTO)
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 50)
     private String username;
 
     @JsonIgnore
-    @Column(nullable = false)
     private String password;
 
-    @Column(length = 100)
     private String email;
 
-    @Column(length = 50)
     private String nickname;
 
-    @Column(length = 255)
     private String avatar;
 
-    @Column(length = 50)
     private String firstName;
 
-    @Column(length = 50)
     private String lastName;
 
-    @Column(length = 20)
     private String phoneNumber;
 
     /** 角色: superadmin, admin, user */
-    @Column(length = 20)
     private String role = "user";
 
     /** 状态: active, inactive, invited, suspended */
-    @Column(nullable = false, length = 20)
     private String status = "active";
 
-    @Column(updatable = false)
+    /** 不允许更新（等价原 JPA updatable = false） */
+    @TableField(updateStrategy = FieldStrategy.NEVER)
     private LocalDateTime createTime = LocalDateTime.now();
 
+    /** 更新时由 MetaObjectHandler 自动填充为当前时间 */
+    @TableField(fill = FieldFill.UPDATE)
     private LocalDateTime updateTime = LocalDateTime.now();
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.updateTime = LocalDateTime.now();
-    }
 }

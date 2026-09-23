@@ -1,53 +1,45 @@
 package com.goodzheng.po.novel.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
 import java.time.LocalDateTime;
 
 @Data
-@Entity
-@Table(name = "book_chapter")
+@TableName("book_chapter")
 public class BookChapter {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @TableId(type = IdType.AUTO)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "book_id", nullable = false)
+    /** 所属书籍 ID（原 JPA @ManyToOne 关联，MyBatis-Plus 用普通外键字段） */
     @JsonIgnore
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
-    private Book book;
+    private Long bookId;
 
     /** 章节索引/序号 */
-    @Column(nullable = false)
     private Integer chapterIndex;
 
-    @Column(nullable = false, length = 200)
     private String title;
 
-    @Column(columnDefinition = "TEXT")
     private String content;
 
     /** 章节字数（不含空白字符） */
-    @Column(nullable = false)
     private Integer wordCount = 0;
 
     // ── 软删除 ────────────────────────────────────────────
     private LocalDateTime deletedAt;
 
-    @Column(updatable = false)
+    /** 不允许更新（等价原 JPA updatable = false） */
+    @TableField(updateStrategy = FieldStrategy.NEVER)
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    /** 更新时由 MetaObjectHandler 自动填充为当前时间 */
+    @TableField(fill = FieldFill.UPDATE)
     private LocalDateTime updatedAt = LocalDateTime.now();
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
 }

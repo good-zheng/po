@@ -22,27 +22,30 @@ public class JwtUtil {
         this.expiration = expiration;
     }
 
-    public String generateToken(String username) {
+    /** 令牌携带用户标识、角色、状态与登录来源，供过滤器链直接鉴权 */
+    public String generateToken(Long userId, String username, String role, String status, String client) {
         Date now = new Date();
         return Jwts.builder()
                 .subject(username)
+                .claim("uid", userId)
+                .claim("role", role)
+                .claim("status", status)
+                .claim("client", client)
                 .issuedAt(now)
                 .expiration(new Date(now.getTime() + expiration))
                 .signWith(key)
                 .compact();
     }
 
-    public String getUsernameFromToken(String token) {
-        return getClaims(token).getSubject();
-    }
-
-    public boolean validateToken(String token) {
-        try {
-            getClaims(token);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+    /** 解析并校验令牌（签名、有效期）；无效令牌抛出 io.jsonwebtoken.JwtException */
+    public AuthUser parse(String token) {
+        Claims claims = getClaims(token);
+        return new AuthUser(
+                claims.get("uid", Long.class),
+                claims.getSubject(),
+                claims.get("role", String.class),
+                claims.get("status", String.class),
+                claims.get("client", String.class));
     }
 
     private Claims getClaims(String token) {

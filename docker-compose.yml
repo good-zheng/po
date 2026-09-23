@@ -23,9 +23,10 @@ services:
 
   redis:
     image: redis:7-alpine
-    # 仅在 compose 内部网络访问，未暴露宿主机端口；如需密码可加 --requirepass
+    # 与 application-local.yaml 的 spring.data.redis.password 保持一致
+    command: redis-server --requirepass ${REDIS_PASSWORD:-123456}
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD-SHELL", "redis-cli -a $${REDIS_PASSWORD:-123456} ping"]
       interval: 5s
       timeout: 3s
       retries: 20

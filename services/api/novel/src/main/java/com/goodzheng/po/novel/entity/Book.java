@@ -1,58 +1,51 @@
 package com.goodzheng.po.novel.entity;
 
-import jakarta.persistence.*;
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Data
-@Entity
-@Table(name = "book")
+@TableName("book")
 public class Book {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @TableId(type = IdType.AUTO)
     private Long id;
 
     /** 创建用户ID */
-    @Column(nullable = false)
     private Long authorId;
 
-    @Column(nullable = false, length = 200)
     private String title;
 
-    @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Column(length = 500)
     private String coverImage;
 
     /** 书籍类型，如：fantasy-玄幻、wuxia-武侠、scifi-科幻 */
-    @Column(length = 50)
     private String genre;
 
     /** 创作状态: ongoing-连载中, completed-已完结, paused-暂停更新 */
-    @Column(length = 20)
     private String status = "ongoing";
 
     /** 书籍总字数（各未删除章节字数合计） */
-    @Column(nullable = false)
     private Integer wordCount = 0;
 
     /** 作者署名 */
-    @Column(length = 100)
     private String author;
 
     // ── 软删除 ────────────────────────────────────────────
     private LocalDateTime deletedAt;
 
-    @Column(updatable = false)
+    /** 不允许更新（等价原 JPA updatable = false） */
+    @TableField(updateStrategy = FieldStrategy.NEVER)
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    /** 更新时由 MetaObjectHandler 自动填充为当前时间 */
+    @TableField(fill = FieldFill.UPDATE)
     private LocalDateTime updatedAt = LocalDateTime.now();
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
 }

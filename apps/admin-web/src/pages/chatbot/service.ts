@@ -38,6 +38,8 @@ class ChatWSRequest extends AbstractXRequestClass<
 
   private pendingContent: string | null = null;
 
+  private pendingConversationId: string | null = null;
+
   private pingTimer: ReturnType<typeof setInterval> | null = null;
 
   get asyncHandler() {
@@ -67,6 +69,7 @@ class ChatWSRequest extends AbstractXRequestClass<
     this.chunks = [];
     this.requesting = true;
     this.pendingContent = message.content;
+    this.pendingConversationId = params?.conversationId || null;
 
     if (!this.ws) {
       this.connect();
@@ -129,9 +132,11 @@ class ChatWSRequest extends AbstractXRequestClass<
     const frame: ChatInFrame = {
       type: 'message',
       content: this.pendingContent,
+      conversation_id: this.pendingConversationId ?? undefined,
     };
     this.ws.send(JSON.stringify(frame));
     this.pendingContent = null;
+    this.pendingConversationId = null;
   }
 
   private handleFrame(event: MessageEvent) {
@@ -151,16 +156,24 @@ class ChatWSRequest extends AbstractXRequestClass<
       return;
     }
 
-    this.requesting = false;
     if (frame.type === 'done') {
+      this.requesting = false;
       callbacks?.onSuccess?.(this.chunks, new Headers());
-    } else {
+      return;
+    }
+
+    if (frame.type === 'error') {
+      this.requesting = false;
       callbacks?.onError?.(
         new Error(frame.content || '服务返回错误'),
         undefined,
         new Headers(),
       );
+      return;
     }
+
+    // run_started/step/thinking/plan/tool_call_*/interrupt 为编排过程帧：
+    // 信息性透传，不结束请求、不触发回调
   }
 
   private startHeartbeat() {

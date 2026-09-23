@@ -4,6 +4,7 @@ export default {
   'menu.recipes.detail': '菜谱详情',
   'menu.recipes.create': '创建菜谱',
   'menu.recipes.edit': '编辑菜谱',
+  'menu.recipes.review': '菜谱审核',
 
   'menu.books': '小说管理',
   'menu.books.list': '书籍列表',

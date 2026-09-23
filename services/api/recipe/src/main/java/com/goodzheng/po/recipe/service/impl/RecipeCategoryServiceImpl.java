@@ -1,7 +1,8 @@
 package com.goodzheng.po.recipe.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.goodzheng.po.recipe.entity.RecipeCategory;
-import com.goodzheng.po.recipe.repository.RecipeCategoryRepository;
+import com.goodzheng.po.recipe.repository.RecipeCategoryMapper;
 import com.goodzheng.po.recipe.service.RecipeCategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,11 +14,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RecipeCategoryServiceImpl implements RecipeCategoryService {
 
-    private final RecipeCategoryRepository recipeCategoryRepository;
+    private final RecipeCategoryMapper recipeCategoryMapper;
 
     @Override
     @Transactional(readOnly = true)
     public List<RecipeCategory> listAll() {
-        return recipeCategoryRepository.findByDeletedAtIsNullOrderBySortOrderAscIdAsc();
+        return recipeCategoryMapper.selectList(new LambdaQueryWrapper<RecipeCategory>()
+                .isNull(RecipeCategory::getDeletedAt)
+                .orderByAsc(RecipeCategory::getSortOrder)
+                .orderByAsc(RecipeCategory::getId));
     }
 }

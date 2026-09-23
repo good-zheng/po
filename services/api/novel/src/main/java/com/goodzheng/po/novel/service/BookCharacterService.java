@@ -11,9 +11,9 @@ public interface BookCharacterService {
 
     BookCharacter get(Long bookId, Long characterId);
 
-    BookCharacter create(Long bookId, CharacterRequest request, Long operatorId);
+    BookCharacter create(Long bookId, CharacterRequest request);
 
-    BookCharacter update(Long bookId, Long characterId, CharacterRequest request, Long operatorId);
+    BookCharacter update(Long bookId, Long characterId, CharacterRequest request);
 
-    void delete(Long bookId, Long characterId, Long operatorId);
+    void delete(Long bookId, Long characterId);
 }

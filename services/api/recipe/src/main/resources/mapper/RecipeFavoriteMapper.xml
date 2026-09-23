@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.goodzheng.po.recipe.repository.RecipeFavoriteMapper">
+
+    <!-- 我的收藏：JOIN 菜谱主表，列别名转 camelCase 直接映射 Recipe 属性 -->
+    <select id="selectFavoritePage" resultType="com.goodzheng.po.recipe.entity.Recipe">
+        SELECT
+            r.id AS id,
+            r.title AS title,
+            r.description AS description,
+            r.cover_image_url AS coverImageUrl,
+            r.prep_time AS prepTime,
+            r.cook_time AS cookTime,
+            r.total_time AS totalTime,
+            r.difficulty AS difficulty,
+            r.servings AS servings,
+            r.category AS category,
+            r.tags AS tags,
+            r.author_id AS authorId,
+            r.is_public AS isPublic,
+            r.likes_count AS likesCount,
+            r.calories AS calories,
+            r.protein AS protein,
+            r.fat AS fat,
+            r.carbs AS carbs,
+            r.tips AS tips,
+            r.flavor_profile AS flavorProfile,
+            r.status AS status,
+            r.reject_reason AS rejectReason,
+            r.created_at AS createdAt,
+            r.updated_at AS updatedAt,
+            f.created_at AS favoritedAt
+        FROM recipe_favorite f
+        JOIN recipe r ON r.id = f.recipe_id
+        WHERE f.user_id = #{userId}
+          AND r.deleted_at IS NULL
+        ORDER BY f.created_at DESC
+    </select>
+
+</mapper>

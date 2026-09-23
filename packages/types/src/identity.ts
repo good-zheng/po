@@ -1,3 +1,12 @@
+/** 登录来源：admin=管理后台，app=移动端。后端据此决定账号可登录的客户端 */
+export type LoginClient = "admin" | "app";
+
+export type LoginRequest = {
+  username: string;
+  password: string;
+  client: LoginClient;
+};
+
 export type UserItem = {
   id: number;
   username: string;

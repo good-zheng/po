@@ -1,9 +1,11 @@
 package com.goodzheng.po.identity.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.goodzheng.po.identity.dto.UserRequest;
 import com.goodzheng.po.identity.entity.User;
-import com.goodzheng.po.identity.repository.UserRepository;
+import com.goodzheng.po.identity.repository.UserMapper;
 import com.goodzheng.po.identity.service.UserService;
+import com.goodzheng.po.shared.mybatis.MyBatisPages;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,32 +19,46 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    private final UserRepository userRepository;
+    private final UserMapper userMapper;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Override
     @Transactional(readOnly = true)
     public Page<User> list(Pageable pageable) {
-        return userRepository.findAll(pageable);
+        var mpPage = MyBatisPages.<User>toMpPage(pageable);
+        userMapper.selectPage(mpPage, null);
+        return MyBatisPages.toPage(mpPage, pageable);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Page<User> search(String keyword, Pageable pageable) {
-        return userRepository.searchByKeyword(keyword, pageable);
+        String pattern = "%" + keyword.toLowerCase() + "%";
+        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
+        wrapper.and(w -> w
+                .apply("LOWER(username) LIKE {0}", pattern)
+                .or().apply("LOWER(email) LIKE {0}", pattern)
+                .or().apply("LOWER(first_name) LIKE {0}", pattern)
+                .or().apply("LOWER(last_name) LIKE {0}", pattern));
+        var mpPage = MyBatisPages.<User>toMpPage(pageable);
+        userMapper.selectPage(mpPage, wrapper);
+        return MyBatisPages.toPage(mpPage, pageable);
     }
 
     @Override
     @Transactional(readOnly = true)
     public User getById(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("用户不存在"));
+        User user = userMapper.selectById(id);
+        if (user == null) {
+            throw new RuntimeException("用户不存在");
+        }
+        return user;
     }
 
     @Override
     @Transactional
     public User create(UserRequest request) {
-        if (userRepository.existsByUsername(request.getUsername())) {
+        if (userMapper.existsByUsername(request.getUsername())) {
             throw new RuntimeException("用户名已存在");
         }
         User user = new User();
@@ -57,7 +73,8 @@ public class UserServiceImpl implements UserService {
         user.setStatus(request.getStatus() != null ? request.getStatus() : "active");
         user.setNickname(request.getNickname() != null ? request.getNickname() : request.getUsername());
         user.setAvatar(request.getAvatar());
-        return userRepository.save(user);
+        userMapper.insert(user);
+        return user;
     }
 
     @Override
@@ -77,7 +94,8 @@ public class UserServiceImpl implements UserService {
         if (request.getPassword() != null && !request.getPassword().isBlank()) {
             user.setPassword(passwordEncoder.encode(request.getPassword()));
         }
-        return userRepository.save(user);
+        userMapper.updateById(user);
+        return user;
     }
 
     @Override
@@ -97,29 +115,29 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("新密码不能与原密码相同");
         }
         user.setPassword(passwordEncoder.encode(newPassword));
-        userRepository.save(user);
+        userMapper.updateById(user);
     }
 
     @Override
     @Transactional
     public void delete(Long id) {
-        if (!userRepository.existsById(id)) {
+        if (userMapper.selectById(id) == null) {
             throw new RuntimeException("用户不存在");
         }
-        userRepository.deleteById(id);
+        userMapper.deleteById(id);
     }
 
     @Override
     @Transactional
     public void batchDelete(List<Long> ids) {
-        userRepository.deleteAllByIdInBatch(ids);
+        userMapper.deleteBatchIds(ids);
     }
 
     @Override
     @Transactional
     public void batchUpdateStatus(List<Long> ids, String status) {
-        List<User> users = userRepository.findAllById(ids);
+        List<User> users = userMapper.selectBatchIds(ids);
         users.forEach(u -> u.setStatus(status));
-        userRepository.saveAll(users);
+        users.forEach(userMapper::updateById);
     }
 }

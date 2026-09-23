@@ -14,6 +14,11 @@
     <artifactId>po-api-bootstrap</artifactId>
     <name>po-api-bootstrap</name>
 
+    <properties>
+        <!-- 覆盖父 POM 的跳过配置：reactor 中只有本模块执行 spring-boot:run -->
+        <spring-boot.run.skip>false</spring-boot.run.skip>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.goodzheng</groupId>
@@ -37,7 +42,11 @@
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-spring-boot4-starter</artifactId>
-            <version>3.5.17</version>
+        </dependency>
+        <!-- 分页插件 PaginationInnerInterceptor 所需（3.5.9 起独立模块） -->
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-jsqlparser</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

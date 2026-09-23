@@ -1,6 +1,11 @@
 package com.goodzheng.po.recipe.entity;
 
-import jakarta.persistence.*;
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -8,21 +13,16 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Data
-@Entity
-@Table(name = "recipe")
+@TableName("recipe")
 public class Recipe {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @TableId(type = IdType.AUTO)
     private Long id;
 
-    @Column(nullable = false, length = 100)
     private String title;
 
-    @Column(length = 500)
     private String description;
 
-    @Column(length = 500)
     private String coverImageUrl;
 
     // ── 时间与难度 ─────────────────────────────────────────
@@ -31,28 +31,22 @@ public class Recipe {
     private Integer totalTime;
 
     /** 难度: 1-简单, 2-中等, 3-困难 */
-    @Column(nullable = false)
     private Integer difficulty = 1;
 
     /** 建议食用人数 */
     private Integer servings;
 
     // ── 分类与标签 ─────────────────────────────────────────
-    @Column(length = 50)
     private String category;
 
     /** 标签，存为逗号分隔字符串，如: 下饭,低脂,快手菜 */
-    @Column(length = 500)
     private String tags;
 
     // ── 作者与统计 ─────────────────────────────────────────
-    @Column(nullable = false)
     private Long authorId;
 
-    @Column(nullable = false)
     private Boolean isPublic = true;
 
-    @Column(nullable = false)
     private Integer likesCount = 0;
 
     // ── 扩展字段 ──────────────────────────────────────────
@@ -61,32 +55,48 @@ public class Recipe {
     private Double fat;
     private Double carbs;
 
-    @Column(length = 500)
     private String tips;
 
-    @Column(length = 100)
     private String flavorProfile;
+
+    // ── 审核流 ────────────────────────────────────────────
+    /** 审核状态: pending=待审核, approved=已通过, rejected=已驳回（见 RecipeStatusConstants） */
+    private String status = "approved";
+
+    /** 驳回原因（status=rejected 时有值） */
+    private String rejectReason;
 
     // ── 软删除 ────────────────────────────────────────────
     private LocalDateTime deletedAt;
 
     // ── 时间戳 ────────────────────────────────────────────
-    @Column(updatable = false)
+    /** 不允许更新（等价原 JPA updatable = false） */
+    @TableField(updateStrategy = FieldStrategy.NEVER)
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    /** 更新时由 MetaObjectHandler 自动填充为当前时间 */
+    @TableField(fill = FieldFill.UPDATE)
     private LocalDateTime updatedAt = LocalDateTime.now();
 
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    // ── 关联关系 ──────────────────────────────────────────
-    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("sortOrder ASC")
+    // ── 关联数据（非本表字段，由 Service 显式查询填充） ──────
+    @TableField(exist = false)
     private Set<Ingredient> ingredients = new LinkedHashSet<>();
 
-    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("stepNumber ASC")
+    @TableField(exist = false)
     private Set<Step> steps = new LinkedHashSet<>();
+
+    // ── 当前用户视角的交互标记（非本表字段，由 Service 批量填充） ──
+    @TableField(exist = false)
+    private Boolean isFavorited;
+
+    @TableField(exist = false)
+    private Boolean isLiked;
+
+    /** 收藏时间（收藏列表返回） */
+    @TableField(exist = false)
+    private LocalDateTime favoritedAt;
+
+    /** 最近浏览时间（历史列表返回） */
+    @TableField(exist = false)
+    private LocalDateTime viewedAt;
 }

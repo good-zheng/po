@@ -20,6 +20,23 @@ interface ResponseStructure {
   showType?: ErrorShowType;
 }
 
+const TOKEN_STORAGE_KEY = 'token';
+const LOGIN_PATH = '/user/login';
+
+/** 会话失效：清除本地令牌并回到登录页（带着回跳地址） */
+function redirectToLogin() {
+  if (typeof window === 'undefined') {
+    return;
+  }
+  localStorage.removeItem(TOKEN_STORAGE_KEY);
+  if (window.location.pathname === LOGIN_PATH) {
+    return;
+  }
+  const { pathname, search, hash } = window.location;
+  const redirect = encodeURIComponent(pathname + search + hash);
+  window.location.href = `${LOGIN_PATH}?redirect=${redirect}`;
+}
+
 /**
  * @name 错误处理
  * pro 自带的错误处理， 可以在这里做自己的改动
@@ -73,7 +90,16 @@ export const errorConfig: RequestConfig = {
       } else if (error.response) {
         // Axios 的错误
         // 请求成功发出且服务器也响应了状态码，但状态代码超出了 2xx 的范围
-        messageAntd.error(`Response status:${error.response.status}`);
+        const { status, data } = error.response;
+        const serverMessage = (data as ResponseStructure | undefined)?.message;
+        if (status === 401) {
+          messageAntd.error(serverMessage || '登录状态已失效，请重新登录');
+          redirectToLogin();
+        } else if (status === 403) {
+          messageAntd.error(serverMessage || '没有访问权限');
+        } else {
+          messageAntd.error(serverMessage || `Response status:${status}`);
+        }
       } else if (typeof navigator !== 'undefined' && !navigator.onLine) {
         messageAntd.error(
           getIntl().formatMessage({
@@ -95,7 +121,7 @@ export const errorConfig: RequestConfig = {
     (config: RequestOptions) => {
       // 拦截请求配置，进行个性化处理。
       // 示例：为请求附加 token（按需启用）
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem(TOKEN_STORAGE_KEY);
       if (token) {
         config.headers = {
           ...config.headers,

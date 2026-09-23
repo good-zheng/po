@@ -28,7 +28,8 @@ INSERT INTO recipe_category (name, icon, description, sort_order, created_at, up
 ('闽菜', '🦀', '福建菜，善用海鲜，口味清淡', 106, @now, @now),
 ('徽菜', '🍄', '安徽菜，重油重色，擅长烧炖', 107, @now, @now),
 ('东北菜', '🥬', '东北菜，量大实惠，炖菜见长', 108, @now, @now),
-('西北菜', '🐑', '西北菜，牛羊肉为主，豪放粗犷', 109, @now, @now);
+('西北菜', '🐑', '西北菜，牛羊肉为主，豪放粗犷', 109, @now, @now),
+('江西菜', '🫙', '江西菜，鲜辣香醇，善烹河鲜与瓦罐汤', 110, @now, @now);
 
 -- ========== 饮食方式 ==========
 INSERT INTO recipe_category (name, icon, description, sort_order, created_at, updated_at) VALUES

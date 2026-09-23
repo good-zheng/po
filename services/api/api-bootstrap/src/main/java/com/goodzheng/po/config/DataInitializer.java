@@ -2,7 +2,7 @@ package com.goodzheng.po.config;
 
 import com.goodzheng.po.identity.constant.RoleConstants;
 import com.goodzheng.po.identity.entity.User;
-import com.goodzheng.po.identity.repository.UserRepository;
+import com.goodzheng.po.identity.repository.UserMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class DataInitializer implements CommandLineRunner {
 
-    private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     @Value("${app.seed.default.admin:false}")
     private boolean seedDefaultAdmin;
@@ -30,7 +30,7 @@ public class DataInitializer implements CommandLineRunner {
         if (!seedDefaultAdmin) {
             return;
         }
-        boolean hasSuperAdmin = userRepository.findAll().stream()
+        boolean hasSuperAdmin = userMapper.selectList(null).stream()
                 .anyMatch(u -> RoleConstants.SUPER_ADMIN.equals(u.getRole()));
         if (!hasSuperAdmin) {
             BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
@@ -39,7 +39,7 @@ public class DataInitializer implements CommandLineRunner {
             superAdmin.setPassword(encoder.encode("123456"));
             superAdmin.setNickname("超级管理员");
             superAdmin.setRole(RoleConstants.SUPER_ADMIN);
-            userRepository.save(superAdmin);
+            userMapper.insert(superAdmin);
             log.warn("已创建默认超级管理员账号: superadmin / 123456，请立即登录修改密码");
         }
     }

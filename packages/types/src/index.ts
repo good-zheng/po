@@ -1,6 +1,8 @@
 export type { PageResponse, Result } from "./api";
 export type {
   ChangePasswordRequest,
+  LoginClient,
+  LoginRequest,
   ProfileRequest,
   UserItem,
   UserRequest,
@@ -18,9 +20,13 @@ export type {
 export type {
   Ingredient,
   Recipe,
+  RecipeAuditRequest,
   RecipeCategory,
+  RecipeLikeResult,
   RecipeListParams,
   RecipeRequest,
+  RecipeSort,
+  RecipeStatus,
   Step,
 } from "./recipe";
 export type {

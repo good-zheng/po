@@ -6,14 +6,15 @@ import com.goodzheng.po.identity.dto.ProfileRequest;
 import com.goodzheng.po.shared.dto.Result;
 import com.goodzheng.po.identity.dto.UserRequest;
 import com.goodzheng.po.identity.entity.User;
-import com.goodzheng.po.identity.repository.UserRepository;
+import com.goodzheng.po.identity.repository.UserMapper;
+import com.goodzheng.po.identity.security.AuthUser;
 import com.goodzheng.po.identity.service.UserService;
-import com.goodzheng.po.identity.security.JwtUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,9 +28,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * 用户接口。
+ * 访问控制（登录态、角色、登录来源）由 SecurityConfig 过滤器链统一完成，
+ * 这里只处理业务规则。
+ */
 @RestController
 @RequestMapping("/users")
-@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class UserController {
 
@@ -44,61 +49,48 @@ public class UserController {
     private static final long MAX_AVATAR_SIZE = 2 * 1024 * 1024;
 
     private final UserService userService;
-    private final JwtUtil jwtUtil;
-    private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     // ── 分页列表（管理员及以上） ────────────────────────
     @GetMapping
     public Result<Page<User>> list(
-            @RequestHeader(value = "Authorization", required = false) String auth,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String keyword) {
-        try {
-            requireManager(resolveUser(auth));
-            PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createTime"));
-            Page<User> result;
-            if (keyword != null && !keyword.isBlank()) {
-                result = userService.search(keyword, pageRequest);
-            } else {
-                result = userService.list(pageRequest);
-            }
-            return Result.success(result);
-        } catch (RuntimeException e) {
-            return Result.error(forbiddenOrUnauthorized(e), e.getMessage());
-        }
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createTime"));
+        Page<User> result = (keyword != null && !keyword.isBlank())
+                ? userService.search(keyword, pageRequest)
+                : userService.list(pageRequest);
+        return Result.success(result);
     }
 
     // ── 单个详情（管理员及以上） ────────────────────────
     @GetMapping("/{id}")
-    public Result<User> getById(
-            @RequestHeader(value = "Authorization", required = false) String auth,
-            @PathVariable Long id) {
+    public Result<User> getById(@PathVariable Long id) {
         try {
-            requireManager(resolveUser(auth));
             return Result.success(userService.getById(id));
         } catch (RuntimeException e) {
-            return Result.error(forbiddenOrUnauthorized(e), e.getMessage());
+            return Result.error(400, e.getMessage());
         }
     }
 
-    // ── 当前登录用户信息（仅需有效登录） ────────────────
+    // ── 当前登录用户信息 ────────────────────────────────
     @GetMapping("/me")
-    public Result<User> me(@RequestHeader(value = "Authorization", required = false) String auth) {
+    public Result<User> me(@AuthenticationPrincipal AuthUser principal) {
         try {
-            return Result.success(resolveUser(auth));
+            return Result.success(currentUser(principal));
         } catch (RuntimeException e) {
             return Result.error(401, e.getMessage());
         }
     }
 
-    // ── 更新当前用户个人资料（仅需有效登录） ────────────
+    // ── 更新当前用户个人资料 ────────────────────────────
     @PutMapping("/me")
     public Result<User> updateMe(
-            @RequestHeader(value = "Authorization", required = false) String auth,
-            @RequestBody ProfileRequest request) {
+            @AuthenticationPrincipal AuthUser principal,
+            @Valid @RequestBody ProfileRequest request) {
         try {
-            User user = resolveUser(auth);
+            User user = currentUser(principal);
             // 仅放行基本资料字段，角色/状态/密码不可自助修改
             UserRequest safe = new UserRequest();
             safe.setNickname(request.getNickname());
@@ -107,31 +99,31 @@ public class UserController {
             safe.setAvatar(request.getAvatar());
             return Result.success(userService.update(user.getId(), safe));
         } catch (RuntimeException e) {
-            return Result.error(forbiddenOrUnauthorized(e), e.getMessage());
+            return Result.error(400, e.getMessage());
         }
     }
 
-    // ── 修改当前用户密码（仅需有效登录） ────────────
+    // ── 修改当前用户密码 ────────────────────────────
     @PutMapping("/me/password")
     public Result<String> changePassword(
-            @RequestHeader(value = "Authorization", required = false) String auth,
+            @AuthenticationPrincipal AuthUser principal,
             @RequestBody ChangePasswordRequest request) {
         try {
-            User user = resolveUser(auth);
+            User user = currentUser(principal);
             userService.changePassword(user.getId(), request.getOldPassword(), request.getNewPassword());
             return Result.success("密码修改成功", null);
         } catch (RuntimeException e) {
-            return Result.error(forbiddenOrUnauthorized(e), e.getMessage());
+            return Result.error(400, e.getMessage());
         }
     }
 
     // ── 上传头像（当前登录用户） ─────────────────────────
     @PostMapping("/me/avatar")
     public Result<String> uploadAvatar(
-            @RequestHeader(value = "Authorization", required = false) String auth,
+            @AuthenticationPrincipal AuthUser principal,
             @RequestParam("file") MultipartFile file) {
         try {
-            User user = resolveUser(auth);
+            User user = currentUser(principal);
             if (file == null || file.isEmpty()) {
                 throw new RuntimeException("请选择要上传的图片");
             }
@@ -158,118 +150,112 @@ public class UserController {
             userService.update(user.getId(), request);
             return Result.success("头像上传成功", url);
         } catch (RuntimeException e) {
-            return Result.error(forbiddenOrUnauthorized(e), e.getMessage());
+            return Result.error(400, e.getMessage());
         }
     }
 
     // ── 创建用户（管理员及以上） ────────────────────────
     @PostMapping
     public Result<User> create(
-            @RequestHeader(value = "Authorization", required = false) String auth,
+            @AuthenticationPrincipal AuthUser principal,
             @Valid @RequestBody UserRequest request) {
         try {
-            User operator = requireManager(resolveUser(auth));
-            validateRoleAssignment(operator, request.getRole());
+            validateRoleAssignment(principal, request.getRole());
             return Result.success(userService.create(request));
         } catch (RuntimeException e) {
-            return Result.error(forbiddenOrUnauthorized(e), e.getMessage());
+            return Result.error(400, e.getMessage());
         }
     }
 
     // ── 更新用户（管理员及以上） ────────────────────────
     @PutMapping("/{id}")
     public Result<User> update(
-            @RequestHeader(value = "Authorization", required = false) String auth,
+            @AuthenticationPrincipal AuthUser principal,
             @PathVariable Long id,
             @RequestBody UserRequest request) {
         try {
-            User operator = requireManager(resolveUser(auth));
             User target = userService.getById(id);
 
             // 管理员不能修改超级管理员
-            if (!isSuperAdmin(operator) && isSuperAdmin(target)) {
+            if (!principal.isSuperAdmin() && isSuperAdmin(target)) {
                 throw new RuntimeException("管理员不能修改超级管理员");
             }
             // 超级管理员不能修改自己的角色（防止失去系统控制权）
-            if (isSuperAdmin(operator) && operator.getId().equals(id)
+            if (principal.isSuperAdmin() && principal.id().equals(id)
                     && request.getRole() != null && !request.getRole().equals(target.getRole())) {
                 throw new RuntimeException("不能修改自己的角色");
             }
             // 校验目标角色是否在操作者权限范围内
-            validateRoleAssignment(operator, request.getRole());
-            // 管理员不能把管理员降级为超级管理员之外的越权操作已由上面覆盖
+            validateRoleAssignment(principal, request.getRole());
 
             return Result.success(userService.update(id, request));
         } catch (RuntimeException e) {
-            return Result.error(forbiddenOrUnauthorized(e), e.getMessage());
+            return Result.error(400, e.getMessage());
         }
     }
 
     // ── 修改用户角色（管理员及以上） ────────────────────
     @PutMapping("/{id}/role")
     public Result<User> updateRole(
-            @RequestHeader(value = "Authorization", required = false) String auth,
+            @AuthenticationPrincipal AuthUser principal,
             @PathVariable Long id,
             @RequestBody Map<String, String> body) {
         try {
-            User operator = requireManager(resolveUser(auth));
             User target = userService.getById(id);
             String newRole = body.get("role");
 
             if (newRole == null || !RoleConstants.isValid(newRole)) {
                 throw new RuntimeException("非法角色值");
             }
-            if (!isSuperAdmin(operator) && isSuperAdmin(target)) {
+            if (!principal.isSuperAdmin() && isSuperAdmin(target)) {
                 throw new RuntimeException("管理员不能修改超级管理员的角色");
             }
-            if (isSuperAdmin(operator) && operator.getId().equals(id)
+            if (principal.isSuperAdmin() && principal.id().equals(id)
                     && !newRole.equals(target.getRole())) {
                 throw new RuntimeException("不能修改自己的角色");
             }
-            validateRoleAssignment(operator, newRole);
+            validateRoleAssignment(principal, newRole);
 
             UserRequest request = new UserRequest();
             request.setUsername(target.getUsername());
             request.setRole(newRole);
             return Result.success(userService.update(id, request));
         } catch (RuntimeException e) {
-            return Result.error(forbiddenOrUnauthorized(e), e.getMessage());
+            return Result.error(400, e.getMessage());
         }
     }
 
     // ── 删除用户（管理员及以上） ────────────────────────
     @DeleteMapping("/{id}")
     public Result<String> delete(
-            @RequestHeader(value = "Authorization", required = false) String auth,
+            @AuthenticationPrincipal AuthUser principal,
             @PathVariable Long id) {
         try {
-            User operator = requireManager(resolveUser(auth));
             User target = userService.getById(id);
-            if (operator.getId().equals(id)) {
+            if (principal.id().equals(id)) {
                 throw new RuntimeException("不能删除自己");
             }
-            if (!isSuperAdmin(operator) && isSuperAdmin(target)) {
+            if (!principal.isSuperAdmin() && isSuperAdmin(target)) {
                 throw new RuntimeException("管理员不能删除超级管理员");
             }
             userService.delete(id);
             return Result.success("删除成功", null);
         } catch (RuntimeException e) {
-            return Result.error(forbiddenOrUnauthorized(e), e.getMessage());
+            return Result.error(400, e.getMessage());
         }
     }
 
     // ── 批量删除（管理员及以上） ────────────────────────
     @DeleteMapping("/batch")
     public Result<String> batchDelete(
-            @RequestHeader(value = "Authorization", required = false) String auth,
+            @AuthenticationPrincipal AuthUser principal,
             @RequestBody List<Long> ids) {
         try {
-            User operator = requireManager(resolveUser(auth));
-            if (ids.contains(operator.getId())) {
+            if (ids.contains(principal.id())) {
                 throw new RuntimeException("不能删除自己");
             }
-            if (!isSuperAdmin(operator)) {
-                List<User> targets = userRepository.findAllById(ids);
+            if (!principal.isSuperAdmin()) {
+                List<User> targets = userMapper.findAllById(ids);
                 boolean hasSuperAdmin = targets.stream().anyMatch(this::isSuperAdmin);
                 if (hasSuperAdmin) {
                     throw new RuntimeException("管理员不能删除超级管理员");
@@ -278,27 +264,26 @@ public class UserController {
             userService.batchDelete(ids);
             return Result.success("批量删除成功", null);
         } catch (RuntimeException e) {
-            return Result.error(forbiddenOrUnauthorized(e), e.getMessage());
+            return Result.error(400, e.getMessage());
         }
     }
 
     // ── 批量修改状态（管理员及以上） ────────────────────
     @PutMapping("/batch/status")
     public Result<String> batchUpdateStatus(
-            @RequestHeader(value = "Authorization", required = false) String auth,
+            @AuthenticationPrincipal AuthUser principal,
             @RequestBody Map<String, Object> body) {
         try {
-            User operator = requireManager(resolveUser(auth));
             @SuppressWarnings("unchecked")
             List<Number> idNumbers = (List<Number>) body.get("ids");
             List<Long> ids = idNumbers.stream().map(Number::longValue).toList();
             String status = (String) body.get("status");
 
-            if (ids.contains(operator.getId())) {
+            if (ids.contains(principal.id())) {
                 throw new RuntimeException("不能修改自己的状态");
             }
-            if (!isSuperAdmin(operator)) {
-                List<User> targets = userRepository.findAllById(ids);
+            if (!principal.isSuperAdmin()) {
+                List<User> targets = userMapper.findAllById(ids);
                 boolean hasSuperAdmin = targets.stream().anyMatch(this::isSuperAdmin);
                 if (hasSuperAdmin) {
                     throw new RuntimeException("管理员不能修改超级管理员的状态");
@@ -307,40 +292,23 @@ public class UserController {
             userService.batchUpdateStatus(ids, status);
             return Result.success("状态更新成功", null);
         } catch (RuntimeException e) {
-            return Result.error(forbiddenOrUnauthorized(e), e.getMessage());
+            return Result.error(400, e.getMessage());
         }
     }
 
     // ── 权限校验辅助方法 ────────────────────────────────
 
-    /** 从 Authorization 头解析当前登录用户（token 无效时抛出 401 语义异常） */
-    private User resolveUser(String authHeader) {
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            throw new InvalidTokenException("未登录或令牌缺失");
+    /** 当前登录用户实体（认证由过滤器链完成，这里仅为业务操作取实体） */
+    private User currentUser(AuthUser principal) {
+        User user = userMapper.selectById(principal.id());
+        if (user == null) {
+            throw new RuntimeException("用户不存在");
         }
-        String token = authHeader.substring(7);
-        if (!jwtUtil.validateToken(token)) {
-            throw new InvalidTokenException("令牌无效或已过期");
-        }
-        String username = jwtUtil.getUsernameFromToken(token);
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new InvalidTokenException("用户不存在"));
-    }
-
-    /** 要求管理员及以上角色 */
-    private User requireManager(User operator) {
-        if (!isSuperAdmin(operator) && !RoleConstants.ADMIN.equals(operator.getRole())) {
-            throw new ForbiddenException("需要管理员或超级管理员权限");
-        }
-        // 被禁用的账号不能执行管理操作
-        if (!"active".equals(operator.getStatus())) {
-            throw new ForbiddenException("账号已被禁用");
-        }
-        return operator;
+        return user;
     }
 
     /** 校验操作者是否有权授予目标角色 */
-    private void validateRoleAssignment(User operator, String targetRole) {
+    private void validateRoleAssignment(AuthUser operator, String targetRole) {
         if (targetRole == null) {
             return;
         }
@@ -348,37 +316,12 @@ public class UserController {
             throw new RuntimeException("非法角色值: " + targetRole);
         }
         // 仅超级管理员可以授予/撤销超级管理员角色
-        if (RoleConstants.SUPER_ADMIN.equals(targetRole) && !isSuperAdmin(operator)) {
-            throw new ForbiddenException("仅超级管理员可以授予超级管理员角色");
+        if (RoleConstants.SUPER_ADMIN.equals(targetRole) && !operator.isSuperAdmin()) {
+            throw new RuntimeException("仅超级管理员可以授予超级管理员角色");
         }
     }
 
     private boolean isSuperAdmin(User user) {
         return RoleConstants.SUPER_ADMIN.equals(user.getRole());
-    }
-
-    /** 区分 401（未认证）与 403（权限不足） */
-    private int forbiddenOrUnauthorized(RuntimeException e) {
-        if (e instanceof InvalidTokenException) {
-            return 401;
-        }
-        if (e instanceof ForbiddenException) {
-            return 403;
-        }
-        return 400;
-    }
-
-    /** 未认证异常（映射 HTTP 401） */
-    private static class InvalidTokenException extends RuntimeException {
-        InvalidTokenException(String message) {
-            super(message);
-        }
-    }
-
-    /** 权限不足异常（映射 HTTP 403） */
-    private static class ForbiddenException extends RuntimeException {
-        ForbiddenException(String message) {
-            super(message);
-        }
     }
 }

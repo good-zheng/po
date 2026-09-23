@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.goodzheng.po.recipe.repository.RecipeMapper">
+
+    <!-- 菜谱详情：一次连表查出食材和步骤，替代 selectById + 两次子表查询 -->
+    <!-- 子表列加 ing_/stp_ 前缀避免 id 等列名冲突；javaType 用 LinkedHashSet 保持 sort_order/step_number 顺序 -->
+    <resultMap id="recipeDetailMap" type="com.goodzheng.po.recipe.entity.Recipe">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="description" column="description"/>
+        <result property="coverImageUrl" column="cover_image_url"/>
+        <result property="prepTime" column="prep_time"/>
+        <result property="cookTime" column="cook_time"/>
+        <result property="totalTime" column="total_time"/>
+        <result property="difficulty" column="difficulty"/>
+        <result property="servings" column="servings"/>
+        <result property="category" column="category"/>
+        <result property="tags" column="tags"/>
+        <result property="authorId" column="author_id"/>
+        <result property="isPublic" column="is_public"/>
+        <result property="likesCount" column="likes_count"/>
+        <result property="calories" column="calories"/>
+        <result property="protein" column="protein"/>
+        <result property="fat" column="fat"/>
+        <result property="carbs" column="carbs"/>
+        <result property="tips" column="tips"/>
+        <result property="flavorProfile" column="flavor_profile"/>
+        <result property="status" column="status"/>
+        <result property="rejectReason" column="reject_reason"/>
+        <result property="deletedAt" column="deleted_at"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <collection property="ingredients" javaType="java.util.LinkedHashSet"
+                    ofType="com.goodzheng.po.recipe.entity.Ingredient">
+            <id property="id" column="ing_id"/>
+            <result property="recipeId" column="ing_recipe_id"/>
+            <result property="name" column="ing_name"/>
+            <result property="amount" column="ing_amount"/>
+            <result property="unit" column="ing_unit"/>
+            <result property="isEssential" column="ing_is_essential"/>
+            <result property="sortOrder" column="ing_sort_order"/>
+            <result property="imageUrl" column="ing_image_url"/>
+        </collection>
+        <collection property="steps" javaType="java.util.LinkedHashSet"
+                    ofType="com.goodzheng.po.recipe.entity.Step">
+            <id property="id" column="stp_id"/>
+            <result property="recipeId" column="stp_recipe_id"/>
+            <result property="stepNumber" column="stp_step_number"/>
+            <result property="content" column="stp_content"/>
+            <result property="imageUrl" column="stp_image_url"/>
+            <result property="videoUrl" column="stp_video_url"/>
+            <result property="duration" column="stp_duration"/>
+        </collection>
+    </resultMap>
+
+    <select id="selectDetailWithChildren" resultMap="recipeDetailMap">
+        SELECT
+            r.id, r.title, r.description, r.cover_image_url,
+            r.prep_time, r.cook_time, r.total_time,
+            r.difficulty, r.servings, r.category, r.tags,
+            r.author_id, r.is_public, r.likes_count,
+            r.calories, r.protein, r.fat, r.carbs,
+            r.tips, r.flavor_profile, r.status, r.reject_reason,
+            r.deleted_at, r.created_at, r.updated_at,
+            i.id           AS ing_id,
+            i.recipe_id    AS ing_recipe_id,
+            i.name         AS ing_name,
+            i.amount       AS ing_amount,
+            i.unit         AS ing_unit,
+            i.is_essential AS ing_is_essential,
+            i.sort_order   AS ing_sort_order,
+            i.image_url    AS ing_image_url,
+            s.id           AS stp_id,
+            s.recipe_id    AS stp_recipe_id,
+            s.step_number  AS stp_step_number,
+            s.content      AS stp_content,
+            s.image_url    AS stp_image_url,
+            s.video_url    AS stp_video_url,
+            s.duration     AS stp_duration
+        FROM recipe r
+        LEFT JOIN recipe_ingredient i ON i.recipe_id = r.id
+        LEFT JOIN recipe_step s ON s.recipe_id = r.id
+        WHERE r.id = #{id}
+        ORDER BY i.sort_order, s.step_number
+    </select>
+
+    <!-- 公开列表筛选排序：固定只出已通过审核、公开、未删除的菜谱；orderBy 由 Service 排序白名单生成 -->
+    <select id="selectFilteredPage" resultType="com.goodzheng.po.recipe.entity.Recipe">
+        SELECT
+            r.id AS id,
+            r.title AS title,
+            r.description AS description,
+            r.cover_image_url AS coverImageUrl,
+            r.prep_time AS prepTime,
+            r.cook_time AS cookTime,
+            r.total_time AS totalTime,
+            r.difficulty AS difficulty,
+            r.servings AS servings,
+            r.category AS category,
+            r.tags AS tags,
+            r.author_id AS authorId,
+            r.is_public AS isPublic,
+            r.likes_count AS likesCount,
+            r.calories AS calories,
+            r.protein AS protein,
+            r.fat AS fat,
+            r.carbs AS carbs,
+            r.tips AS tips,
+            r.flavor_profile AS flavorProfile,
+            r.status AS status,
+            r.reject_reason AS rejectReason,
+            r.deleted_at AS deletedAt,
+            r.created_at AS createdAt,
+            r.updated_at AS updatedAt
+        FROM recipe r
+        <where>
+            r.deleted_at IS NULL
+            AND r.status = 'approved'
+            AND r.is_public = 1
+            <if test="keyword != null and keyword != ''">
+                AND (r.title LIKE CONCAT('%', #{keyword}, '%')
+                OR r.description LIKE CONCAT('%', #{keyword}, '%')
+                OR r.tags LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+            <if test="categories != null and categories.size() > 0">
+                AND r.category IN
+                <foreach collection="categories" item="name" open="(" separator="," close=")">
+                    #{name}
+                </foreach>
+            </if>
+            <if test="difficulty != null">
+                AND r.difficulty = #{difficulty}
+            </if>
+        </where>
+        ORDER BY ${orderBy}
+    </select>
+
+</mapper>

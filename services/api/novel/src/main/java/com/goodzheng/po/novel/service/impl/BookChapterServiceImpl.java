@@ -1,10 +1,12 @@
 package com.goodzheng.po.novel.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.goodzheng.po.novel.dto.ChapterRequest;
 import com.goodzheng.po.novel.entity.Book;
 import com.goodzheng.po.novel.entity.BookChapter;
-import com.goodzheng.po.novel.repository.BookChapterRepository;
-import com.goodzheng.po.novel.repository.BookRepository;
+import com.goodzheng.po.novel.repository.BookChapterMapper;
+import com.goodzheng.po.novel.repository.BookMapper;
 import com.goodzheng.po.novel.service.BookChapterService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,51 +14,53 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class BookChapterServiceImpl implements BookChapterService {
 
-    private final BookChapterRepository chapterRepository;
-    private final BookRepository bookRepository;
+    private final BookChapterMapper chapterMapper;
+    private final BookMapper bookMapper;
 
     @Override
     @Transactional(readOnly = true)
     public List<BookChapter> list(Long bookId) {
         checkBookExists(bookId);
-        return chapterRepository.findByBookIdAndDeletedAtIsNullOrderByChapterIndexAsc(bookId);
+        return chapterMapper.selectList(new LambdaQueryWrapper<BookChapter>()
+                .eq(BookChapter::getBookId, bookId)
+                .isNull(BookChapter::getDeletedAt)
+                .orderByAsc(BookChapter::getChapterIndex));
     }
 
     @Override
     @Transactional(readOnly = true)
     public BookChapter get(Long bookId, Long chapterId) {
-        return chapterRepository.findByIdAndBookIdAndDeletedAtIsNull(chapterId, bookId)
+        return findOne(bookId, chapterId)
                 .orElseThrow(() -> new RuntimeException("章节不存在"));
     }
 
     @Override
     @Transactional
-    public BookChapter create(Long bookId, ChapterRequest req, Long operatorId) {
-        Book book = checkBookExists(bookId);
-        checkOwner(book, operatorId);
+    public BookChapter create(Long bookId, ChapterRequest req) {
+        checkBookExists(bookId);
 
         BookChapter chapter = new BookChapter();
-        chapter.setBook(book);
+        chapter.setBookId(bookId);
         chapter.setTitle(req.getTitle());
         chapter.setContent(req.getContent());
         chapter.setChapterIndex(resolveChapterIndex(bookId, req.getChapterIndex()));
         chapter.setWordCount(calculateWordCount(req.getContent()));
 
-        BookChapter saved = chapterRepository.save(chapter);
+        chapterMapper.insert(chapter);
         refreshBookWordCount(bookId);
-        return saved;
+        return chapter;
     }
 
     @Override
     @Transactional
-    public BookChapter update(Long bookId, Long chapterId, ChapterRequest req, Long operatorId) {
-        Book book = checkBookExists(bookId);
-        checkOwner(book, operatorId);
+    public BookChapter update(Long bookId, Long chapterId, ChapterRequest req) {
+        checkBookExists(bookId);
 
         BookChapter chapter = get(bookId, chapterId);
         chapter.setTitle(req.getTitle());
@@ -66,45 +70,51 @@ public class BookChapterServiceImpl implements BookChapterService {
         }
         chapter.setWordCount(calculateWordCount(req.getContent()));
 
-        BookChapter saved = chapterRepository.save(chapter);
+        chapterMapper.updateById(chapter);
         refreshBookWordCount(bookId);
-        return saved;
+        return chapter;
     }
 
     @Override
     @Transactional
-    public void delete(Long bookId, Long chapterId, Long operatorId) {
-        Book book = checkBookExists(bookId);
-        checkOwner(book, operatorId);
+    public void delete(Long bookId, Long chapterId) {
+        checkBookExists(bookId);
 
         BookChapter chapter = get(bookId, chapterId);
         chapter.setDeletedAt(LocalDateTime.now());
-        chapterRepository.save(chapter);
+        chapterMapper.updateById(chapter);
         refreshBookWordCount(bookId);
     }
 
     // ── 工具方法 ──────────────────────────────────────────
 
+    private Optional<BookChapter> findOne(Long bookId, Long chapterId) {
+        return Optional.ofNullable(chapterMapper.selectOne(new LambdaQueryWrapper<BookChapter>()
+                .eq(BookChapter::getId, chapterId)
+                .eq(BookChapter::getBookId, bookId)
+                .isNull(BookChapter::getDeletedAt)));
+    }
+
     private Book checkBookExists(Long bookId) {
-        Book book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new RuntimeException("书籍不存在"));
+        Book book = bookMapper.selectById(bookId);
+        if (book == null) {
+            throw new RuntimeException("书籍不存在");
+        }
         if (book.getDeletedAt() != null) {
             throw new RuntimeException("书籍已删除");
         }
         return book;
     }
 
-    private void checkOwner(Book book, Long operatorId) {
-        if (!book.getAuthorId().equals(operatorId)) {
-            throw new RuntimeException("无权操作他人书籍");
-        }
-    }
-
     private Integer resolveChapterIndex(Long bookId, Integer requested) {
         if (requested != null) {
             return requested;
         }
-        Integer max = chapterRepository.findMaxChapterIndex(bookId);
+        Integer max = chapterMapper.selectObjs(new LambdaQueryWrapper<BookChapter>()
+                        .select(BookChapter::getChapterIndex)
+                        .eq(BookChapter::getBookId, bookId)
+                        .isNull(BookChapter::getDeletedAt))
+                .stream().map(o -> (Integer) o).max(Integer::compareTo).orElse(null);
         return (max == null ? 0 : max) + 1;
     }
 
@@ -116,11 +126,20 @@ public class BookChapterServiceImpl implements BookChapterService {
     }
 
     private void refreshBookWordCount(Long bookId) {
-        Book book = bookRepository.findById(bookId).orElse(null);
+        Book book = bookMapper.selectById(bookId);
         if (book == null) {
             return;
         }
-        book.setWordCount(chapterRepository.sumWordCountByBookId(bookId));
-        bookRepository.save(book);
+        book.setWordCount(sumWordCount(bookId));
+        bookMapper.updateById(book);
+    }
+
+    /** 未删除章节字数合计（等价原 JPQL 的 SUM(word_count)） */
+    private int sumWordCount(Long bookId) {
+        List<Object> values = chapterMapper.selectObjs(new QueryWrapper<BookChapter>()
+                .select("IFNULL(SUM(word_count), 0)")
+                .eq("book_id", bookId)
+                .isNull("deleted_at"));
+        return values.isEmpty() || values.get(0) == null ? 0 : ((Number) values.get(0)).intValue();
     }
 }

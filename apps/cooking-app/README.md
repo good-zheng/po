@@ -1,0 +1,197 @@
+# PO 做菜
+
+基于 Expo、React Native、expo-router 和 NativeWind 构建的菜谱移动端应用，复用仓库中的 Spring Boot API 与 `@po/types` 共享类型。
+
+## 当前功能
+
+- 强制登录：未登录只能看到登录/注册页，登录后才进入标签页
+- 用户名 + 密码登录与注册，token 持久化（原生走 SecureStore，Web 走 localStorage），重启保留登录态
+- 会话失效（后端 `Result.code === 401`）时统一清除会话并跳回登录页
+- 个人中心展示昵称、角色、邮箱与头像，支持退出登录
+- 首页菜谱分页列表、下拉刷新与上拉加载
+- 做菜模式：按步骤计时，计时结束播放上菜铃提示音并震动，提示进入下一步
+- 分类、收藏、个人中心标签页骨架
+- 浅色与深色模式
+- Axios API 客户端、统一 `Result` 响应解包与 401 处理
+- TanStack Query 缓存与请求状态管理
+
+## 开发环境
+
+### 前置条件
+
+- Node.js 22+、pnpm 10+
+- 使用 Expo Go、Web 或 iOS 模拟器开发时，无需原生 Android 工具链
+- 生成本地 Android APK 时，额外准备 JDK 17 与 Android SDK（Platform Tools、Platform、CMake、NDK 与一台模拟器）；命令行安装即可，不必装 Android Studio
+- 再装一个支持 Windows 长路径的 ninja（`pip install ninja`，需 ≥ 1.11）。pnpm 的 `.pnpm` 目录名很长，react-native-* 原生模块的 CMake 中间文件路径会超过 260 字符，Android SDK 自带的 ninja 1.10.x 读写不了这类路径，会报 `manifest 'build.ninja' still dirty after 100 tries` 或 `mkdir(...): No such file or directory`；`pnpm mobile:android` 会在启动前自动把 SDK 里的旧版 ninja 换成 PATH 上的新版（原文件备份为 `ninja.exe.orig`）
+
+所有命令均从仓库根目录执行。首次安装依赖并创建本地配置：
+
+```bash
+pnpm install
+cp apps/cooking-app/.env.example apps/cooking-app/.env
+```
+
+`.env` 默认指向本机 Spring Boot API：
+
+```env
+EXPO_PUBLIC_API_URL=http://localhost:8080/api
+```
+
+先按根目录 README 启动 Spring Boot API，再启动 Expo：
+
+```bash
+pnpm mobile:start
+```
+
+Web 版固定请求同源 `/api`，由 Metro 开发服务器代理；iOS 模拟器可保留 `localhost`。Android 模拟器需将 `.env` 改为 `http://10.0.2.2:8080/api`，或执行 `adb reverse tcp:8080 tcp:8080` 后继续使用 `localhost`。真机使用 Expo Go 时，改为同一局域网内开发机可访问的地址，例如 `http://<开发机局域网 IPv4>:8080/api`，随后扫描 Expo 输出的二维码。
+
+浏览器里调试时，接口一律以同源的 `/api` 发出，由 Metro dev server 代理到后端（目标取自 `EXPO_PUBLIC_API_URL` 的主机，未设置时用 `http://localhost:8080`），因此不会跨域，后端也无需配置 CORS。后端若走 Docker 网关，把 `EXPO_PUBLIC_API_URL` 设为 `http://localhost:8000/api`，代理目标会跟着变。
+
+### 开发运行目标
+
+| 命令 | 说明 |
+| --- | --- |
+| `pnpm mobile:start` | 启动 Expo 开发服务器，并在终端选择运行目标 |
+| `pnpm mobile:android` | 启动 Android 模拟器或已连接设备 |
+| `pnpm mobile:ios` | 启动 iOS 模拟器（仅 macOS） |
+| `pnpm mobile:web` | 在浏览器中启动 |
+| `pnpm mobile:lint` | 运行 Biome 检查 |
+| `pnpm mobile:typecheck` | 运行 TypeScript 类型检查 |
+| `pnpm mobile:test` | 运行 Jest 单元与组件测试 |
+
+## 本地 Android APK
+
+本地构建适用于开发和内测。生成的是可安装的 debug APK，不适用于应用商店发布。
+
+### 命令行准备工具链
+
+不需要安装 Android Studio，用命令行工具装齐 JDK 17 与 Android SDK 组件即可。先装 JDK 17（如 `~/.jdks/ms-17.0.20.1`）与 cmdline-tools，然后一次装完所有组件：
+
+```bash
+sdkmanager "platform-tools" \
+  "platforms;android-36" \
+  "build-tools;36.0.0" \
+  "cmake;3.22.1" \
+  "ndk;27.1.12297006" \
+  "emulator" \
+  "system-images;android-36;google_apis;x86_64"
+```
+
+再建一台模拟器（只需一次）：
+
+```bash
+avdmanager create avd -n po_pixel7 -k "system-images;android-36;google_apis;x86_64" --device pixel_7
+avdmanager list avd          # 确认已创建
+```
+
+`sdkmanager`/`avdmanager` 默认取 `ANDROID_HOME`（Windows 下为 `%LOCALAPPDATA%\Android\Sdk`）定位 SDK；若装在别处，先导出该变量。`scripts/jdk.mjs` 会自动从 `~/.jdks` 里挑 JDK 17，`scripts/run-mobile.mjs` 会自动定位 SDK 并把 `platform-tools`、`emulator` 加进 PATH，所以日常只需保证组件已安装。
+
+### 一键构建、安装并启动
+
+模拟器已启动（或真机已连接）后，在仓库根目录执行：
+
+```bash
+pnpm mobile:android
+```
+
+它会先做 Expo 预构建、再编译并安装 debug 包、最后启动 Metro。
+
+只打包 APK（不装、不启动 Metro）：
+
+```bash
+pnpm mobile:apk              # 四种 ABI，可装真机
+pnpm mobile:apk x86_64       # 只编模拟器架构，快很多
+```
+
+APK 位于：
+
+```text
+apps/cooking-app/android/app/build/outputs/apk/debug/app-debug.apk
+```
+
+也可以直接进原生目录用 Gradle 编译，效果等价（需自行保证 `JAVA_HOME`、`ANDROID_HOME` 已设置）：
+
+```bash
+cd apps/cooking-app/android
+./gradlew.bat assembleDebug -PreactNativeArchitectures=x86_64
+```
+
+不带 `-PreactNativeArchitectures` 时按 `android/gradle.properties` 的 `reactNativeArchitectures` 取值，默认四种 ABI（`armeabi-v7a`、`arm64-v8a`、`x86`、`x86_64`）。装到已连接设备：
+
+```bash
+adb install -r app/build/outputs/apk/debug/app-debug.apk
+```
+
+模拟器里若想让应用访问本机后端，除了把 `.env` 改成 `http://10.0.2.2:8080/api`，也可以转发端口后继续用 `localhost`：
+
+```bash
+adb reverse tcp:8080 tcp:8080
+```
+
+`android/` 与 `ios/` 是 Expo 预构建产物，默认已忽略，不提交到仓库；`pnpm mobile:android` 会在需要时重新生成，也可单独执行 `pnpm mobile:prebuild:android`。改动 `app.json` 里影响原生的配置（应用名、图标、权限、插件）后需要重新预构建。
+
+## 生产部署
+
+移动端不随 Docker Compose 部署。后端与网关先按根目录 README 的生产部署流程上线；移动端通过 EAS Build 单独签名和分发。
+
+1. 为生产后端准备 HTTPS API 地址，并在 EAS 的 `production` 环境中配置 `EXPO_PUBLIC_API_URL`。该变量会写入客户端包，**不得**放入密码、令牌或其他机密。
+2. 运行发布前检查：
+
+   ```bash
+   pnpm mobile:lint
+   pnpm mobile:typecheck
+   pnpm mobile:test
+   ```
+
+3. 登录 EAS。当前项目已链接到 EAS 项目；若在新机器上操作，执行：
+
+   ```bash
+   pnpm dlx eas-cli@latest login
+   ```
+
+4. 内测构建会生成可直接安装的 APK：
+
+   ```bash
+   pnpm mobile:eas:preview
+   ```
+
+   构建完成后，EAS 会提供下载页；将 APK 分发给测试人员安装。
+
+5. 正式构建会生成 Google Play 要求的 AAB：
+
+   ```bash
+   pnpm mobile:eas:production
+   ```
+
+   EAS 使用 `eas.json` 中的 `production` profile 自动递增 Android 版本号，并托管签名凭据。将生成的 AAB 上传至 Google Play Console，先经内部测试、封闭测试，再发布到正式轨道。
+
+生产 API 必须使用 HTTPS；不要提交 `.env`、签名文件或 EAS 访问令牌。
+
+## 目录结构
+
+```text
+src/
+├─ app/            Expo Router 页面与标签页布局（login/register + (tabs)）
+├─ components/     可复用的界面组件与表单控件
+├─ lib/api/        Axios 客户端、菜谱接口与登录注册接口
+├─ lib/auth/       会话存储、AuthProvider 与路由守卫
+├─ lib/cooking/    做菜会话状态与计时结束的提示音
+├─ lib/            Query Key 与 NativeWind 适配
+└─ __tests__/      Jest 单元与组件测试
+```
+
+路由使用 `src/app/` 下的文件式约定，`_layout.tsx` 通过 `Stack.Protected` 按登录状态切换可访问的路由组。样式通过 NativeWind 类名编写，跨端数据类型从 `@po/types` 导入。
+
+## 提示音
+
+做菜模式的等待计时归零时（自然归零或用户点「跳过等待」）会播放 `assets/sounds/step-done.wav`，非 Web 端同时震动 400ms，提示可以进入下一步。
+
+- 声音内容：三声厨房上菜铃（C6 基音加高次不谐和分音），最后一击之后接一段油爆锅气，总长 2.0s
+- 播放逻辑在 `src/lib/cooking/use-cook-alert.ts`：每次调用都从开头重播，并设置 `playsInSilentMode` 与 `duckOthers`，手机按了静音键也听得见
+- 音频文件由 `tools/cook-alert-sound.py` 用 Python 标准库合成，不依赖第三方素材；调整音色就是改脚本里的敲击时刻、分音与锅气参数，然后在仓库根目录重新生成：
+
+  ```bash
+  python tools/cook-alert-sound.py
+  ```
+
+  脚本自带分音能量与包络自检，可直接看出修改后的三声铃是否还清晰。换掉音频文件后需重启 Expo 才能生效。

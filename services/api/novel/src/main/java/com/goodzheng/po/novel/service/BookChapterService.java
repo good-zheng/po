@@ -11,9 +11,9 @@ public interface BookChapterService {
 
     BookChapter get(Long bookId, Long chapterId);
 
-    BookChapter create(Long bookId, ChapterRequest request, Long operatorId);
+    BookChapter create(Long bookId, ChapterRequest request);
 
-    BookChapter update(Long bookId, Long chapterId, ChapterRequest request, Long operatorId);
+    BookChapter update(Long bookId, Long chapterId, ChapterRequest request);
 
-    void delete(Long bookId, Long chapterId, Long operatorId);
+    void delete(Long bookId, Long chapterId);
 }

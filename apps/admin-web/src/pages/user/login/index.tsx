@@ -152,7 +152,7 @@ const Login: React.FC = () => {
   const handleSubmit = async (values: API.LoginParams) => {
     try {
       // 登录
-      const msg = await login({ ...values, type });
+      const msg = await login({ ...values, type, client: 'admin' });
       if (msg.success) {
         const defaultLoginSuccessMessage = intl.formatMessage({
           id: 'pages.login.success',
@@ -209,14 +209,16 @@ const Login: React.FC = () => {
           initialValues={{
             autoLogin: true,
           }}
-          actions={[
-            <FormattedMessage
-              key="loginWith"
-              id="pages.login.loginWith"
-              defaultMessage="其他登录方式"
-            />,
-            <ActionIcons key="icons" />,
-          ]}
+          actions={
+            [
+              // <FormattedMessage
+              //   key="loginWith"
+              //   id="pages.login.loginWith"
+              //   defaultMessage="其他登录方式"
+              // />,
+              // <ActionIcons key="icons" />,
+            ]
+          }
           onFinish={async (values) => {
             await handleSubmit(values as API.LoginParams);
           }}

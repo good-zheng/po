@@ -26,6 +26,17 @@ import { errorConfig } from './requestErrorConfig';
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
 
+/** 与后端 ClientConstants 对应：管理后台只接受管理员与超级管理员 */
+const isAdminRole = (role?: string) =>
+  role === 'admin' || role === 'superadmin';
+
+const redirectToLogin = () => {
+  const { pathname, search, hash } = history.location;
+  history.replace(
+    `${loginPath}?redirect=${encodeURIComponent(pathname + search + hash)}`,
+  );
+};
+
 /**
  * @see https://umijs.org/docs/api/runtime-config#getinitialstate
  * */
@@ -41,12 +52,15 @@ export async function getInitialState(): Promise<{
       const msg = await queryCurrentUser({
         skipErrorHandler: true,
       });
+      if (!isAdminRole(msg.data?.role)) {
+        // 普通用户令牌对管理后台无效：清掉本地会话，回到登录页
+        localStorage.removeItem('token');
+        redirectToLogin();
+        return undefined;
+      }
       return msg.data;
     } catch (_error) {
-      const { pathname, search, hash } = history.location;
-      history.replace(
-        `${loginPath}?redirect=${encodeURIComponent(pathname + search + hash)}`,
-      );
+      redirectToLogin();
     }
     return undefined;
   };

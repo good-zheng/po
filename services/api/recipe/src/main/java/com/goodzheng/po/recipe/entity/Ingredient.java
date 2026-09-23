@@ -1,41 +1,34 @@
 package com.goodzheng.po.recipe.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
 @Data
-@Entity
-@Table(name = "recipe_ingredient")
+@TableName("recipe_ingredient")
 public class Ingredient {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @TableId(type = IdType.AUTO)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "recipe_id", nullable = false)
+    /** 所属菜谱 ID（原 JPA @ManyToOne 关联，MyBatis-Plus 用普通外键字段） */
     @JsonIgnore
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
-    private Recipe recipe;
+    private Long recipeId;
 
-    @Column(nullable = false, length = 100)
     private String name;
 
-    @Column(length = 50)
     private String amount;
 
-    @Column(length = 20)
     private String unit;
 
     /** 是否必需（区分主料和辅料） */
-    @Column(nullable = false)
     private Boolean isEssential = true;
 
     /** 排序 */
-    @Column(nullable = false)
     private Integer sortOrder = 0;
+
+    /** 食材图片（相对路径，如 /api/ingredients/xx.jpg） */
+    private String imageUrl;
 }

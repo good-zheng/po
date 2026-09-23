@@ -3,24 +3,23 @@ package com.goodzheng.po.novel.controller;
 import com.goodzheng.po.novel.dto.CharacterRequest;
 import com.goodzheng.po.shared.dto.Result;
 import com.goodzheng.po.novel.entity.BookCharacter;
-import com.goodzheng.po.identity.repository.UserRepository;
 import com.goodzheng.po.novel.service.BookCharacterService;
-import com.goodzheng.po.identity.security.JwtUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * 书籍角色接口。
+ * 写操作仅管理端管理员，由 SecurityConfig 统一约束。
+ */
 @RestController
 @RequestMapping("/books/{bookId}/characters")
-@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class BookCharacterController {
 
     private final BookCharacterService characterService;
-    private final JwtUtil jwtUtil;
-    private final UserRepository userRepository;
 
     // ── 角色列表 ──────────────────────────────────────────
     @GetMapping
@@ -32,14 +31,12 @@ public class BookCharacterController {
         }
     }
 
-    // ── 创建角色 ──────────────────────────────────────────
+    // ── 创建角色（管理端） ────────────────────────────────
     @PostMapping
     public Result<BookCharacter> create(@PathVariable Long bookId,
-            @RequestHeader("Authorization") String auth,
             @Valid @RequestBody CharacterRequest request) {
         try {
-            Long operatorId = resolveUserId(auth);
-            return Result.success(characterService.create(bookId, request, operatorId));
+            return Result.success(characterService.create(bookId, request));
         } catch (RuntimeException e) {
             return Result.error(400, e.getMessage());
         }
@@ -55,37 +52,25 @@ public class BookCharacterController {
         }
     }
 
-    // ── 更新角色 ──────────────────────────────────────────
+    // ── 更新角色（管理端） ────────────────────────────────
     @PutMapping("/{characterId}")
     public Result<BookCharacter> update(@PathVariable Long bookId, @PathVariable Long characterId,
-            @RequestHeader("Authorization") String auth,
             @Valid @RequestBody CharacterRequest request) {
         try {
-            Long operatorId = resolveUserId(auth);
-            return Result.success(characterService.update(bookId, characterId, request, operatorId));
+            return Result.success(characterService.update(bookId, characterId, request));
         } catch (RuntimeException e) {
             return Result.error(400, e.getMessage());
         }
     }
 
-    // ── 删除角色 ──────────────────────────────────────────
+    // ── 删除角色（管理端） ────────────────────────────────
     @DeleteMapping("/{characterId}")
-    public Result<String> delete(@PathVariable Long bookId, @PathVariable Long characterId,
-            @RequestHeader("Authorization") String auth) {
+    public Result<String> delete(@PathVariable Long bookId, @PathVariable Long characterId) {
         try {
-            Long operatorId = resolveUserId(auth);
-            characterService.delete(bookId, characterId, operatorId);
+            characterService.delete(bookId, characterId);
             return Result.success("删除成功", null);
         } catch (RuntimeException e) {
             return Result.error(400, e.getMessage());
         }
-    }
-
-    private Long resolveUserId(String authHeader) {
-        String token = authHeader.replace("Bearer ", "");
-        String username = jwtUtil.getUsernameFromToken(token);
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("用户不存在"))
-                .getId();
     }
 }

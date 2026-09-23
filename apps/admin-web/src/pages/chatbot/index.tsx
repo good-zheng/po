@@ -184,7 +184,10 @@ const ChatbotPage: React.FC = () => {
           : c,
       ),
     );
-    onRequest({ messages: [{ role: 'user', content }] });
+    onRequest({
+      messages: [{ role: 'user', content }],
+      conversationId: activeKey,
+    });
   };
 
   const newChat = () => {

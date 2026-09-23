@@ -1,37 +1,28 @@
 package com.goodzheng.po.recipe.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
 @Data
-@Entity
-@Table(name = "recipe_step")
+@TableName("recipe_step")
 public class Step {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @TableId(type = IdType.AUTO)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "recipe_id", nullable = false)
+    /** 所属菜谱 ID（原 JPA @ManyToOne 关联，MyBatis-Plus 用普通外键字段） */
     @JsonIgnore
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
-    private Recipe recipe;
+    private Long recipeId;
 
-    @Column(nullable = false)
     private Integer stepNumber;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
-    @Column(length = 500)
     private String imageUrl;
 
-    @Column(length = 500)
     private String videoUrl;
 
     /** 该步骤耗时（分钟） */

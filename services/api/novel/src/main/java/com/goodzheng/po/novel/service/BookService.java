@@ -13,7 +13,7 @@ public interface BookService {
 
     Page<Book> list(String keyword, String genre, String status, Pageable pageable);
 
-    Book update(Long id, BookRequest request, Long authorId);
+    Book update(Long id, BookRequest request);
 
-    void delete(Long id, Long authorId);
+    void delete(Long id);
 }

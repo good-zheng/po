@@ -1,0 +1,385 @@
+{
+  "region": "江西菜",
+  "recipes": [
+    {
+      "title": "三杯鸡",
+      "description": "赣菜名扬四海的代表作，相传源自江西万载。一杯甜米酒、一杯猪油、一杯酱油，三杯入锅不见水，鸡块焖得油亮酥嫩，酒香钻进骨头里。",
+      "difficulty": 2, "servings": 3, "prepTime": 20, "cookTime": 30, "totalTime": 50,
+      "tags": "经典,宴客,鸡肉,江西名菜", "flavorProfile": "咸鲜酒香",
+      "calories": 480, "protein": 32.0, "fat": 30.0, "carbs": 8.0,
+      "tips": "全程不加一滴水，靠米酒和酱油煨熟，火候宁小勿大；收汁收到锅里滋滋响、油亮裹身才算到位。",
+      "cover": { "slug": "gan-sanbeiji", "visual": "braised chicken chunks glossy with soy and rice wine glaze with ginger slices and garlic, Jiangxi three-cup chicken, clay pot" },
+      "ingredients": [
+        ["土鸡", "半", "只(约800g)", true],
+        ["甜米酒", "50", "ml", true],
+        ["猪油", "30", "g", true],
+        ["酱油", "50", "ml", true],
+        ["生姜", "30", "g", true],
+        ["大蒜", "30", "g", true],
+        ["干红辣椒", "5", "g", false],
+        ["小葱", "3", "根", true]
+      ],
+      "steps": [
+        ["鸡斩成小块，姜切片、蒜拍碎", 12],
+        ["热锅下猪油化开，下姜片、蒜瓣、干辣椒爆香", 2],
+        ["下鸡块大火煸炒至表皮微黄收紧", 8],
+        ["烹入酱油、甜米酒，烧开后转小火加盖焖15分钟", 15],
+        ["开盖转大火收汁至浓稠裹身，撒葱花装盘", 5]
+      ]
+    },
+    {
+      "title": "藜蒿炒腊肉",
+      "description": "十大赣菜之一，鄱阳湖春天的限定美味。藜蒿脆嫩带野清香，腊肉咸香出油，一句“正月藜，二月蒿”唱的就是它的时令金贵。",
+      "difficulty": 1, "servings": 3, "prepTime": 15, "cookTime": 8, "totalTime": 23,
+      "tags": "经典,时令,腊味,江西名菜", "flavorProfile": "咸鲜清香",
+      "calories": 420, "protein": 18.0, "fat": 34.0, "carbs": 8.0,
+      "tips": "藜蒿叶全部掐掉只留杆，撕去老皮才脆嫩；下锅后大火快炒半分钟即起，炒久了发软失魂。",
+      "cover": { "slug": "gan-lihao-larou", "visual": "stir-fried artemisia stems with sliced cured pork, green and amber contrast, Poyang Lake spring delicacy, rustic plate" },
+      "ingredients": [
+        ["藜蒿", "300", "g", true],
+        ["腊肉", "200", "g", true],
+        ["干红辣椒", "5", "g", false],
+        ["大蒜", "15", "g", true],
+        ["生姜", "10", "g", true],
+        ["盐", "1", "g", true]
+      ],
+      "steps": [
+        ["藜蒿掐成寸段，撕去老皮，洗净沥干", 8],
+        ["腊肉上锅蒸15分钟，晾凉切薄片", 18],
+        ["热锅下腊肉小火煸至透明出油", 4],
+        ["下姜蒜末、干辣椒段爆香", 1],
+        ["下藜蒿转大火快炒半分钟，尝味补少许盐即出锅", 1]
+      ]
+    },
+    {
+      "title": "余干辣椒炒肉",
+      "description": "赣菜辣味的门面担当。余干枫树辣椒明清时是贡品，皮薄肉厚辣得温柔，与土猪肉同炒，一碗汤泡饭全靠它。",
+      "difficulty": 1, "servings": 3, "prepTime": 15, "cookTime": 8, "totalTime": 23,
+      "tags": "经典,家常,下饭,江西名菜", "flavorProfile": "香辣微甜",
+      "calories": 520, "protein": 22.0, "fat": 42.0, "carbs": 6.0,
+      "tips": "辣椒要用刀拍裂再下锅，辣香才出得来；肥肉煸油、瘦肉后下，一锅两吃口感才对。",
+      "cover": { "slug": "gan-yugan-lajiaochaorou", "visual": "stir-fried pork with flattened green-red Yuguang maple chilies, glossy with pork fat, Jiangxi home-style, ceramic plate" },
+      "ingredients": [
+        ["带皮土猪肉", "350", "g", true],
+        ["余干辣椒", "150", "g", true],
+        ["大蒜", "20", "g", true],
+        ["豆豉", "8", "g", true],
+        ["生抽", "15", "ml", true],
+        ["盐", "2", "g", true]
+      ],
+      "steps": [
+        ["猪肉肥瘦分开切薄片，辣椒拍裂切段，蒜切粒", 10],
+        ["热锅下肥肉片，小火煸出油脂至微卷", 5],
+        ["下瘦肉片滑炒变色，加豆豉、蒜粒", 2],
+        ["下辣椒段大火翻炒至起虎皮", 2],
+        ["烹生抽、加盐翻炒均匀，连汁出锅", 1]
+      ]
+    },
+    {
+      "title": "鄱湖胖鱼头",
+      "description": "赣菜的宴席招牌。鄱阳湖的鳙鱼头大而肥美，配剁椒豆豉米酒旺火蒸透，鱼脑凝脂、鱼肉如蒜瓣，鲜辣里裹着湖水的清甜。",
+      "difficulty": 2, "servings": 4, "prepTime": 20, "cookTime": 15, "totalTime": 35,
+      "tags": "经典,宴客,河鲜,江西名菜", "flavorProfile": "鲜辣嫩滑",
+      "calories": 300, "protein": 26.0, "fat": 16.0, "carbs": 6.0,
+      "tips": "鱼头从鱼腹面剖开不断脊，趴盘而蒸受热匀；米酒去腥添香是赣做法的点睛之笔。",
+      "cover": { "slug": "gan-pohu-pangyutou", "visual": "steamed giant bighead fish head spread open topped with chopped chilies, Poyang Lake specialty, large white oval plate" },
+      "ingredients": [
+        ["鳙鱼头", "1", "个(约1200g)", true],
+        ["剁椒", "80", "g", true],
+        ["米酒", "30", "ml", true],
+        ["豆豉", "10", "g", true],
+        ["生姜", "20", "g", true],
+        ["大蒜", "20", "g", true],
+        ["蒸鱼豉油", "20", "ml", true],
+        ["小葱", "3", "根", true],
+        ["食用油", "30", "ml", true]
+      ],
+      "steps": [
+        ["鱼头从腹面剖开不切断，展开铺盘，抹上米酒腌10分钟", 12],
+        ["剁椒与豆豉、姜蒜末拌勻，厚铺鱼头上", 5],
+        ["水开上锅，大火蒸12分钟，关火虚蒸2分钟", 14],
+        ["倒去盘中腥水，淋蒸鱼豉油、撒葱花", 3],
+        ["热油烧至冒烟浇下激香，趁热连盘上桌", 1]
+      ]
+    },
+    {
+      "title": "井冈山烟笋炒肉",
+      "description": "井冈山八百里竹海的馈赠。鲜笋熏成烟笋，烟香混着笋香，与五花肉同炒，笋吸肉油、肉沾笋香，是赣西南山区的下饭担当。",
+      "difficulty": 2, "servings": 3, "prepTime": 40, "cookTime": 12, "totalTime": 52,
+      "tags": "地方名菜,山珍,下饭", "flavorProfile": "烟香咸鲜",
+      "calories": 460, "protein": 20.0, "fat": 36.0, "carbs": 10.0,
+      "tips": "烟笋干硬，温水泡4小时再煮20分钟才软而不烂；炒时先下肥肉煸油，笋丝借猪油才润。",
+      "cover": { "slug": "gan-jinggangshan-yansun", "visual": "stir-fried smoked bamboo shoots strips with pork slices, amber and brown, Jinggangshan mountain specialty, rustic bowl" },
+      "ingredients": [
+        ["干烟笋", "150", "g", true],
+        ["带皮五花肉", "250", "g", true],
+        ["大蒜叶", "50", "g", true],
+        ["干红辣椒", "8", "g", true],
+        ["生姜", "10", "g", true],
+        ["生抽", "15", "ml", true],
+        ["盐", "2", "g", true]
+      ],
+      "steps": [
+        ["烟笋温水泡发4小时，撕成细丝，煮20分钟捞出挤干", 260],
+        ["五花肉切薄片，蒜叶切段，姜切丝", 8],
+        ["热锅下五花肉煸出油至微卷", 5],
+        ["下姜丝、干辣椒段、烟笋丝中火炒2分钟", 2],
+        ["烹生抽、加盐，下蒜叶大火炒匀出锅", 2]
+      ]
+    },
+    {
+      "title": "赣州小炒鱼",
+      "description": "相传王阳明府中庖厨的即兴之作，醋香入馔的开山菜。鱼块滑嫩带醋香，辣椒姜蒜齐攻，酸甜咸辣一锅出，赣南人宴客的常客。",
+      "difficulty": 2, "servings": 3, "prepTime": 20, "cookTime": 10, "totalTime": 30,
+      "tags": "经典,宴客,河鲜", "flavorProfile": "醋香咸辣",
+      "calories": 360, "protein": 28.0, "fat": 20.0, "carbs": 8.0,
+      "tips": "鱼块拌薯粉（红薯粉）抓匀再滑炒，外滑里嫩；醋分两次放，炝锅一次起锅一次，醋香才有层次。",
+      "cover": { "slug": "gan-ganzhou-xiaochaoyu", "visual": "stir-fried fish chunks with red and green peppers in glossy vinegar sauce, Ganzhou specialty, dark red sauce, white plate" },
+      "ingredients": [
+        ["草鱼", "1", "条(约800g)", true],
+        ["红薯淀粉", "20", "g", true],
+        ["香醋", "20", "ml", true],
+        ["米酒", "15", "ml", true],
+        ["红辣椒", "2", "根", true],
+        ["青辣椒", "2", "根", false],
+        ["生姜", "15", "g", true],
+        ["大蒜", "20", "g", true],
+        ["生抽", "15", "ml", true],
+        ["食用油", "50", "ml", true]
+      ],
+      "steps": [
+        ["鱼治净取中段切3厘米块，加米酒、盐、红薯淀粉抓匀", 12],
+        ["青红椒切菱形片，姜蒜切末", 5],
+        ["热油下鱼块滑散，煎至两面定型盛出", 4],
+        ["锅留底油，下姜蒜末、辣椒片爆香，烹入一半香醋炝锅", 2],
+        ["倒回鱼块，加生抽和少许水，中火烧2分钟", 2],
+        ["淋剩下的香醋，翻匀收汁出锅", 1]
+      ]
+    },
+    {
+      "title": "赣南荷包胙",
+      "description": "南安府（大余）传了三百年的宴席大菜。方形五花肉裹米粉香料，荷叶包扎入钵慢蒸半日，肉酥烂不腻、荷叶清香沁入，解开就是满堂香。",
+      "difficulty": 3, "servings": 6, "prepTime": 60, "cookTime": 240, "totalTime": 300,
+      "tags": "地方名菜,宴席,猪肉", "flavorProfile": "软糯荷香",
+      "calories": 680, "protein": 22.0, "fat": 54.0, "carbs": 18.0,
+      "tips": "肉先煮七成熟再切块拌粉，肥油逼出大半；荷叶扎紧不漏汽，蒸足4小时，筷子一戳到底才算成。",
+      "cover": { "slug": "gan-gannan-hebaozuo", "visual": "steamed pork belly squares wrapped in lotus leaves opened to show glossy rice-flour coated meat, Gannan banquet dish, bamboo steamer" },
+      "ingredients": [
+        ["带皮五花肉", "1000", "g", true],
+        ["干荷叶", "4", "张", true],
+        ["粘米粉", "100", "g", true],
+        ["八角粉", "3", "g", true],
+        ["酱油", "40", "ml", true],
+        ["甜酒酿", "30", "g", true],
+        ["白糖", "10", "g", true],
+        ["生姜", "20", "g", true]
+      ],
+      "steps": [
+        ["五花肉整块煮至七成熟，捞出晾凉切5厘米见方的块", 40],
+        ["肉块加酱油、酒酿、白糖、八角粉、姜末拌匀腌20分钟", 25],
+        ["粘米粉干锅炒至微黄，拌入肉块让每面挂粉", 15],
+        ["荷叶烫软，每张包两块肉扎紧，码入蒸钵", 20],
+        ["上甑大火蒸4小时至肉酥烂，连荷叶装盘，桌上解开", 240]
+      ]
+    },
+    {
+      "title": "南昌瓦罐煨汤",
+      "description": "南昌人从宋朝煨到今天的早餐魂。小瓦罐装料封盖，埋进大瓦缸的木炭火里煨足数小时，汤浓似乳、藕粉肉酥，一盅下肚全天踏实。",
+      "difficulty": 2, "servings": 4, "prepTime": 20, "cookTime": 180, "totalTime": 200,
+      "tags": "经典,汤品,养生,早餐", "flavorProfile": "浓香清润",
+      "calories": 320, "protein": 22.0, "fat": 18.0, "carbs": 16.0,
+      "tips": "家用砂锅替代瓦缸也能煨出好汤，关键是小火加盖、绝不中途开盖；盐一定最后放，早放肉柴。",
+      "cover": { "slug": "gan-nanchang-waguan-tang", "visual": "small clay pots of milky pork and lotus root soup with steam rising, Nanchang clay pot soup, rustic wooden table" },
+      "ingredients": [
+        ["猪排骨", "400", "g", true],
+        ["莲藕", "300", "g", true],
+        ["生姜", "15", "g", true],
+        ["红枣", "5", "颗", false],
+        ["盐", "4", "g", true],
+        ["清水", "1200", "ml", true]
+      ],
+      "steps": [
+        ["排骨斩段冷水下锅焯水，洗净血沫", 12],
+        ["莲藕去皮切滚刀块，姜拍裂", 8],
+        ["小瓦罐（或砂锅）内放排骨、莲藕、姜、红枣，一次性加足清水", 5],
+        ["加盖小火慢煨3小时，中途不开盖", 180],
+        ["起锅前加盐调味，连罐上桌", 3]
+      ]
+    },
+    {
+      "title": "南昌拌粉",
+      "description": "南昌人过早的头牌。湿米粉烫得雪白弹滑，萝卜干花生米剁椒蒜末一拌，嗦一口咸辣冲鼻，再配一碗瓦罐汤，就是南昌的早晨。",
+      "difficulty": 1, "servings": 2, "prepTime": 10, "cookTime": 5, "totalTime": 15,
+      "tags": "地方名菜,小吃,早餐,米粉", "flavorProfile": "咸辣爽口",
+      "calories": 480, "protein": 12.0, "fat": 16.0, "carbs": 70.0,
+      "tips": "米粉烫十几秒就够，久烫软塌没嚼头；拌的顺序是先液体后干料，最后花生米保持脆响。",
+      "cover": { "slug": "gan-nanchang-banfen", "visual": "white rice noodles mixed with chili oil, pickled radish, peanuts and scallions in a shallow bowl, Nanchang mixed rice noodles" },
+      "ingredients": [
+        ["江西湿米粉", "300", "g", true],
+        ["萝卜干", "30", "g", true],
+        ["油炸花生米", "30", "g", true],
+        ["剁椒", "15", "g", true],
+        ["蒜末", "15", "g", true],
+        ["生抽", "15", "ml", true],
+        ["香油", "5", "ml", true],
+        ["小葱", "2", "根", true],
+        ["香菜", "5", "g", false]
+      ],
+      "steps": [
+        ["萝卜干切细丁，葱、香菜切末", 5],
+        ["碗中放生抽、香油、剁椒、蒜末调成底味", 2],
+        ["水沸下米粉烫15秒，捞出沥爽", 1],
+        ["米粉入碗颠拌均匀挂味", 2],
+        ["撒萝卜干、花生米、葱花、香菜即成", 1]
+      ]
+    },
+    {
+      "title": "弋阳年糕",
+      "description": "“弋阳大禾谷，天下第一糕”。大禾谷米经三蒸两百锤捶打成年糕，久煮不糊、弹糯拉丝，配白菜肉丝一炒，是上饶人围炉的家常至味。",
+      "difficulty": 1, "servings": 3, "prepTime": 15, "cookTime": 10, "totalTime": 25,
+      "tags": "地方名菜,主食,年糕", "flavorProfile": "软糯咸鲜",
+      "calories": 520, "protein": 14.0, "fat": 12.0, "carbs": 88.0,
+      "tips": "年糕切片先入开水煮软再炒，直接下锅容易外糊内硬；炒时勤翻动，年糕粘锅功力不小。",
+      "cover": { "slug": "gan-yiyang-niangao", "visual": "stir-fried white rice cakes with napa cabbage and shredded pork, glossy and chewy, Yiyang rice cake, home-style plate" },
+      "ingredients": [
+        ["弋阳年糕", "400", "g", true],
+        ["大白菜", "200", "g", true],
+        ["猪里脊丝", "100", "g", true],
+        ["大蒜叶", "30", "g", true],
+        ["生抽", "15", "ml", true],
+        ["盐", "3", "g", true],
+        ["食用油", "30", "ml", true]
+      ],
+      "steps": [
+        ["年糕切3毫米薄片，入沸水煮2分钟至软，捞出过凉", 8],
+        ["白菜切丝，里脊丝用少许生抽抓匀，蒜叶切段", 5],
+        ["热油下肉丝滑炒变色，下白菜丝炒软", 3],
+        ["下年糕片中火翻炒1分钟", 1],
+        ["烹生抽、加盐，下蒜叶翻匀出锅", 2]
+      ]
+    },
+    {
+      "title": "泰和乌鸡汤",
+      "description": "泰和白凤乌鸡是世界珍禽，绒羽雪白、骨乌肉黑。清炖只放姜枣，汤色澄黄油亮，滋补不燥，是江西人秋冬餐桌上的一盅温柔。",
+      "difficulty": 1, "servings": 4, "prepTime": 15, "cookTime": 100, "totalTime": 115,
+      "tags": "地方名菜,汤品,养生,宴客", "flavorProfile": "清补鲜润",
+      "calories": 280, "protein": 30.0, "fat": 14.0, "carbs": 6.0,
+      "tips": "乌鸡焯水后炖，汤才清；姜片两三片足矣，多则夺了鸡的清鲜。",
+      "cover": { "slug": "gan-taihe-wuji-tang", "visual": "clear golden-black chicken soup with white silkie chicken pieces, red dates and goji berries, Taihe silkie soup, white ceramic pot" },
+      "ingredients": [
+        ["泰和乌骨鸡", "1", "只(约900g)", true],
+        ["红枣", "8", "颗", true],
+        ["枸杞", "5", "g", true],
+        ["生姜", "15", "g", true],
+        ["料酒", "15", "ml", true],
+        ["盐", "4", "g", true]
+      ],
+      "steps": [
+        ["乌鸡斩大件，冷水下锅加料酒焯水，洗净", 12],
+        ["鸡块入砂锅，加姜片、红枣和足量开水", 5],
+        ["大火烧开转小火，加盖炖80分钟", 80],
+        ["撒枸杞再炖10分钟，加盐调味即成", 12]
+      ]
+    },
+    {
+      "title": "庐山石鱼炒蛋",
+      "description": "庐山三石之一。石鱼长不盈寸、鲜香浓缩，与土鸡蛋同炒，蛋裹鱼鲜、鱼借蛋嫩，一盘山珍下饭一绝，去庐山必点的名馔。",
+      "difficulty": 1, "servings": 3, "prepTime": 15, "cookTime": 5, "totalTime": 20,
+      "tags": "地方名菜,山珍,鸡蛋", "flavorProfile": "鲜香嫩滑",
+      "calories": 260, "protein": 20.0, "fat": 18.0, "carbs": 4.0,
+      "tips": "石鱼干温水泡5分钟即可，泡久了鲜味流失；油温五成热下蛋液，小火慢推才嫩。",
+      "cover": { "slug": "gan-lushan-shiyu-chaodan", "visual": "fluffy scrambled eggs with tiny silver-white fish mixed in, golden and white, Lushan stone fish fried eggs, white plate" },
+      "ingredients": [
+        ["庐山石鱼", "30", "g", true],
+        ["土鸡蛋", "5", "个", true],
+        ["小葱", "3", "根", true],
+        ["料酒", "5", "ml", true],
+        ["盐", "3", "g", true],
+        ["食用油", "40", "ml", true]
+      ],
+      "steps": [
+        ["石鱼温水泡5分钟，洗净沥干", 6],
+        ["鸡蛋打散，加料酒、盐、葱花和石鱼搅匀", 5],
+        ["油烧至五成热，倒入蛋液", 1],
+        ["中小火慢推，蛋液凝固至八成即关火", 2],
+        ["利用余温焖十秒，装盘上桌", 1]
+      ]
+    },
+    {
+      "title": "九江茶饼",
+      "description": "浔阳江头的千年茶点，苏东坡都赞过的“香脆”。皮薄如纸、馅芯酥香，芝麻桂花的香气混着茶油香，配一盏庐山云雾茶刚刚好。",
+      "difficulty": 2, "servings": 8, "prepTime": 40, "cookTime": 20, "totalTime": 60,
+      "tags": "地方名菜,茶点,点心,小吃", "flavorProfile": "香甜酥脆",
+      "calories": 320, "protein": 6.0, "fat": 14.0, "carbs": 44.0,
+      "tips": "面团掺茶油和面才酥，水油比例宁少勿多；烤到边缘微黄立刻出炉，放烤网上晾脆。",
+      "cover": { "slug": "gan-jiujiang-chabing", "visual": "round golden Chinese pastry cookies topped with white sesame seeds, Jiujiang tea cakes, stacked on bamboo tray with tea set" },
+      "ingredients": [
+        ["中筋面粉", "250", "g", true],
+        ["茶油", "60", "ml", true],
+        ["白芝麻", "40", "g", true],
+        ["白糖", "80", "g", true],
+        ["糖桂花", "15", "g", true],
+        ["面粉(馅用)", "30", "g", true],
+        ["小苏打", "1", "g", true],
+        ["清水", "80", "ml", true]
+      ],
+      "steps": [
+        ["面粉100g加茶油30ml搓成油酥面；剩余面粉加茶油、小苏打、清水和成水油面，醒20分钟", 30],
+        ["白糖、糖桂花、面粉30g拌成馅", 5],
+        ["水油面包油酥，擀开卷起分剂，逐个包馅压成圆饼", 15],
+        ["饼面刷水，粘满白芝麻", 5],
+        ["烤箱200度烤15分钟至边缘金黄，取出晾凉即酥", 20]
+      ]
+    },
+    {
+      "title": "南昌白糖糕",
+      "description": "南昌街头巷尾的传统甜口小吃，糯食控的心头肉。糯米团搓条盘成玉环，入油锅炸得金黄鼓胀，趁热滚一层白糖，外脆里糯拉丝。",
+      "difficulty": 2, "servings": 4, "prepTime": 40, "cookTime": 15, "totalTime": 55,
+      "tags": "地方名菜,小吃,甜点,糯米", "flavorProfile": "香甜软糯",
+      "calories": 420, "protein": 6.0, "fat": 14.0, "carbs": 68.0,
+      "tips": "面团里掺三分之一粘米粉，炸出来才不塌不粘牙；油温五成热下锅，小火慢炸才鼓得起空心。",
+      "cover": { "slug": "gan-nanchang-baitanggao", "visual": "golden fried glutinous rice rings coated with white sugar, Nanchang white sugar cakes, stacked on parchment paper" },
+      "ingredients": [
+        ["糯米粉", "200", "g", true],
+        ["粘米粉", "80", "g", true],
+        ["白糖", "40", "g", true],
+        ["酵母", "2", "g", true],
+        ["温水", "180", "ml", true],
+        ["白砂糖粉", "60", "g", true],
+        ["食用油", "500", "ml", false]
+      ],
+      "steps": [
+        ["白糖入温水化开，加酵母，倒入两种米粉揉成光滑面团，醒发30分钟", 35],
+        ["面团搓成细长条，盘成圆环状，收口捏紧", 10],
+        ["油烧至五成热，逐个下糕坯小火慢炸，翻面炸至金黄鼓起", 8],
+        ["捞出沥油，趁热滚满白砂糖粉", 3],
+        ["稍晾即食，凉了回锅复炸半分钟依旧酥糯", 2]
+      ]
+    },
+    {
+      "title": "瑞金牛肉汤",
+      "description": "红色故都瑞金的一张味觉名片。当天黄牛肉切薄片清水现煮，只放姜盐不加一物，汤清见底却鲜掉眉毛，蘸一碟辣椒酱就是一顿硬早餐。",
+      "difficulty": 1, "servings": 4, "prepTime": 15, "cookTime": 15, "totalTime": 30,
+      "tags": "地方名菜,汤品,牛肉,早餐", "flavorProfile": "清鲜原味",
+      "calories": 280, "protein": 28.0, "fat": 14.0, "carbs": 4.0,
+      "tips": "牛肉逆纹切薄片，水微沸时下锅一烫就熟，久煮必老；汤里千万别加酱油，清才见鲜。",
+      "cover": { "slug": "gan-ruijin-niuroutang", "visual": "clear beef soup with thin pink beef slices, ginger shreds and scallions, Ruijin beef soup, simple ceramic bowls" },
+      "ingredients": [
+        ["新鲜黄牛肉", "500", "g", true],
+        ["生姜", "25", "g", true],
+        ["盐", "5", "g", true],
+        ["小葱", "3", "根", true],
+        ["香菜", "10", "g", true],
+        ["干辣椒面", "20", "g", true],
+        ["清水", "1000", "ml", true]
+      ],
+      "steps": [
+        ["牛肉逆纹切薄片，姜切丝，葱、香菜切末", 12],
+        ["清水烧开，下姜丝", 2],
+        ["牛肉片分散下锅，中火煮至刚变色（约1分钟）", 2],
+        ["加盐调味，连汤舀入碗中", 1],
+        ["撒葱花、香菜，配干辣椒面蘸碟趁烫吃", 1]
+      ]
+    }
+  ]
+}

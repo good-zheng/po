@@ -47,6 +47,7 @@ export default [
     path: '/welcome',
     name: 'welcome',
     icon: 'home',
+    access: 'canAdmin',
     component: './Welcome',
   },
   {
@@ -63,6 +64,11 @@ export default [
         path: '/recipes/list',
         name: 'list',
         component: './recipes/list',
+      },
+      {
+        path: '/recipes/review',
+        name: 'review',
+        component: './recipes/review',
       },
       {
         path: '/recipes/create',
@@ -144,6 +150,7 @@ export default [
     path: '/chatbot',
     name: 'chatbot',
     icon: 'robot',
+    access: 'canAdmin',
     component: './chatbot',
   },
   {
@@ -157,12 +164,14 @@ export default [
     name: 'settings',
     icon: 'setting',
     path: '/account/settings',
+    access: 'canAdmin',
     component: './account/settings',
   },
   {
     path: '/dashboard',
     name: 'dashboard',
     icon: 'dashboard',
+    access: 'canAdmin',
     routes: [
       {
         path: '/dashboard',

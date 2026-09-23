@@ -3,24 +3,23 @@ package com.goodzheng.po.novel.controller;
 import com.goodzheng.po.novel.dto.ChapterRequest;
 import com.goodzheng.po.shared.dto.Result;
 import com.goodzheng.po.novel.entity.BookChapter;
-import com.goodzheng.po.identity.repository.UserRepository;
 import com.goodzheng.po.novel.service.BookChapterService;
-import com.goodzheng.po.identity.security.JwtUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * 章节接口。
+ * 写操作仅管理端管理员，由 SecurityConfig 统一约束。
+ */
 @RestController
 @RequestMapping("/books/{bookId}/chapters")
-@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class BookChapterController {
 
     private final BookChapterService chapterService;
-    private final JwtUtil jwtUtil;
-    private final UserRepository userRepository;
 
     // ── 章节列表 ──────────────────────────────────────────
     @GetMapping
@@ -32,14 +31,12 @@ public class BookChapterController {
         }
     }
 
-    // ── 创建章节 ──────────────────────────────────────────
+    // ── 创建章节（管理端） ────────────────────────────────
     @PostMapping
     public Result<BookChapter> create(@PathVariable Long bookId,
-            @RequestHeader("Authorization") String auth,
             @Valid @RequestBody ChapterRequest request) {
         try {
-            Long operatorId = resolveUserId(auth);
-            return Result.success(chapterService.create(bookId, request, operatorId));
+            return Result.success(chapterService.create(bookId, request));
         } catch (RuntimeException e) {
             return Result.error(400, e.getMessage());
         }
@@ -55,37 +52,25 @@ public class BookChapterController {
         }
     }
 
-    // ── 更新章节 ──────────────────────────────────────────
+    // ── 更新章节（管理端） ────────────────────────────────
     @PutMapping("/{chapterId}")
     public Result<BookChapter> update(@PathVariable Long bookId, @PathVariable Long chapterId,
-            @RequestHeader("Authorization") String auth,
             @Valid @RequestBody ChapterRequest request) {
         try {
-            Long operatorId = resolveUserId(auth);
-            return Result.success(chapterService.update(bookId, chapterId, request, operatorId));
+            return Result.success(chapterService.update(bookId, chapterId, request));
         } catch (RuntimeException e) {
             return Result.error(400, e.getMessage());
         }
     }
 
-    // ── 删除章节 ──────────────────────────────────────────
+    // ── 删除章节（管理端） ────────────────────────────────
     @DeleteMapping("/{chapterId}")
-    public Result<String> delete(@PathVariable Long bookId, @PathVariable Long chapterId,
-            @RequestHeader("Authorization") String auth) {
+    public Result<String> delete(@PathVariable Long bookId, @PathVariable Long chapterId) {
         try {
-            Long operatorId = resolveUserId(auth);
-            chapterService.delete(bookId, chapterId, operatorId);
+            chapterService.delete(bookId, chapterId);
             return Result.success("删除成功", null);
         } catch (RuntimeException e) {
             return Result.error(400, e.getMessage());
         }
-    }
-
-    private Long resolveUserId(String authHeader) {
-        String token = authHeader.replace("Bearer ", "");
-        String username = jwtUtil.getUsernameFromToken(token);
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("用户不存在"))
-                .getId();
     }
 }
