@@ -28,6 +28,18 @@ updates 中的完整 AIMessage 按 id 去重；id 缺失（本地 fake 模型）
 ``(namespace, mode, chunk)`` 三元组，namespace 丢弃、事件只带节点名）。
 没有这一开关，supervisor 委托子图时 get_stream_writer 发布的
 领域事件对 WS / A2A / MCP 各传输层均不可见。
+
+副作用与对策：``subgraphs=True`` 时**同一条消息会在两级 updates 中各出现
+一次**——子图内部节点一次（父节点名即子图名），父级委派节点的 delta 又一次
+（内容是该子图本轮新增的全部消息）。两处是同一个消息对象，若不拦截，
+工具调用与回复文本都会下发给前端两遍。拦截点在
+:meth:`_RunTranslator.translate_updates`：整条消息按 id 去重后再翻译。
+
+续接线程同理：父级委派节点的 delta 是「该子图此刻的全部消息」而非本轮增量，
+所以续接已有 thread 时它会把**上一轮的**消息一并带回，第二轮回放第一轮的
+回复与工具卡片。Runner 因此在开跑前读一次线程既有状态
+（``_thread_messages``），把这些消息登记进 :meth:`_RunTranslator.register_history`，
+本轮只下发真正的新增内容。
 """
 
 from __future__ import annotations
@@ -52,8 +64,20 @@ class _RunTranslator:
         self._streamed_ids: set[str] = set()
         self._streamed_content_hashes: set[str] = set()
         self._announced_tool_calls: set[str] = set()
+        # 「前端已经有了」的消息键：本轮已翻译过的（两级 updates 上浮的同一
+        # 消息）与开跑前线程里就有的历史（续接会话）都在这里
+        self._delivered_message_keys: set[str] = set()
         # subgraphs=True 下同一 interrupt 会以子图与父图两级 updates 各上浮一次
         self._interrupt_ids: set[str] = set()
+
+    def register_history(self, messages: Iterable[Any]) -> None:
+        """登记开跑前线程里已有的消息，这些消息本轮一律不再下发。
+
+        与 :meth:`translate_updates` 共用同一张表：对前端而言「上一轮发过」
+        和「本轮刚发过」没有区别，都是不该再出现一次的消息。
+        """
+        for message in messages:
+            self._delivered_message_keys.add(_message_key(message))
 
     # ---------- updates ----------
     def translate_updates(self, chunk: Any) -> list[AgentEvent]:
@@ -73,6 +97,14 @@ class _RunTranslator:
             if not isinstance(delta, dict):
                 continue
             for message in delta.get("messages") or []:
+                # 子图消息在两级 updates 各上浮一次、续接线程时父级 delta 还带
+                # 历史消息（见模块 docstring），这里按消息去重，翻译层以下各
+                # 路径就不必各自处理重复。
+                key = _message_key(message)
+                if key:
+                    if key in self._delivered_message_keys:
+                        continue
+                    self._delivered_message_keys.add(key)
                 if isinstance(message, ToolMessage):
                     events.extend(self._translate_tool_message(message))
                 elif isinstance(message, AIMessage):
@@ -243,6 +275,11 @@ class AgentRunner:
         )
         try:
             async with asyncio.timeout(self.timeout_seconds):
+                # 续接线程时父级委派节点的 delta 会带上全部历史消息，先登记
+                # 再开跑，本轮才不会把上一轮的回复与工具卡片重放一遍
+                translator.register_history(
+                    await _thread_messages(graph, config)
+                )
                 async for _namespace, mode, chunk in graph.astream(
                     state,
                     config,
@@ -287,6 +324,26 @@ class AgentRunner:
         yield AgentEvent(EventType.RUN_FINISHED, payload={})
 
 
+async def _thread_messages(
+    graph: CompiledStateGraph, config: dict[str, Any]
+) -> list[Any]:
+    """读取线程既有状态里的消息；拿不到（无记忆 / 读失败）时返回空表。
+
+    只在有 ``thread_id`` 时才读：没有线程就谈不上历史重放。读失败一律吞掉
+    ——这一步只为「别把历史重发一遍」，最坏后果是消息重复，比整轮对话因为
+    读 state 失败而挂掉轻得多，不值得让它中断运行。
+    """
+    if not (config.get("configurable") or {}).get("thread_id"):
+        return []
+    try:
+        snapshot = await graph.aget_state(config)
+    except Exception:  # 无 checkpointer（ValueError）或存储不可达
+        return []
+    values = getattr(snapshot, "values", None)
+    messages = values.get("messages") if isinstance(values, dict) else None
+    return list(messages) if isinstance(messages, list) else []
+
+
 def _content_to_str(content: Any) -> str:
     if isinstance(content, str):
         return content
@@ -304,6 +361,27 @@ def _content_to_str(content: Any) -> str:
 
 def _hash_content(content: str) -> str:
     return hashlib.sha256(content.encode("utf-8")).hexdigest()
+
+
+def _message_key(message: Any) -> str:
+    """updates 内消息的去重键。
+
+    优先用 ``message.id``：LangGraph 的 ``add_messages`` 按 id 归并，
+    因此同一线程内 id 唯一，而子图消息上浮两次时 id 必然相同。
+    本地 fake 模型 / 手写节点构造的消息可能不带 id，此时退到工具调用 id、
+    内容哈希，最后才是对象身份——前面几项都无法区分时才依赖「同一个对象
+    上浮两次」这一事实，因此不会误杀两条内容相同但各自独立的消息。
+    """
+    msg_id = getattr(message, "id", None)
+    if msg_id:
+        return str(msg_id)
+    tool_call_id = getattr(message, "tool_call_id", None)
+    if tool_call_id:
+        return f"tool_call:{tool_call_id}"
+    content = _content_to_str(getattr(message, "content", ""))
+    if content:
+        return f"content:{_hash_content(content)}"
+    return f"object:{id(message)}"
 
 
 def _summarize_interrupt(value: Any) -> str:

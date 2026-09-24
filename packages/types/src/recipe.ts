@@ -14,6 +14,14 @@ export type RecipeCategory = {
   updatedAt?: string;
 };
 
+/** 菜谱分类创建/更新请求（管理端） */
+export type RecipeCategoryRequest = {
+  name: string;
+  icon?: string;
+  description?: string;
+  sortOrder?: number;
+};
+
 export type Ingredient = {
   id?: number;
   name: string;
@@ -70,6 +78,21 @@ export type Recipe = {
   steps?: Step[];
   createdAt?: string;
   updatedAt?: string;
+};
+
+/** 菜谱卡片摘要：聊天工具结果（search_recipes / get_recipe_detail）下发的渲染源 */
+export type RecipeBrief = {
+  id: number;
+  title: string;
+  description?: string | null;
+  coverImageUrl?: string | null;
+  prepTime?: number | null;
+  cookTime?: number | null;
+  totalTime?: number | null;
+  difficulty?: number | null;
+  servings?: number | null;
+  category?: string | null;
+  tags?: string | null;
 };
 
 export type RecipeRequest = {

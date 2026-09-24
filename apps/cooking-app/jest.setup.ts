@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as matchers from '@testing-library/react-native/matchers';
 
 expect.extend(matchers);
@@ -16,6 +17,16 @@ jest.mock('expo-secure-store', () => ({
   }),
 }));
 
+jest.mock('@react-native-async-storage/async-storage', () =>
+  require('@react-native-async-storage/async-storage/jest'),
+);
+
+jest.mock('expo-speech', () => ({
+  speak: jest.fn(),
+  stop: jest.fn(),
+}));
+
 beforeEach(() => {
   mockSecureStoreData.clear();
+  void AsyncStorage.clear();
 });

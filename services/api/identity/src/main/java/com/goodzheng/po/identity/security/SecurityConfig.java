@@ -69,6 +69,9 @@ public class SecurityConfig {
                         // 菜谱互动（收藏/点赞）与创建：需登录（归属权由 Service 层校验）
                         .requestMatchers(HttpMethod.POST, "/recipes", "/recipes/*/favorite", "/recipes/*/like").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/recipes/*/favorite").authenticated()
+                        // 通用文件上传：任何已登录用户；上传产物 /files/** 公开可读
+                        .requestMatchers(HttpMethod.POST, "/files/upload").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/files/**").permitAll()
                         // 审核队列与审核操作：仅管理端管理员（须在 GET /recipes/* 与 PUT /recipes/* 规则之前）
                         .requestMatchers("/recipes/review").access(ADMIN_CLIENT)
                         .requestMatchers(HttpMethod.PUT, "/recipes/*/audit").access(ADMIN_CLIENT)
@@ -79,15 +82,12 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,
                                 "/recipes", "/recipes/*",
                                 "/recipe-categories", "/recipe-categories/*",
-                                "/books", "/books/*",
-                                "/books/*/chapters", "/books/*/chapters/*",
-                                "/books/*/characters", "/books/*/characters/*",
                                 "/avatars/**", "/covers/**", "/ingredients/**").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
                         // 用户管理：仅管理端管理员
                         .requestMatchers("/users/**").access(ADMIN_CLIENT)
                         // 内容写操作：仅管理端管理员（App 普通用户不能创建/修改/删除内容）
-                        .requestMatchers("/recipes/**", "/recipe-categories/**", "/books/**").access(ADMIN_CLIENT)
+                        .requestMatchers("/recipes/**", "/recipe-categories/**").access(ADMIN_CLIENT)
                         .anyRequest().authenticated())
                 .exceptionHandling(handler -> handler
                         .authenticationEntryPoint(this::writeUnauthorized)

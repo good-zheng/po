@@ -29,6 +29,10 @@ type RecipeFilterBarProps = {
   difficulty?: number;
   onDifficultyChange: (value?: number) => void;
   categories: RecipeCategory[];
+  /** 搜索历史：传入后在搜索框为空时以标签形式展示 */
+  history?: string[];
+  onSelectHistory?: (term: string) => void;
+  onClearHistory?: () => void;
 };
 
 function Chip({
@@ -75,8 +79,12 @@ export function RecipeFilterBar({
   difficulty,
   onDifficultyChange,
   categories,
+  history,
+  onSelectHistory,
+  onClearHistory,
 }: RecipeFilterBarProps) {
   const [focused, setFocused] = useState(false);
+  const showHistory = !keyword && (history?.length ?? 0) > 0;
 
   return (
     <View className="gap-2.5 pb-3">
@@ -111,6 +119,40 @@ export function RecipeFilterBar({
           </Pressable>
         ) : null}
       </View>
+
+      {showHistory ? (
+        <View className="gap-1.5">
+          <View className="flex-row items-center justify-between">
+            <Text className="text-xs text-stone-400 dark:text-stone-500">
+              最近搜索
+            </Text>
+            {onClearHistory ? (
+              <Pressable
+                accessibilityLabel="清空搜索历史"
+                hitSlop={8}
+                onPress={onClearHistory}
+              >
+                <Ionicons color="#a8a29e" name="trash-outline" size={14} />
+              </Pressable>
+            ) : null}
+          </View>
+          <ScrollView
+            className="grow-0"
+            contentContainerClassName="gap-2 pr-4"
+            horizontal
+            showsHorizontalScrollIndicator={false}
+          >
+            {history?.map((term) => (
+              <Chip
+                active={false}
+                key={term}
+                label={term}
+                onPress={() => onSelectHistory?.(term)}
+              />
+            ))}
+          </ScrollView>
+        </View>
+      ) : null}
 
       <ScrollView
         className="grow-0"

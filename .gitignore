@@ -15,6 +15,9 @@ services/agent-core/.venv/
 services/agent-core/.pytest_cache/
 services/agent-core/**/__pycache__/
 services/agent-core/build/
+services/agent-cooking/.venv/
+services/agent-cooking/.pytest_cache/
+services/agent-cooking/**/__pycache__/
 *.egg-info/
 .agent-core/
 

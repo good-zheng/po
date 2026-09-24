@@ -36,26 +36,36 @@ export function totalMinutes(
   return minutes > 0 ? minutes : undefined;
 }
 
-export function formatIngredientAmount(ingredient: Ingredient): string {
-  const parts = [normalizeAmount(ingredient.amount), ingredient.unit?.trim()]
+export function formatIngredientAmount(
+  ingredient: Ingredient,
+  scale = 1,
+): string {
+  const parts = [
+    normalizeAmount(ingredient.amount, scale),
+    ingredient.unit?.trim(),
+  ]
     .filter(Boolean)
     .join(' ');
 
   return parts || '适量';
 }
 
-/** 用量在库里是字符串，1.0 / 150.00 这类写法要去掉多余的零 */
-function normalizeAmount(amount?: string | null): string | undefined {
+/** 用量在库里是字符串，1.0 / 150.00 这类写法要去掉多余的零；scale 为份量换算系数 */
+function normalizeAmount(
+  amount?: string | null,
+  scale = 1,
+): string | undefined {
   const text = amount?.trim();
   if (!text) {
     return undefined;
   }
 
   const numeric = Number(text);
+  if (!Number.isFinite(numeric)) {
+    return text;
+  }
 
-  return Number.isFinite(numeric)
-    ? String(Math.round(numeric * 100) / 100)
-    : text;
+  return String(Math.round(numeric * scale * 100) / 100);
 }
 
 export function sortSteps(steps?: Step[] | null): Step[] {

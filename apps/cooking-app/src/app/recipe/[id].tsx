@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link, useLocalSearchParams, useRouter } from 'expo-router';
 import type { ReactNode } from 'react';
+import { useState } from 'react';
 import {
   Pressable,
   ScrollView,
@@ -37,6 +38,7 @@ export default function RecipeDetailScreen() {
   const insets = useSafeAreaInsets();
   const isDark = useColorScheme() === 'dark';
   const queryClient = useQueryClient();
+  const [servings, setServings] = useState<number | null>(null);
 
   const { data, error, isLoading, refetch } = useQuery({
     enabled: Number.isFinite(recipeId),
@@ -107,6 +109,10 @@ export default function RecipeDetailScreen() {
     );
   }
 
+  const baseServings = data.servings && data.servings > 0 ? data.servings : 1;
+  const effectiveServings = servings ?? baseServings;
+  const amountScale = effectiveServings / baseServings;
+
   const ingredients = [...(data.ingredients ?? [])].sort(
     (a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0),
   );
@@ -171,7 +177,74 @@ export default function RecipeDetailScreen() {
           <RecipeMeta className="mt-4" recipe={data} />
 
           {ingredients.length > 0 ? (
-            <Section title="用料">
+            <Section
+              extra={
+                <View className="flex-row items-center gap-3">
+                  <Pressable
+                    accessibilityLabel="减少份量"
+                    accessibilityRole="button"
+                    className={cn(
+                      'h-7 w-7 items-center justify-center rounded-full border',
+                      effectiveServings <= 1
+                        ? 'border-stone-200 dark:border-stone-800'
+                        : 'border-stone-300 active:opacity-70 dark:border-stone-700',
+                    )}
+                    disabled={effectiveServings <= 1}
+                    hitSlop={6}
+                    onPress={() =>
+                      setServings(Math.max(1, effectiveServings - 1))
+                    }
+                  >
+                    <Ionicons
+                      color={
+                        effectiveServings <= 1
+                          ? isDark
+                            ? '#44403c'
+                            : '#d6d3d1'
+                          : isDark
+                            ? '#d6d3d1'
+                            : '#57534e'
+                      }
+                      name="remove"
+                      size={16}
+                    />
+                  </Pressable>
+                  <Text className="text-sm font-semibold text-stone-900 dark:text-stone-50">
+                    {effectiveServings} 人份
+                  </Text>
+                  <Pressable
+                    accessibilityLabel="增加份量"
+                    accessibilityRole="button"
+                    className={cn(
+                      'h-7 w-7 items-center justify-center rounded-full border',
+                      effectiveServings >= 20
+                        ? 'border-stone-200 dark:border-stone-800'
+                        : 'border-stone-300 active:opacity-70 dark:border-stone-700',
+                    )}
+                    disabled={effectiveServings >= 20}
+                    hitSlop={6}
+                    onPress={() =>
+                      setServings(Math.min(20, effectiveServings + 1))
+                    }
+                  >
+                    <Ionicons
+                      color={
+                        effectiveServings >= 20
+                          ? isDark
+                            ? '#44403c'
+                            : '#d6d3d1'
+                          : isDark
+                            ? '#d6d3d1'
+                            : '#57534e'
+                      }
+                      name="add"
+                      size={16}
+                    />
+                  </Pressable>
+                </View>
+              }
+              title="用料"
+            >
               <View className="overflow-hidden rounded-2xl bg-white dark:bg-stone-900">
                 {ingredients.map((ingredient, index) => (
                   <View
@@ -193,7 +266,7 @@ export default function RecipeDetailScreen() {
                       ) : null}
                     </View>
                     <Text className="text-sm text-stone-500 dark:text-stone-400">
-                      {formatIngredientAmount(ingredient)}
+                      {formatIngredientAmount(ingredient, amountScale)}
                     </Text>
                   </View>
                 ))}
@@ -346,12 +419,23 @@ export default function RecipeDetailScreen() {
   );
 }
 
-function Section({ title, children }: { title: string; children: ReactNode }) {
+function Section({
+  title,
+  extra,
+  children,
+}: {
+  title: string;
+  extra?: ReactNode;
+  children: ReactNode;
+}) {
   return (
     <View className="mt-6">
-      <Text className="mb-3 text-base font-bold text-stone-900 dark:text-stone-50">
-        {title}
-      </Text>
+      <View className="mb-3 flex-row items-center justify-between">
+        <Text className="text-base font-bold text-stone-900 dark:text-stone-50">
+          {title}
+        </Text>
+        {extra}
+      </View>
       {children}
     </View>
   );

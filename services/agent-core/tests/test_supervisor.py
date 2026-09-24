@@ -50,16 +50,16 @@ def build_graph(router: StubRouter, agents=None):
 
 
 async def test_delegates_to_vertical_agent() -> None:
-    router = StubRouter({"写一章小说": RouteDecision("echo", 5.0, "stub")})
+    router = StubRouter({"写一首诗": RouteDecision("echo", 5.0, "stub")})
     graph = build_graph(router)
-    state = await graph.ainvoke({"messages": [HumanMessage(content="写一章小说")]})
+    state = await graph.ainvoke({"messages": [HumanMessage(content="写一首诗")]})
 
     assert state["intent"] == "echo"
     assert state["agent_name"] == "echo"
     assert state["route_score"] == 5.0
-    assert state["messages"][-1].content == "echo:写一章小说"
+    assert state["messages"][-1].content == "echo:写一首诗"
     assert state["artifacts"] == {"echo": {"ran": True}}
-    assert router.seen == ["写一章小说"]
+    assert router.seen == ["写一首诗"]
 
 
 async def test_falls_back_to_chitchat_when_intent_missing() -> None:
@@ -124,11 +124,11 @@ def test_vertical_agent_utterances_validation() -> None:
     compiled = build_echo_agent().graph
     with pytest.raises(VerticalAgentError, match="空语料"):
         VerticalAgent(
-            name="ok", description="d", graph=compiled, utterances=("写一部小说", "  ")
+            name="ok", description="d", graph=compiled, utterances=("写一首诗", "  ")
         )
     agent = VerticalAgent(
-        name="ok", description="d", graph=compiled, utterances=("写一部小说",)
+        name="ok", description="d", graph=compiled, utterances=("写一首诗",)
     )
-    assert agent.utterances == ("写一部小说",)
+    assert agent.utterances == ("写一首诗",)
     # 缺省：不参与意图路由
     assert build_echo_agent().utterances == ()

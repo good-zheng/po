@@ -54,6 +54,21 @@ describe('formatIngredientAmount', () => {
       formatIngredientAmount({ amount: '  ', name: '盐', unit: ' ' }),
     ).toBe('适量');
   });
+
+  it('scales numeric amounts by the serving factor', () => {
+    expect(
+      formatIngredientAmount({ amount: '150.00', name: '剁椒', unit: 'g' }, 2),
+    ).toBe('300 g');
+    expect(
+      formatIngredientAmount({ amount: '1.0', name: '鱼头', unit: '个' }, 0.5),
+    ).toBe('0.5 个');
+  });
+
+  it('keeps non numeric amounts when scaling', () => {
+    expect(
+      formatIngredientAmount({ amount: '半', name: '蒜', unit: '头' }, 2),
+    ).toBe('半 头');
+  });
 });
 
 describe('totalMinutes', () => {

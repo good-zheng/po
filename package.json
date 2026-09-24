@@ -21,7 +21,7 @@
     "chat:start": "node scripts/run-service.mjs chat start",
     "chat:test": "node scripts/run-service.mjs chat test",
     "agentcore:test": "node scripts/run-service.mjs agentcore test",
-    "agentnovel:test": "node scripts/run-service.mjs agentnovel test",
+    "agentcooking:test": "node scripts/run-service.mjs agentcooking test",
     "mobile:start": "pnpm --filter @po/cooking start",
     "mobile:android": "node scripts/run-mobile.mjs android",
     "mobile:apk": "node scripts/run-mobile.mjs apk",

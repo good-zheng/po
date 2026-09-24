@@ -42,7 +42,7 @@ export default function ProfileScreen() {
     {
       icon: 'create-outline',
       label: '编辑资料',
-      description: '昵称、手机号、邮箱',
+      description: '头像、昵称、手机号、邮箱',
       onPress: () => router.push('/profile/edit'),
     },
     {

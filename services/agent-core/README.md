@@ -21,7 +21,7 @@ po monorepo 的智能体编排核心库（框架无关）。为 `services/chat`�
 | `supervisor` | supervisor graph 工厂（chitchat 兜底 + 垂直 agent 分发 + 条件边 Layer2） | 已实现（P1） |
 | `runner` | AgentRunner：astream 驱动，LangGraph 流 → `AgentEvent` 统一翻译（含超时/异常/interrupt） | 已实现（P1） |
 | `tools` | 两级工具注册表（全局 + Agent 命名空间） | registry 已实现（P1）；MCP 远端注入待 P3 |
-| `agents` | 垂直 Agent 插槽协议（`VerticalAgent` 契约校验） | 已实现；首个垂直 Agent（`po-agent-novel`，P5）已接入 |
+| `agents` | 垂直 Agent 插槽协议（`VerticalAgent` 契约校验） | 已实现；暂无内置垂直 Agent，宿主侧登记点见 chat 的 `_builtin_agents` |
 | `protocols.mcp` / `protocols.a2a` | MCP、A2A 协议双向适配 | 规划（P3/P4） |
 
 ## 安装（作为 chat 宿主的依赖）

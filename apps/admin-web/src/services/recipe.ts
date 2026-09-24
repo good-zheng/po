@@ -5,6 +5,7 @@ import type {
   Recipe,
   RecipeAuditRequest,
   RecipeCategory,
+  RecipeCategoryRequest,
   RecipeRequest,
   Result,
   Step,
@@ -14,6 +15,7 @@ export type {
   Ingredient,
   Recipe,
   RecipeCategory,
+  RecipeCategoryRequest,
   RecipeListParams,
   RecipeRequest,
   Step,
@@ -25,6 +27,44 @@ export type {
 export async function getRecipeCategories(options?: Record<string, unknown>) {
   return request<Result<RecipeCategory[]>>('/api/recipe-categories', {
     method: 'GET',
+    ...(options || {}),
+  });
+}
+
+/** 新建菜谱分类（管理员） */
+export async function createRecipeCategory(
+  body: RecipeCategoryRequest,
+  options?: Record<string, unknown>,
+) {
+  return request<Result<RecipeCategory>>('/api/recipe-categories', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    data: body,
+    ...(options || {}),
+  });
+}
+
+/** 更新菜谱分类（管理员） */
+export async function updateRecipeCategory(
+  id: number,
+  body: RecipeCategoryRequest,
+  options?: Record<string, unknown>,
+) {
+  return request<Result<RecipeCategory>>(`/api/recipe-categories/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    data: body,
+    ...(options || {}),
+  });
+}
+
+/** 删除菜谱分类（管理员，软删除） */
+export async function deleteRecipeCategory(
+  id: number,
+  options?: Record<string, unknown>,
+) {
+  return request<Result<string>>(`/api/recipe-categories/${id}`, {
+    method: 'DELETE',
     ...(options || {}),
   });
 }

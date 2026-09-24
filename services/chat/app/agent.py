@@ -6,8 +6,9 @@
   （与 P0 阶段的 echo 端点行为一致，保持前端/测试零感知）；
 - checkpointer：redis/sqlite 连接失败 → memory（会话记忆退化为进程内，
   服务可用性优先）；
-- 垂直 Agent：``agents=None`` 时装配内置插槽（novel），包缺失或装配
-  失败逐个跳过；``agents=[]`` 显式不装配；
+- 垂直 Agent：``agents=None`` 时装配内置插槽（当前为空，登记点见
+  :func:`_builtin_agents`），包缺失或装配失败逐个跳过；``agents=[]``
+  显式不装配；
 - 意图路由：``create_intent_router`` 按 slots 派生语料，embedding 缺失
   或装配失败时降级本地关键词路由（垂直 Agent 仍可被路由到），无命中
   再由 supervisor 兜底 chitchat。
@@ -207,20 +208,24 @@ async def _init_checkpointer(
 
 
 def _builtin_agents(settings: AgentCoreSettings) -> list[VerticalAgent]:
-    """宿主默认装配的垂直 Agent；包缺失或装配失败逐个跳过。"""
-    builtin: list[VerticalAgent] = []
-    try:
-        # 延迟导入（函数内 import）：po-agent-novel 是可选依赖，若放在模块顶部，
-        # 未安装该包的部署环境会在 import app.agent 时直接失败，连 chitchat
-        # 都无法提供。
-        from po_agent_novel import build_novel_agent
+    """宿主默认装配的垂直 Agent；包缺失或装配失败逐个跳过。
 
-        builtin.append(build_novel_agent(settings))
-    except Exception as exc:  # 缺包/依赖冲突不阻断宿主启动
-        # 刻意捕获宽泛异常：装包失败、版本冲突、Agent 内部初始化错误都应只
-        # 摘掉这一个插槽（warning 可观测），换取整个宿主仍能启动。
-        logger.warning("novel Agent 装配失败，跳过该插槽：%s", exc)
-    return builtin
+    此函数是唯一的插槽登记点：垂直 Agent 按「函数内延迟导入 + 失败仅跳过
+    本插槽」的模式在这里登记（延迟导入是为了让未安装该包的部署环境仍能
+    启动 chitchat）。装配失败只降级本插槽——烹饪助手起不来不该让整个
+    聊天服务不可用，用户仍能拿到 chitchat 兜底回复。
+    """
+    agents: list[VerticalAgent] = []
+    try:
+        from po_agent_cooking import build_cooking_agent
+    except ImportError as exc:
+        logger.info("未安装 po-agent-cooking，跳过 cooking 插槽：%s", exc)
+        return agents
+    try:
+        agents.append(build_cooking_agent(settings))
+    except Exception as exc:  # 装配异常（配置/依赖问题）不该阻断宿主启动
+        logger.warning("cooking 插槽装配失败，已跳过：%s", exc)
+    return agents
 
 
 async def build_orchestrator(

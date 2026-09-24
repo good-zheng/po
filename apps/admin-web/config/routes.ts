@@ -43,13 +43,13 @@ export default [
       },
     ],
   },
-  {
-    path: '/welcome',
-    name: 'welcome',
-    icon: 'home',
-    access: 'canAdmin',
-    component: './Welcome',
-  },
+  // {
+  //   path: '/welcome',
+  //   name: 'welcome',
+  //   icon: 'home',
+  //   access: 'canAdmin',
+  //   component: './Welcome',
+  // },
   {
     path: '/recipes',
     name: 'recipes',
@@ -69,6 +69,11 @@ export default [
         path: '/recipes/review',
         name: 'review',
         component: './recipes/review',
+      },
+      {
+        path: '/recipes/categories',
+        name: 'categories',
+        component: './recipes/categories',
       },
       {
         path: '/recipes/create',
@@ -113,40 +118,6 @@ export default [
   //   ],
   // },
   {
-    path: '/books',
-    name: 'books',
-    icon: 'read',
-    access: 'canAdmin',
-    routes: [
-      {
-        path: '/books',
-        redirect: '/books/list',
-      },
-      {
-        path: '/books/list',
-        name: 'list',
-        component: './books/list',
-      },
-      {
-        path: '/books/create',
-        name: 'create',
-        component: './books/create',
-      },
-      {
-        path: '/books/edit/:id',
-        name: 'edit',
-        hideInMenu: true,
-        component: './books/edit',
-      },
-      {
-        path: '/books/detail/:id',
-        name: 'detail',
-        hideInMenu: true,
-        component: './books/detail',
-      },
-    ],
-  },
-  {
     path: '/chatbot',
     name: 'chatbot',
     icon: 'robot',
@@ -167,198 +138,35 @@ export default [
     access: 'canAdmin',
     component: './account/settings',
   },
-  {
-    path: '/dashboard',
-    name: 'dashboard',
-    icon: 'dashboard',
-    access: 'canAdmin',
-    routes: [
-      {
-        path: '/dashboard',
-        redirect: '/dashboard/analysis',
-      },
-      {
-        name: 'analysis',
-        icon: 'barChart',
-        path: '/dashboard/analysis',
-        component: './dashboard/analysis',
-      },
-      {
-        name: 'monitor',
-        icon: 'monitor',
-        path: '/dashboard/monitor',
-        component: './dashboard/monitor',
-      },
-      {
-        name: 'workplace',
-        icon: 'desktop',
-        path: '/dashboard/workplace',
-        component: './dashboard/workplace',
-      },
-    ],
-  },
-  {
-    path: '/form',
-    icon: 'form',
-    name: 'form',
-    routes: [
-      {
-        path: '/form',
-        redirect: '/form/basic-form',
-      },
-      {
-        name: 'basic-form',
-        icon: 'form',
-        path: '/form/basic-form',
-        component: './form/basic-form',
-      },
-      {
-        name: 'step-form',
-        icon: 'orderedList',
-        path: '/form/step-form',
-        component: './form/step-form',
-      },
-      {
-        name: 'advanced-form',
-        icon: 'profile',
-        path: '/form/advanced-form',
-        component: './form/advanced-form',
-      },
-    ],
-  },
-  {
-    path: '/list',
-    icon: 'table',
-    name: 'list',
-    routes: [
-      {
-        path: '/list/search',
-        name: 'search-list',
-        component: './list/search',
-        routes: [
-          {
-            path: '/list/search',
-            redirect: '/list/search/articles',
-          },
-          {
-            name: 'articles',
-            icon: 'read',
-            path: '/list/search/articles',
-            component: './list/search/articles',
-          },
-          {
-            name: 'projects',
-            icon: 'project',
-            path: '/list/search/projects',
-            component: './list/search/projects',
-          },
-          {
-            name: 'applications',
-            icon: 'appstore',
-            path: '/list/search/applications',
-            component: './list/search/applications',
-          },
-        ],
-      },
-      {
-        path: '/list',
-        redirect: '/list/table-list',
-      },
-      {
-        name: 'table-list',
-        icon: 'table',
-        path: '/list/table-list',
-        component: './table-list',
-      },
-      {
-        name: 'basic-list',
-        icon: 'unorderedList',
-        path: '/list/basic-list',
-        component: './list/basic-list',
-      },
-      {
-        name: 'card-list',
-        icon: 'creditCard',
-        path: '/list/card-list',
-        component: './list/card-list',
-      },
-    ],
-  },
-  {
-    path: '/profile',
-    name: 'profile',
-    icon: 'profile',
-    routes: [
-      {
-        path: '/profile',
-        redirect: '/profile/basic',
-      },
-      {
-        name: 'basic',
-        icon: 'idcard',
-        path: '/profile/basic',
-        component: './profile/basic',
-      },
-      {
-        name: 'advanced',
-        icon: 'crown',
-        path: '/profile/advanced',
-        component: './profile/advanced',
-      },
-    ],
-  },
-  {
-    name: 'result',
-    icon: 'checkCircle',
-    path: '/result',
-    routes: [
-      {
-        path: '/result',
-        redirect: '/result/success',
-      },
-      {
-        name: 'success',
-        icon: 'checkCircle',
-        path: '/result/success',
-        component: './result/success',
-      },
-      {
-        name: 'fail',
-        icon: 'closeCircle',
-        path: '/result/fail',
-        component: './result/fail',
-      },
-    ],
-  },
-  {
-    name: 'exception',
-    icon: 'warning',
-    path: '/exception',
-    routes: [
-      {
-        path: '/exception',
-        redirect: '/exception/403',
-      },
-      {
-        name: '403',
-        icon: 'stop',
-        path: '/exception/403',
-        component: './exception/403',
-      },
-      {
-        name: '404',
-        icon: 'warning',
-        path: '/exception/404',
-        component: './exception/404',
-      },
-      {
-        name: '500',
-        icon: 'bug',
-        path: '/exception/500',
-        component: './exception/500',
-      },
-    ],
-  },
+  // {
+  //   name: 'exception',
+  //   icon: 'warning',
+  //   path: '/exception',
+  //   routes: [
+  //     {
+  //       path: '/exception',
+  //       redirect: '/exception/403',
+  //     },
+  //     {
+  //       name: '403',
+  //       icon: 'stop',
+  //       path: '/exception/403',
+  //       component: './exception/403',
+  //     },
+  //     {
+  //       name: '404',
+  //       icon: 'warning',
+  //       path: '/exception/404',
+  //       component: './exception/404',
+  //     },
+  //     {
+  //       name: '500',
+  //       icon: 'bug',
+  //       path: '/exception/500',
+  //       component: './exception/500',
+  //     },
+  //   ],
+  // },
   {
     path: '/',
     redirect: '/recipes/list',

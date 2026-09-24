@@ -41,8 +41,8 @@ class EventType(StrEnum):
 
     # 阶段进度（graph 节点进入/完成）
     # 注意：runner 以 subgraphs=True 驱动，垂直 Agent 内部的子图节点
-    # （如 novel 的 conceive/outline/generate）也会以 STEP 上浮，
-    # 因此 payload.node 可能是子图内部节点名，不一定是父图插槽名
+    # 也会以 STEP 上浮，因此 payload.node 可能是子图内部节点名，
+    # 不一定是父图插槽名
     STEP = "step"
 
     # control（WS 上行；此处仅作协议定义，由宿主消费）

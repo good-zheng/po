@@ -8,16 +8,14 @@ dependencies = [
     "uvicorn[standard]>=0.30",
     "pydantic-settings>=2.5",
     "po-agent-core",
-    "po-agent-novel",
 ]
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0", "httpx>=0.27"]
-# po-agent-core 与 po-agent-novel 均不在 PyPI，需先在 chat venv 里按序安装本地包：
+# po-agent-core 不在 PyPI，需先在 chat venv 里安装本地包：
 #   pip install -e "../agent-core[dev]"
-#   pip install -e "../agent-novel[dev]"
 #   pip install -e ".[dev]"
-# 仓库根命令 pnpm chat:install 会按正确顺序完成三步安装
+# 仓库根命令 pnpm chat:install 会按正确顺序完成两步安装
 
 [build-system]
 requires = ["setuptools>=68"]

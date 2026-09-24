@@ -141,20 +141,20 @@ jobs:
           cache-dependency-path: |
             services/chat/pyproject.toml
             services/agent-core/pyproject.toml
-            services/agent-novel/pyproject.toml
+            services/agent-cooking/pyproject.toml
 
-      # po-agent-core/po-agent-novel 不在 PyPI，必须先于 chat 按依赖序安装本地包
-      - name: Install agent-core, agent-novel then chat
+      # agent-core / agent-cooking 都不在 PyPI，必须先于 chat 按依赖序安装本地包
+      - name: Install agent-core, agent-cooking then chat
         run: |
           pip install -e '../agent-core[dev]'
-          pip install -e '../agent-novel[dev]'
+          pip install -e '../agent-cooking[dev]'
           pip install -e '.[dev]'
 
       - name: Test agent-core (pytest)
         run: python -m pytest ../agent-core/tests
 
-      - name: Test agent-novel (pytest)
-        run: python -m pytest ../agent-novel/tests
+      - name: Test agent-cooking (pytest)
+        run: python -m pytest ../agent-cooking/tests
 
       - name: Test chat (pytest)
         run: python -m pytest tests

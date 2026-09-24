@@ -42,7 +42,7 @@ interrupt / resume 的时序（前端必须遵守）
 因此前端必须先把这个 run 的帧消费到 ``done``，再发 ``resume`` 帧；提前发送会
 让 resume 的结果与上一轮收尾帧交错。``resume`` 帧的 ``content`` 是用户的回答，
 由服务端原样透传（``Command(resume=value)``），确认词的具体判定在垂直 Agent
-内部完成（如 po-agent-novel 的 ``_APPROVE_WORDS``），本模块不做解释。
+内部完成（由各 Agent 自己的确认词表负责），本模块不做解释。
 
 另：本文件不经 FastAPI 的校验管道，``WSInFrame`` 的校验失败需自行兜住并回
 ``error`` 帧（REST 侧同类错误由框架统一转 422）。

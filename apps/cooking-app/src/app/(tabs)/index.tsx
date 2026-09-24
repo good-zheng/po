@@ -7,6 +7,7 @@ import { RecipeFilterBar } from '@/components/recipe-filter-bar';
 import { RecipeList } from '@/components/recipe-list';
 import { fetchRecipeCategories, fetchRecipes } from '@/lib/api/recipes';
 import { categoryKeys, recipeKeys } from '@/lib/query-keys';
+import { useSearchHistory } from '@/lib/use-search-history';
 
 export default function HomeScreen() {
   const [draftKeyword, setDraftKeyword] = useState('');
@@ -14,6 +15,7 @@ export default function HomeScreen() {
   const [categoryId, setCategoryId] = useState<number | undefined>();
   const [difficulty, setDifficulty] = useState<number | undefined>();
   const [sort, setSort] = useState<RecipeSort>('recommend');
+  const { add: addHistory, clear: clearHistory, history } = useSearchHistory();
 
   const categoriesQuery = useQuery({
     queryFn: fetchRecipeCategories,
@@ -30,6 +32,12 @@ export default function HomeScreen() {
     [categoryId, difficulty, keyword, sort],
   );
 
+  const applySearch = (term: string) => {
+    setDraftKeyword(term);
+    setKeyword(term.trim());
+    addHistory(term);
+  };
+
   return (
     <View className="flex-1 bg-stone-50 dark:bg-stone-950">
       <View className="px-5 pb-1 pt-5">
@@ -45,11 +53,14 @@ export default function HomeScreen() {
           categories={categoriesQuery.data ?? []}
           categoryId={categoryId}
           difficulty={difficulty}
+          history={history}
           keyword={draftKeyword}
           onCategoryChange={setCategoryId}
+          onClearHistory={clearHistory}
           onDifficultyChange={setDifficulty}
           onKeywordChange={setDraftKeyword}
-          onSearch={() => setKeyword(draftKeyword.trim())}
+          onSearch={() => applySearch(draftKeyword)}
+          onSelectHistory={applySearch}
           onSortChange={setSort}
           sort={sort}
         />

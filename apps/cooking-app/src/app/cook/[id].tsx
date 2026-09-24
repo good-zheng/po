@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useQuery } from '@tanstack/react-query';
 import { useKeepAwake } from 'expo-keep-awake';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import * as Speech from 'expo-speech';
 import { useEffect, useState } from 'react';
 import {
   Pressable,
@@ -96,6 +97,24 @@ export default function CookModeScreen() {
   }, [timer?.running]);
 
   const timeUp = Boolean(timer && timer.remaining === 0);
+
+  // 换步骤时播报当前做法；退出做菜页（含完成、取消）即停止朗读
+  useEffect(() => {
+    if (!step) {
+      return;
+    }
+
+    Speech.stop();
+    Speech.speak(`第 ${step.stepNumber} 步，${step.content}`, {
+      language: 'zh-CN',
+    });
+  }, [step]);
+
+  useEffect(() => {
+    return () => {
+      Speech.stop();
+    };
+  }, []);
 
   // 计时归零就是这一步的停顿点：响铃提醒，用户决定要不要进下一步
   useEffect(() => {

@@ -24,8 +24,8 @@ from po_agent_core.supervisor.state import CoreState
 
 ROUTES = [
     Route(
-        name="novel_write",
-        utterances=["写一章小说", "续写剧情", "创作一个武侠故事", "帮我写大纲"],
+        name="poem_write",
+        utterances=["写一首诗", "续写诗句", "创作一首唐诗", "帮我写首现代诗"],
     ),
     Route(name="chitchat", utterances=["你好", "讲个笑话", "今天天气怎么样", "无聊了"]),
 ]
@@ -53,8 +53,8 @@ def make_router(threshold: float) -> IntentRouter:
 
 def test_route_matches_domain_intent() -> None:
     router = make_router(threshold=0.3)
-    decision = router.route("帮我写一章关于江湖恩怨的小说")
-    assert decision.intent == "novel_write"
+    decision = router.route("帮我写一首关于江南春色的诗")
+    assert decision.intent == "poem_write"
     assert decision.source == "hybrid"
     assert decision.score >= 0.3
 
@@ -67,13 +67,13 @@ def test_route_matches_chitchat() -> None:
 
 def test_route_below_threshold_falls_back_to_none() -> None:
     router = make_router(threshold=99.0)
-    decision = router.route("帮我写一章关于江湖恩怨的小说")
+    decision = router.route("帮我写一首关于江南春色的诗")
     assert decision.intent is None
     assert decision.source == "hybrid"
 
 
 def test_route_names_property() -> None:
-    assert make_router(threshold=0.3).route_names == ["novel_write", "chitchat"]
+    assert make_router(threshold=0.3).route_names == ["poem_write", "chitchat"]
 
 
 def test_empty_routes_rejected() -> None:
@@ -83,7 +83,7 @@ def test_empty_routes_rejected() -> None:
 
 def test_fallback_router_always_returns_none() -> None:
     router = FallbackIntentRouter()
-    decision = router.route("写一章小说")
+    decision = router.route("写一首诗")
     assert decision == RouteDecision(intent=None, score=0.0, source="fallback")
     assert router.route_names == []
 
@@ -117,14 +117,14 @@ def test_create_intent_router_degrades_without_embedding_config() -> None:
     router = create_intent_router(no_key_settings(), ROUTES)
     assert isinstance(router, KeywordIntentRouter)
     # 降级后垂直 Agent 仍可被路由到，而非整体退化为纯聊天
-    assert router.route("帮我写一章关于江湖恩怨的小说").intent == "novel_write"
+    assert router.route("帮我写一首关于江南春色的诗").intent == "poem_write"
 
 
 def test_keyword_router_routes_by_bigram_coverage() -> None:
     router = KeywordIntentRouter(ROUTES)
-    assert router.route_names == ["novel_write", "chitchat"]
-    decision = router.route("帮我写一章关于江湖恩怨的小说")
-    assert decision.intent == "novel_write"
+    assert router.route_names == ["poem_write", "chitchat"]
+    decision = router.route("帮我写一首关于江南春色的诗")
+    assert decision.intent == "poem_write"
     assert decision.source == "keyword"
     assert decision.score >= KEYWORD_THRESHOLD
     # 无交集的闲聊不命中 → supervisor 兜底 chitchat
@@ -133,7 +133,7 @@ def test_keyword_router_routes_by_bigram_coverage() -> None:
 
 def test_keyword_router_threshold_controls_no_match() -> None:
     router = KeywordIntentRouter(ROUTES, threshold=99.0)
-    assert router.route("帮我写一章关于江湖恩怨的小说").intent is None
+    assert router.route("帮我写一首关于江南春色的诗").intent is None
 
 
 def test_keyword_router_rejects_empty_routes() -> None:
@@ -147,14 +147,14 @@ def test_create_intent_router_with_injected_encoder() -> None:
         settings, ROUTES, encoder=BagOfCharsEncoder(), threshold=0.3
     )
     assert isinstance(router, IntentRouter)
-    assert router.route("帮我写一章关于江湖恩怨的小说").intent == "novel_write"
+    assert router.route("帮我写一首关于江南春色的诗").intent == "poem_write"
 
 
 def test_create_intent_router_uses_settings_threshold() -> None:
     settings = AgentCoreSettings(_env_file=None, router_threshold=99.0)
     router = create_intent_router(settings, ROUTES, encoder=BagOfCharsEncoder())
     assert isinstance(router, IntentRouter)
-    assert router.route("帮我写一章关于江湖恩怨的小说").intent is None
+    assert router.route("帮我写一首关于江南春色的诗").intent is None
 
 
 # ---------- 从垂直 Agent 插槽派生路由 ----------
@@ -175,17 +175,17 @@ def _slot_agent(name: str, utterances: tuple[str, ...]) -> VerticalAgent:
 
 def test_routes_from_agents_builds_route_per_agent() -> None:
     agents = [
-        _slot_agent("novel", ("写一部小说", "帮我构思大纲")),
+        _slot_agent("verse", ("写一首词", "帮我填词")),
         _slot_agent("poem", ("写一首诗",)),
     ]
     routes = routes_from_agents(agents)
-    assert [r.name for r in routes] == ["novel", "poem"]
-    assert routes[0].utterances == ["写一部小说", "帮我构思大纲"]
+    assert [r.name for r in routes] == ["verse", "poem"]
+    assert routes[0].utterances == ["写一首词", "帮我填词"]
 
 
 def test_routes_from_agents_skips_empty_utterances() -> None:
-    routes = routes_from_agents([_slot_agent("novel", ("写一部小说",)), _slot_agent("bare", ())])
-    assert [r.name for r in routes] == ["novel"]
+    routes = routes_from_agents([_slot_agent("verse", ("写一首词",)), _slot_agent("bare", ())])
+    assert [r.name for r in routes] == ["verse"]
 
 
 def test_create_intent_router_empty_routes_degrades() -> None:

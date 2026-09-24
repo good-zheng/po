@@ -1,6 +1,6 @@
 # po
 
-菜谱 / 用户 / 小说业务的全栈 Monorepo：pnpm workspace 管理前端与共享类型，Maven reactor 管理 Spring Boot 后端，Python FastAPI 提供流式聊天，Docker Compose + Nginx 网关统一部署。
+菜谱 / 用户业务的全栈 Monorepo：pnpm workspace 管理前端与共享类型，Maven reactor 管理 Spring Boot 后端，Python FastAPI 提供流式聊天，Docker Compose + Nginx 网关统一部署。
 
 | 层 | 技术栈 | 位置 |
 | --- | --- | --- |
@@ -9,7 +9,8 @@
 | 共享类型 | TypeScript 包 `@po/types` | `packages/types` |
 | 业务 API | Java 17 + Spring Boot 4 + MyBatis-Plus + MySQL + Redis + JWT | `services/api` |
 | 聊天服务 | Python 3.11 + FastAPI + WebSocket + LangGraph | `services/chat` |
-| Agent 编排 | 纯库 `po-agent-core`（supervisor / 事件流 / semantic-router 意图路由 / 记忆）+ 垂直 Agent 插槽 `po-agent-novel` | `services/agent-core`、`services/agent-novel` |
+| Agent 编排 | 纯库 `po-agent-core`（supervisor / 事件流 / semantic-router 意图路由 / 记忆，垂直 Agent 经插槽接入） | `services/agent-core` |
+| 烹饪助手 Agent | 纯库 `po-agent-cooking`（菜谱检索 / 详情 / 分类三个工具 + ReAct 子图，注册进 chat 宿主） | `services/agent-cooking` |
 | 网关与编排 | Nginx 1.27 + Docker Compose | `infra/nginx`、`docker-compose.yml` |
 
 ## 架构总览
@@ -22,14 +23,13 @@ services/api          Maven 多模块单体
   ├─ shared           公共 DTO / Result / 异常
   ├─ identity         用户、认证、JWT
   ├─ recipe           菜谱与分类
-  ├─ novel            小说
   └─ api-bootstrap    启动模块（application.yaml，context-path=/api）
 services/agent-core    编排核心纯库（supervisor / 事件流翻译 / 意图路由 / 会话记忆，
                       垂直 Agent 经插槽接入，不含业务领域知识）
-services/agent-novel   小说创作垂直 Agent（构思→大纲→逐章生成+反思循环→归档确认，
-                      数据层走 NovelStore Protocol，当前为 mock 实现）
+services/agent-cooking 烹饪助手垂直 Agent（菜谱检索 / 详情 / 分类三个工具 + ReAct 子图，
+                      按 cooking 角色取模型，模型或菜谱后端不可用时逐级降级）
 services/chat          FastAPI 宿主（/api/health、/api/items、/ws/chat 流式编排，
-                      装配 agent-core + agent-novel，LLM 缺配置时离线降级）
+                      装配 agent-core 与烹饪插槽，LLM 缺配置时离线降级）
 infra/nginx/nginx.conf 网关分流规则
 ```
 
@@ -39,7 +39,7 @@ infra/nginx/nginx.conf 网关分流规则
 | --- | --- | --- |
 | `/ws/chat` | chat:5090 | WebSocket 流式聊天 |
 | `/api/health`、`/api/items/**` | chat:5090 | FastAPI 接口 |
-| `/api/**`（其余） | api:8080 | Spring Boot（含 auth/users/recipes/books/actuator，前缀由 `server.servlet.context-path=/api` 消费） |
+| `/api/**`（其余） | api:8080 | Spring Boot（含 auth/users/recipes/actuator，前缀由 `server.servlet.context-path=/api` 消费） |
 | `/` | Nginx 静态 | Umi 产物，history 路由回退 `index.html`，带 hash 资源长缓存 30d |
 
 ## 生产环境
@@ -51,7 +51,7 @@ infra/nginx/nginx.conf 网关分流规则
 | `mysql` | `mysql:8.4` | 仅内网 3306 | 命名卷 `mysql_data` |
 | `redis` | `redis:7-alpine` | 仅内网 6379 | 无（缓存用途） |
 | `api` | `services/api/Dockerfile` | 仅内网 8080 | 命名卷 `uploads_data` → `/app/uploads` |
-| `chat` | `services/chat/Dockerfile` | 仅内网 5090 | 无 |
+| `chat` | `services/chat/Dockerfile`（构建上下文为仓库根，随包本地 agent-core / agent-cooking） | 仅内网 5090 | 无 |
 | `web` | `apps/admin-web/Dockerfile`（构建上下文为仓库根） | **对外 `${WEB_PORT:-8000}:80`** | 只读挂载 `infra/nginx/nginx.conf` |
 
 只有 `web` 暴露宿主机端口，其余服务仅在 compose 网络内互通；`api` 与 `chat` 都带健康检查，`web` 延迟到二者 healthy 后再启动。
@@ -73,6 +73,8 @@ cp .env.example .env
 | `APP_SEED_DEFAULT_ADMIN` | 否 | 默认 `false`；置 `true` 且库中无超管时创建 `superadmin/123456`，登录后应立即改密 |
 | `WEB_PORT` | 否 | 网关对外端口，默认 `8000` |
 | `PY_SERVER_CORS_ORIGINS` | 否 | 聊天服务 CORS 白名单 |
+| `AGENT_CORE_LLM_PROVIDER` / `AGENT_CORE_LLM_MODEL` / `AGENT_CORE_LLM_API_KEY` | 否 | 聊天与烹饪助手的模型（OpenAI 兼容协议）；不配或密钥无效时聊天服务降级为离线模式，接口仍可用。分角色覆盖（cooking/chat/write/judge）见 `.env.example` |
+| `AGENT_CORE_EMBEDDING_*` | 否 | 意图路由的 embedding；不配则降级为本地关键词路由，垂直 Agent 仍可被命中 |
 | `UMI_APP_API_BASE_URL` | 否 | 仅本地开发使用：前端 dev server 的 `/api` 代理目标 |
 
 生成强 JWT 密钥：
@@ -136,7 +138,7 @@ Windows 注意事项：
 
 ### 1. Spring Boot API → http://127.0.0.1:8080/api
 
-所有命令均在仓库根目录执行。`services/api` 是 Maven 多模块 reactor，父 POM 没有 main 类；`api:start` 在 `services/api` 目录内执行 `./mvnw -pl api-bootstrap -am spring-boot:run`，会在同一次 reactor 构建中编译 `shared`、`identity`、`recipe`、`novel` 并只对 `api-bootstrap` 启动应用（父 POM 与其余模块通过 `spring-boot.run.skip` 跳过 boot goal），因此改完全部 Java 模块后直接 `api:start` 即可，无需先 `api:install`。
+所有命令均在仓库根目录执行。`services/api` 是 Maven 多模块 reactor，父 POM 没有 main 类；`api:start` 在 `services/api` 目录内执行 `./mvnw -pl api-bootstrap -am spring-boot:run`，会在同一次 reactor 构建中编译 `shared`、`identity`、`recipe` 并只对 `api-bootstrap` 启动应用（父 POM 与其余模块通过 `spring-boot.run.skip` 跳过 boot goal），因此改完全部 Java 模块后直接 `api:start` 即可，无需先 `api:install`。
 
 在仓库根目录执行即可，无需预先配置 JDK 环境变量（启动器会自动定位 JDK 17）：
 
@@ -153,7 +155,7 @@ pnpm api:start
 先在 `services/chat` 创建 `.venv`（`python -m venv .venv`），再从仓库根目录安装本地包并启动：
 
 ```bash
-pnpm chat:install    # 按依赖序安装 agent-core → agent-novel → chat（可编辑模式）
+pnpm chat:install    # 按依赖序安装 agent-core → agent-cooking → chat（可编辑模式）
 pnpm chat:start
 ```
 
@@ -168,7 +170,7 @@ pnpm admin:dev
 
 ### 4. Expo 做菜 App
 
-先按上文启动 Spring Boot API，然后创建移动端本地配置：
+先按上文启动 Spring Boot API 与聊天服务（`pnpm chat:start`），然后创建移动端本地配置：
 
 ```bash
 cp apps/cooking-app/.env.example apps/cooking-app/.env
@@ -176,6 +178,8 @@ pnpm mobile:start
 ```
 
 浏览器版固定走同源 `/api`，由 Expo dev server 代理到 `EXPO_PUBLIC_API_URL` 的主机（默认 8080），不会跨域；iOS 模拟器可保留 `EXPO_PUBLIC_API_URL=http://localhost:8080/api`。Android 模拟器应改为 `http://10.0.2.2:8080/api`，或执行 `adb reverse tcp:8080 tcp:8080` 后继续使用 `localhost`。真机 Expo Go 则改为开发机在同一局域网中可访问的地址，再扫描 Expo 输出的二维码。
+
+「AI 指导」标签页连 `services/chat` 的 `/ws/chat` 流式问答：地址默认按 `EXPO_PUBLIC_API_URL` 的主机换到 5090 端口推导（Metro 只代理 HTTP，不代理 WebSocket 升级），网关 / 隧道场景可用 `EXPO_PUBLIC_CHAT_URL` 显式覆盖；聊天服务连不上时自动回退本地菜谱规则，界面不会报错。
 
 移动端是 pnpm workspace 包，统一从根目录执行命令：
 
@@ -200,9 +204,10 @@ pnpm mobile:web       # 浏览器
 | `pnpm api:install` | 安装 API 依赖模块到本地 Maven 仓库（一般无需执行，`api:start` 会在 reactor 内构建） |
 | `pnpm api:start` | 在 reactor 内构建依赖模块并启动 `api-bootstrap`（等价于 `services/api` 下 `./mvnw -pl api-bootstrap -am spring-boot:run`） |
 | `pnpm api:verify` | Java 全模块 `mvn verify` |
-| `pnpm chat:install` | 按依赖序安装 agent-core → agent-novel → chat 到 `services/chat/.venv` |
+| `pnpm chat:install` | 按依赖序安装 agent-core → agent-cooking → chat 到 `services/chat/.venv` |
 | `pnpm chat:start` / `chat:test` | 启动 FastAPI 聊天服务或运行 pytest |
-| `pnpm agentcore:test` / `agentnovel:test` | 运行编排核心库 / 小说垂直 Agent 的 pytest（复用 chat 的 `.venv`） |
+| `pnpm agentcore:test` | 运行编排核心库的 pytest（复用 chat 的 `.venv`） |
+| `pnpm agentcooking:test` | 运行烹饪垂直 Agent 的 pytest（复用 chat 的 `.venv`） |
 | `pnpm mobile:start` | 启动 Expo 做菜 App 开发服务器 |
 | `pnpm mobile:android` / `mobile:ios` / `mobile:web` | 启动 Android、iOS 或 Web 开发目标 |
 | `pnpm mobile:apk` | 本地编译 Android debug APK（可加 `x86_64` 等架构参数只编单一 ABI） |
@@ -218,7 +223,7 @@ pnpm mobile:web       # 浏览器
 - **frontend**：pnpm 10.28.1 + Node 22 → 冻结锁文件安装 → 构建 `@po/types` → lint → vitest → 构建产物
 - **mobile**：pnpm 10.28.1 + Node 22 → 冻结锁文件安装 → Expo App 的 Biome、TypeScript 与 jest-expo 检查
 - **api**：Temurin 17 + Maven 缓存，以 MySQL 8.4 / Redis 7 服务容器 + 环境变量注入（等价 `application-local.yaml`）→ `mvn verify`
-- **chat**：Python 3.11 → 按依赖序安装本地包 `agent-core → agent-novel → chat` → 依次运行 agent-core、agent-novel、chat 三套 pytest
+- **chat**：Python 3.11 → 按依赖序安装本地包 `agent-core → agent-cooking → chat` → 依次运行 agent-core、agent-cooking、chat 三套 pytest
 
 ## 提交规范
 

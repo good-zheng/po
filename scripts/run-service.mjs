@@ -33,24 +33,51 @@ if (service === 'api') {
       env: { ...process.env, JAVA_HOME: resolveJdkHome() },
     },
   ];
-} else if (service === 'chat' || service === 'agentcore' || service === 'agentnovel') {
-  // agent-core/agent-novel 是库，无独立 venv，复用 chat 的 .venv 跑测试
+} else if (service === 'chat' || service === 'agentcore' || service === 'agentcooking') {
+  // agent-core / agent-cooking 都是库包，无独立 venv，复用 chat 的 .venv 跑测试
   const chatDir = resolve(repositoryRoot, 'services', 'chat');
-  const goals =
-    service === 'chat'
-      ? {
-          // chat 依赖两个本地包，须先装库再装宿主
-          install: [
-            ['-m', 'pip', 'install', '-e', '../agent-core[dev]'],
-            ['-m', 'pip', 'install', '-e', '../agent-novel[dev]'],
-            ['-m', 'pip', 'install', '-e', '.[dev]'],
+  const serviceLayout = {
+    chat: {
+      cwd: chatDir,
+      goals: {
+        // chat 依赖本地库包，须先装库再装宿主；顺序即依赖链
+        install: [
+          ['-m', 'pip', 'install', '-e', '../agent-core[dev]'],
+          ['-m', 'pip', 'install', '-e', '../agent-cooking[dev]'],
+          ['-m', 'pip', 'install', '-e', '.[dev]'],
+        ],
+        start: [
+          [
+            '-m',
+            'uvicorn',
+            'app.main:app',
+            '--port',
+            '5090',
+            '--reload',
+            // --reload 默认只盯 CWD（services/chat），而 agent-core / agent-cooking
+            // 是 editable 安装的本地库包，改它们的 src 不重启就一直跑旧代码；
+            // 指定 --reload-dir 后 CWD 不再自动纳入，所以三个目录都要列全
+            '--reload-dir',
+            '.',
+            '--reload-dir',
+            '../agent-core/src',
+            '--reload-dir',
+            '../agent-cooking/src',
           ],
-          start: [['-m', 'uvicorn', 'app.main:app', '--port', '5090', '--reload']],
-          test: [['-m', 'pytest', 'tests']],
-        }
-      : {
-          test: [['-m', 'pytest', 'tests']],
-        };
+        ],
+        test: [['-m', 'pytest', 'tests']],
+      },
+    },
+    agentcore: {
+      cwd: resolve(repositoryRoot, 'services', 'agent-core'),
+      goals: { test: [['-m', 'pytest', 'tests']] },
+    },
+    agentcooking: {
+      cwd: resolve(repositoryRoot, 'services', 'agent-cooking'),
+      goals: { test: [['-m', 'pytest', 'tests']] },
+    },
+  };
+  const { cwd, goals } = serviceLayout[service];
 
   if (!(action in goals)) {
     throw new Error(`Unsupported ${service} command: ${action}`);
@@ -64,10 +91,6 @@ if (service === 'api') {
       `Python venv not found: ${command}. Create it first: cd services/chat && python -m venv .venv`,
     );
   }
-  const cwd =
-    service === 'chat'
-      ? chatDir
-      : resolve(repositoryRoot, 'services', service === 'agentcore' ? 'agent-core' : 'agent-novel');
   commandList = goals[action].map((args) => ({
     command,
     args,

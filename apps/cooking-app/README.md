@@ -10,6 +10,7 @@
 - 个人中心展示昵称、角色、邮箱与头像，支持退出登录
 - 首页菜谱分页列表、下拉刷新与上拉加载
 - 做菜模式：按步骤计时，计时结束播放上菜铃提示音并震动，提示进入下一步
+- 「AI 指导」标签页：向聊天服务发起流式问答，回复中的菜谱以卡片呈现、可点进详情页；服务不可用时静默回退本地规则
 - 分类、收藏、个人中心标签页骨架
 - 浅色与深色模式
 - Axios API 客户端、统一 `Result` 响应解包与 401 处理
@@ -35,9 +36,12 @@ cp apps/cooking-app/.env.example apps/cooking-app/.env
 
 ```env
 EXPO_PUBLIC_API_URL=http://localhost:8080/api
+# 可选：显式指定 AI 聊天的 WebSocket 地址；
+# 不设置时按上面的主机换到 5090 端口推导（见下文「AI 指导」）
+# EXPO_PUBLIC_CHAT_URL=ws://localhost:5090/ws/chat
 ```
 
-先按根目录 README 启动 Spring Boot API，再启动 Expo：
+先按根目录 README 启动 Spring Boot API 与聊天服务（`pnpm chat:start`，AI 指导标签页需要），再启动 Expo：
 
 ```bash
 pnpm mobile:start
@@ -46,6 +50,15 @@ pnpm mobile:start
 Web 版固定请求同源 `/api`，由 Metro 开发服务器代理；iOS 模拟器可保留 `localhost`。Android 模拟器需将 `.env` 改为 `http://10.0.2.2:8080/api`，或执行 `adb reverse tcp:8080 tcp:8080` 后继续使用 `localhost`。真机使用 Expo Go 时，改为同一局域网内开发机可访问的地址，例如 `http://<开发机局域网 IPv4>:8080/api`，随后扫描 Expo 输出的二维码。
 
 浏览器里调试时，接口一律以同源的 `/api` 发出，由 Metro dev server 代理到后端（目标取自 `EXPO_PUBLIC_API_URL` 的主机，未设置时用 `http://localhost:8080`），因此不会跨域，后端也无需配置 CORS。后端若走 Docker 网关，把 `EXPO_PUBLIC_API_URL` 设为 `http://localhost:8000/api`，代理目标会跟着变。
+
+### AI 指导（聊天服务）
+
+「AI 指导」标签页对应 `services/chat` 的 `/ws/chat`：一轮对话一条 WebSocket，回复文本流式渲染，Agent 检索到的菜谱以卡片呈现、点按进入详情页，服务端按会话 id 保留多轮上下文，点「新对话」清空。
+
+- 地址推导：优先取 `EXPO_PUBLIC_CHAT_URL`；未设置时按 `EXPO_PUBLIC_API_URL` 的主机换到 5090 端口（开发期 Metro 只代理 HTTP `/api`，不代理 WebSocket 升级，所以直连 chat 服务）；生产 Web 与网关同源，自动用 `wss://<站点域名>/ws/chat`
+- 依赖链：chat 服务取菜谱要走 Spring Boot API、生成回复要走 LLM，所以先把 `pnpm api:start` 与 `pnpm chat:start` 都启动起来；后端或模型未就绪时回复里会给出可读提示，而不是白屏
+- 降级：chat 服务连不上、超时或本轮无回复时，界面自动改用本地菜谱规则问答（`src/lib/ai/chat.ts`），断网也能查菜、给推荐，只是回答不来自模型
+- 无密钥也能跑：模型密钥缺失时 chat 服务以离线模式启动（回复带「离线模式」标记），适合只调界面时使用
 
 ### 开发运行目标
 
@@ -174,6 +187,7 @@ src/
 ├─ app/            Expo Router 页面与标签页布局（login/register + (tabs)）
 ├─ components/     可复用的界面组件与表单控件
 ├─ lib/api/        Axios 客户端、菜谱接口与登录注册接口
+├─ lib/ai/         聊天 WebSocket 客户端与本地规则问答（服务不可用时的降级路径）
 ├─ lib/auth/       会话存储、AuthProvider 与路由守卫
 ├─ lib/cooking/    做菜会话状态与计时结束的提示音
 ├─ lib/            Query Key 与 NativeWind 适配

@@ -19,7 +19,7 @@ def lookup(keyword: str) -> str:
 
 @tool("lookup")
 def fast_lookup(keyword: str) -> str:
-    """快速查询资料（novel 命名空间覆盖版）。"""
+    """快速查询资料（verse 命名空间覆盖版）。"""
     return f"快:{keyword}"
 
 
@@ -34,12 +34,12 @@ def test_global_register_and_get() -> None:
 def test_agent_namespace_overrides_global_in_tools_for() -> None:
     registry = ToolRegistry()
     registry.register(lookup)
-    registry.register(fast_lookup, agent="novel")  # novel 命名空间同名覆盖
+    registry.register(fast_lookup, agent="verse")  # verse 命名空间同名覆盖
 
     # 同名以 Agent 命名空间优先；全局视角不受影响
-    assert registry.get("lookup", agent="novel") is fast_lookup
+    assert registry.get("lookup", agent="verse") is fast_lookup
     assert registry.get("lookup") is lookup
-    assert registry.list_names("novel") == ["lookup"]
+    assert registry.list_names("verse") == ["lookup"]
 
     # 其他 Agent 只见全局
     assert registry.list_names("other") == ["lookup"]
@@ -64,9 +64,9 @@ def test_unregistered_lookup_raises() -> None:
 def test_unregister_scoped_to_namespace() -> None:
     registry = ToolRegistry()
     registry.register(lookup)
-    registry.register(fast_lookup, agent="novel")
-    registry.unregister("lookup", agent="novel")
+    registry.register(fast_lookup, agent="verse")
+    registry.unregister("lookup", agent="verse")
 
-    # novel 命名空间已清空：get 回退全局，全局注册不受影响
-    assert registry.get("lookup", agent="novel") is lookup
-    assert registry.list_names("novel") == ["lookup"]
+    # verse 命名空间已清空：get 回退全局，全局注册不受影响
+    assert registry.get("lookup", agent="verse") is lookup
+    assert registry.list_names("verse") == ["lookup"]

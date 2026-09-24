@@ -121,6 +121,118 @@ async def test_tool_call_events_from_updates() -> None:
     assert result.payload["status"] == "success"
 
 
+async def test_subgraph_messages_translate_once() -> None:
+    """子图挂载为父图节点时，同一条消息会在两级 updates 各上浮一次。
+
+    若不按消息去重（见 runner 模块 docstring），前端会把工具卡片与回复
+    文本各渲染两遍——垂直 Agent 子图接入聊天框后这是用户可见缺陷，
+    故固化为回归用例。
+    """
+
+    async def call_tool(state: ChatState) -> dict:
+        return {
+            "messages": [
+                AIMessage(
+                    content="",
+                    tool_calls=[
+                        {"name": "search", "args": {"q": "番茄"}, "id": "call-sub"}
+                    ],
+                )
+            ]
+        }
+
+    async def tool_result(state: ChatState) -> dict:
+        return {
+            "messages": [
+                ToolMessage(content="结果", name="search", tool_call_id="call-sub")
+            ]
+        }
+
+    async def reply(state: ChatState) -> dict:
+        return {"messages": [AIMessage(content="好的")]}
+
+    inner = compile_graph(("call", call_tool), ("tool", tool_result), ("reply", reply))
+    outer = compile_graph(("delegate", inner))
+
+    events = await collect(AgentRunner(), outer, {"messages": [HumanMessage(content="查")]})
+
+    assert types_of(events).count(EventType.TOOL_CALL_START) == 1
+    assert types_of(events).count(EventType.TOOL_CALL_END) == 1
+    assert types_of(events).count(EventType.TOOL_CALL_RESULT) == 1
+    assert [
+        event.content
+        for event in events
+        if event.type is EventType.TEXT_MESSAGE_CONTENT
+    ] == ["好的"]
+
+
+async def test_resumed_thread_does_not_replay_history() -> None:
+    """续接同一线程的第二轮只下发本轮新增内容。
+
+    父级委派节点的 delta 是「子图此刻的全部消息」而非本轮增量，续接会话时
+    会把上一轮的回复与工具卡片一并带回；不拦截的话用户在聊天框里每多问一
+    句就重看一遍历史（见 runner 模块 docstring）。Runner 开跑前读线程既有
+    状态并登记为「前端已有」，故固化为回归用例。
+    """
+    turn = {"n": 0}
+
+    async def call_tool(state: ChatState) -> dict:
+        turn["n"] += 1
+        return {
+            "messages": [
+                AIMessage(
+                    content="",
+                    tool_calls=[
+                        {
+                            "name": "search",
+                            "args": {"q": "番茄"},
+                            "id": f"call-{turn['n']}",
+                        }
+                    ],
+                )
+            ]
+        }
+
+    async def tool_result(state: ChatState) -> dict:
+        return {
+            "messages": [
+                ToolMessage(
+                    content=f"结果{turn['n']}",
+                    name="search",
+                    tool_call_id=f"call-{turn['n']}",
+                )
+            ]
+        }
+
+    async def reply(state: ChatState) -> dict:
+        return {"messages": [AIMessage(content=f"第{turn['n']}轮答复")]}
+
+    inner = compile_graph(("call", call_tool), ("tool", tool_result), ("reply", reply))
+    outer = compile_graph(("delegate", inner), checkpointer=InMemorySaver())
+    runner = AgentRunner()
+    config = {"configurable": {"thread_id": "t-resume"}}
+
+    first = await collect(
+        runner, outer, {"messages": [HumanMessage(content="第一问")]}, config=config
+    )
+    assert [
+        e.content for e in first if e.type is EventType.TEXT_MESSAGE_CONTENT
+    ] == ["第1轮答复"]
+
+    second = await collect(
+        runner, outer, {"messages": [HumanMessage(content="第二问")]}, config=config
+    )
+
+    assert [
+        e.content for e in second if e.type is EventType.TEXT_MESSAGE_CONTENT
+    ] == ["第2轮答复"]
+    assert types_of(second).count(EventType.TOOL_CALL_START) == 1
+    assert types_of(second).count(EventType.TOOL_CALL_END) == 1
+    assert [
+        e.content for e in second if e.type is EventType.TOOL_CALL_RESULT
+    ] == ["结果2"]
+
+
 async def test_tool_call_args_from_streaming_chunks() -> None:
     """流式模型输出 tool_call_chunks 时，args 增量翻译为 TOOL_CALL_ARGS。
 

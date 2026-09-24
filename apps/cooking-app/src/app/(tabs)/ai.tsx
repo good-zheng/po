@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import type { Recipe } from '@po/types';
+import type { RecipeBrief } from '@po/types';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -16,6 +16,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { RecipeChatCard } from '@/components/recipe-chat-card';
+import { resetAgentConversation, streamAgentReply } from '@/lib/ai/agent-chat';
 import { askAssistant } from '@/lib/ai/chat';
 import { fetchRecipeCategories } from '@/lib/api/recipes';
 import { type CookingSession, useCooking } from '@/lib/cooking/cooking-context';
@@ -26,14 +27,17 @@ type ChatMessage = {
   id: number;
   role: 'user' | 'assistant';
   text: string;
-  recipes?: Recipe[];
+  recipes?: RecipeBrief[];
   suggestions?: string[];
 };
+
+/** 助手回复后固定给出的三个后续说法，点击即当作用户输入发出去 */
+const SUGGESTIONS = ['今晚吃什么', '推荐几道快手菜', '剁椒鱼头怎么做'];
 
 const welcomeMessage = (): ChatMessage => ({
   id: nextMessageId(),
   role: 'assistant',
-  suggestions: ['今晚吃什么', '推荐几道快手菜', '剁椒鱼头怎么做'],
+  suggestions: SUGGESTIONS,
   text: '我是你的做菜助手。报个菜名，我给你讲清用料和步骤；也可以让我按分类挑几道。想动手做时点「开始做菜」，我一步步带着你，该等的步骤帮你计时。',
 });
 
@@ -48,6 +52,7 @@ function nextMessageId() {
 export default function AiGuideScreen() {
   const insets = useSafeAreaInsets();
   const listRef = useRef<FlatList<ChatMessage>>(null);
+  const runRef = useRef<AbortController | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>(() => [
     welcomeMessage(),
   ]);
@@ -58,6 +63,14 @@ export default function AiGuideScreen() {
     queryKey: categoryKeys.list(),
   });
   const { cancelCooking, clearNote, note, session } = useCooking();
+
+  useEffect(
+    () => () => {
+      // 离开页面时中断在跑的 WS 轮次，否则连接会挂到超时（90 秒）才释放
+      runRef.current?.abort();
+    },
+    [],
+  );
 
   useEffect(() => {
     if (!note) {
@@ -80,6 +93,15 @@ export default function AiGuideScreen() {
     ]);
   }, [clearNote, note]);
 
+  const patchMessage = useCallback(
+    (id: number, patch: (message: ChatMessage) => ChatMessage) => {
+      setMessages((prev) =>
+        prev.map((message) => (message.id === id ? patch(message) : message)),
+      );
+    },
+    [],
+  );
+
   const send = useCallback(
     async (raw: string) => {
       const text = raw.trim();
@@ -88,32 +110,67 @@ export default function AiGuideScreen() {
       }
 
       setInput('');
+      // 先占位再发请求：助手气泡就地由「正在翻菜谱」变成流式文本，
+      // 用户看到的是一句话在长出来，而不是先转圈再整段跳出。
+      const replyId = nextMessageId();
       setMessages((prev) => [
         ...prev,
         { id: nextMessageId(), role: 'user', text },
+        { id: replyId, role: 'assistant', suggestions: SUGGESTIONS, text: '' },
       ]);
       setPending(true);
 
+      const controller = new AbortController();
+      runRef.current = controller;
+
       try {
+        const result = await streamAgentReply(text, {
+          onRecipes: (recipes) =>
+            patchMessage(replyId, (message) => ({ ...message, recipes })),
+          onText: (streamed) =>
+            patchMessage(replyId, (message) => ({
+              ...message,
+              text: streamed,
+            })),
+          signal: controller.signal,
+        });
+
+        if (result.answered) {
+          if (result.error) {
+            patchMessage(replyId, (message) => ({
+              ...message,
+              text: `${message.text}\n\n（${result.error}）`,
+            }));
+          }
+          return;
+        }
+
+        if (controller.signal.aborted) {
+          return;
+        }
+
+        // Agent 一个字都没给（服务没起、离线、模型不可用）：退回本地菜谱规则，
+        // 保证没有模型可用时聊天框依然能查菜、给推荐。
         const reply = await askAssistant(text, categories ?? []);
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: nextMessageId(),
-            recipes: reply.recipes,
-            role: 'assistant',
-            suggestions: reply.suggestions,
-            text: reply.text,
-          },
-        ]);
+        patchMessage(replyId, (message) => ({
+          ...message,
+          recipes: reply.recipes,
+          suggestions: reply.suggestions,
+          text: reply.text,
+        }));
       } finally {
+        if (runRef.current === controller) {
+          runRef.current = null;
+        }
         setPending(false);
       }
     },
-    [categories, pending],
+    [categories, patchMessage, pending],
   );
 
   const resetChat = () => {
+    runRef.current?.abort();
+    resetAgentConversation();
     setMessages([welcomeMessage()]);
     setPending(false);
     setInput('');
@@ -160,7 +217,6 @@ export default function AiGuideScreen() {
         data={messages}
         keyboardShouldPersistTaps="handled"
         keyExtractor={(message) => `${message.role}-${message.id}`}
-        ListFooterComponent={pending ? <TypingBubble /> : null}
         onContentSizeChange={() =>
           listRef.current?.scrollToEnd({ animated: true })
         }
@@ -219,6 +275,13 @@ function MessageBubble({
   onSuggestionPress: (suggestion: string) => void;
 }) {
   const isUser = message.role === 'user';
+  const isEmpty = !message.text && !message.recipes?.length;
+
+  // 流式回复的占位气泡：还没吐出任何内容时显示「正在翻菜谱」，
+  // 它和其他气泡同处列表末尾，所以转圈与文字是同一个位置。
+  if (!isUser && isEmpty) {
+    return <TypingBubble />;
+  }
 
   return (
     <View className={cn('mb-4', isUser ? 'items-end' : 'items-start')}>

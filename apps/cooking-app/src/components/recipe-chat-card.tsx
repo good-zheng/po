@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import type { Recipe } from '@po/types';
+import type { RecipeBrief } from '@po/types';
 import { Link } from 'expo-router';
 import { Pressable, Text, View } from 'react-native';
 
@@ -7,8 +7,13 @@ import { resolveAssetUrl } from '@/lib/api/client';
 import { Image } from '@/lib/nativewind';
 import { difficultyLabel, totalMinutes } from '@/lib/recipe-utils';
 
-/** 聊天回复里的菜谱卡片，带「查看详情」和「开始做菜」两个入口 */
-export function RecipeChatCard({ recipe }: { recipe: Recipe }) {
+/**
+ * 聊天回复里的菜谱卡片，带「查看详情」和「开始做菜」两个入口。
+ *
+ * 入参用 RecipeBrief 而非完整 Recipe：Agent 工具结果与本地规则回复都只带
+ * 摘要字段，写全字段类型会强迫调用方补齐 id 之外的一堆无关属性。
+ */
+export function RecipeChatCard({ recipe }: { recipe: RecipeBrief }) {
   const minutes = totalMinutes(recipe);
   const meta = [
     minutes ? `${minutes} 分钟` : undefined,

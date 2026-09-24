@@ -61,9 +61,28 @@ services:
     restart: unless-stopped
 
   chat:
-    build: ./services/chat
+    build:
+      # 本地 Python 包（agent-core / agent-cooking）不在 PyPI，构建上下文必须是仓库根
+      context: .
+      dockerfile: services/chat/Dockerfile
     environment:
       PY_SERVER_CORS_ORIGINS: ${PY_SERVER_CORS_ORIGINS:-http://localhost:8000}
+      # 烹饪助手插槽读菜谱走 compose 内网，不能沿用默认的 localhost
+      COOKING_API_BASE_URL: http://api:8080/api
+      # LLM 与 embedding 从根 .env 透传；未配置时聊天服务降级为离线模型而非启动失败
+      AGENT_CORE_LLM_PROVIDER: ${AGENT_CORE_LLM_PROVIDER:-qwen}
+      AGENT_CORE_LLM_MODEL: ${AGENT_CORE_LLM_MODEL:-qwen-plus}
+      AGENT_CORE_LLM_API_KEY: ${AGENT_CORE_LLM_API_KEY:-}
+      AGENT_CORE_EMBEDDING_MODEL: ${AGENT_CORE_EMBEDDING_MODEL:-}
+      AGENT_CORE_EMBEDDING_API_KEY: ${AGENT_CORE_EMBEDDING_API_KEY:-}
+      AGENT_CORE_CHECKPOINTER: ${AGENT_CORE_CHECKPOINTER:-redis}
+      AGENT_CORE_REDIS_URL: redis://:${REDIS_PASSWORD:-123456}@redis:6379/0
+    depends_on:
+      redis:
+        condition: service_healthy
+      # 菜谱接口来自 api 服务；它没起来时工具会返回可读错误，但先等就绪可少一轮空查
+      api:
+        condition: service_healthy
     healthcheck:
       test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:5090/api/health')\""]
       interval: 10s

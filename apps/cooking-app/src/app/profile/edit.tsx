@@ -1,13 +1,23 @@
+import { Ionicons } from '@expo/vector-icons';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from 'react-native';
 
 import { FormError, SubmitButton, TextField } from '@/components/form';
 import { ScreenHeader } from '@/components/screen-header';
-import { ApiError } from '@/lib/api/client';
-import { updateProfile } from '@/lib/api/users';
+import { ApiError, resolveAssetUrl } from '@/lib/api/client';
+import { updateProfile, uploadAvatar } from '@/lib/api/users';
 import { useAuth } from '@/lib/auth/auth-context';
+import { Image } from '@/lib/nativewind';
 import { userKeys } from '@/lib/query-keys';
 
 export default function ProfileEditScreen() {
@@ -19,6 +29,21 @@ export default function ProfileEditScreen() {
   const [phoneNumber, setPhoneNumber] = useState(user?.phoneNumber ?? '');
   const [email, setEmail] = useState(user?.email ?? '');
   const [formError, setFormError] = useState<string | null>(null);
+
+  const avatarMutation = useMutation({
+    mutationFn: uploadAvatar,
+    onError: (error) => {
+      setFormError(
+        error instanceof ApiError
+          ? error.message
+          : '头像上传失败，请稍后再试。',
+      );
+    },
+    onSuccess: async () => {
+      await refreshUser();
+      await queryClient.invalidateQueries({ queryKey: userKeys.me() });
+    },
+  });
 
   const mutation = useMutation({
     mutationFn: updateProfile,
@@ -33,6 +58,21 @@ export default function ProfileEditScreen() {
       router.back();
     },
   });
+
+  const pickAvatar = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      allowsEditing: true,
+      aspect: [1, 1],
+      mediaTypes: ['images'],
+      quality: 0.8,
+    });
+
+    if (result.canceled) {
+      return;
+    }
+
+    avatarMutation.mutate(result.assets[0].uri);
+  };
 
   const handleSubmit = () => {
     setFormError(null);
@@ -53,11 +93,44 @@ export default function ProfileEditScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       className="flex-1 bg-stone-50 dark:bg-stone-950"
     >
-      <ScreenHeader subtitle="昵称、手机号、邮箱" title="编辑资料" />
+      <ScreenHeader subtitle="头像、昵称、手机号、邮箱" title="编辑资料" />
       <ScrollView
         contentContainerClassName="gap-4 px-5 pb-8"
         keyboardShouldPersistTaps="handled"
       >
+        <View className="items-center py-2">
+          <Pressable
+            accessibilityLabel="更换头像"
+            accessibilityRole="button"
+            className="active:opacity-80"
+            disabled={avatarMutation.isPending}
+            onPress={() => void pickAvatar()}
+          >
+            {resolveAssetUrl(user?.avatar) ? (
+              <Image
+                accessibilityLabel="当前头像"
+                className="h-20 w-20 rounded-full bg-stone-200 dark:bg-stone-800"
+                contentFit="cover"
+                source={resolveAssetUrl(user?.avatar)}
+                transition={150}
+              />
+            ) : (
+              <View className="h-20 w-20 items-center justify-center rounded-full bg-brand-50 dark:bg-stone-800">
+                <Ionicons color="#ea580c" name="person" size={36} />
+              </View>
+            )}
+            <View className="absolute bottom-0 right-0 h-6 w-6 items-center justify-center rounded-full bg-brand-600">
+              {avatarMutation.isPending ? (
+                <Ionicons color="#ffffff" name="sync" size={13} />
+              ) : (
+                <Ionicons color="#ffffff" name="camera" size={13} />
+              )}
+            </View>
+          </Pressable>
+          <Text className="mt-2 text-xs text-stone-500 dark:text-stone-400">
+            {avatarMutation.isPending ? '正在上传头像…' : '点击更换头像'}
+          </Text>
+        </View>
         <FormError message={formError} />
         <TextField
           label="昵称"

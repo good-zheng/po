@@ -1,11 +1,15 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   createContext,
   type ReactNode,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from 'react';
+
+const SESSION_STORAGE_KEY = 'cooking-session-v1';
 
 export type CookingSession = {
   recipeId: number;
@@ -50,6 +54,53 @@ let noteSeq = 0;
 export function CookingProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<CookingSession | null>(null);
   const [note, setNote] = useState<CookingNote | null>(null);
+  const [hydrated, setHydrated] = useState(false);
+
+  // 启动时恢复上次未做完的菜；读到损坏数据就丢弃，不影响正常使用
+  useEffect(() => {
+    AsyncStorage.getItem(SESSION_STORAGE_KEY)
+      .then((raw) => {
+        if (!raw) {
+          return;
+        }
+
+        const parsed = JSON.parse(raw) as Partial<CookingSession>;
+        if (
+          typeof parsed.recipeId === 'number' &&
+          typeof parsed.stepCount === 'number' &&
+          typeof parsed.stepIndex === 'number' &&
+          typeof parsed.title === 'string'
+        ) {
+          setSession({
+            recipeId: parsed.recipeId,
+            startedAt:
+              typeof parsed.startedAt === 'number'
+                ? parsed.startedAt
+                : Date.now(),
+            stepCount: parsed.stepCount,
+            stepIndex: parsed.stepIndex,
+            title: parsed.title,
+          });
+        }
+      })
+      .catch(() => {})
+      .finally(() => setHydrated(true));
+  }, []);
+
+  // 进度变化即落盘；完成/取消后清掉，避免下次打开又弹回旧进度
+  useEffect(() => {
+    if (!hydrated) {
+      return;
+    }
+
+    if (session) {
+      AsyncStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session)).catch(
+        () => {},
+      );
+    } else {
+      AsyncStorage.removeItem(SESSION_STORAGE_KEY).catch(() => {});
+    }
+  }, [hydrated, session]);
 
   const beginCooking = useCallback<CookingContextValue['beginCooking']>(
     (recipe, stepCount, options) => {
