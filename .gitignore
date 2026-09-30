@@ -51,6 +51,10 @@ vibe_images/
 /ingredients-count.txt
 /ingredients-image-list.tsv
 
+# 第三方项目的本地副本：PowerWiki 是解压进来的上游代码（含 node_modules 107M、自带 .env），
+# 不入库。需要时从上游仓库单独 clone。
+apps/power-wiki/
+
 # Tooling and OS files
 .DS_Store
 .idea/
