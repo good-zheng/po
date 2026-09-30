@@ -1,0 +1,475 @@
+{
+  "region": "湖北菜",
+  "recipes": [
+    {
+      "title": "莲藕排骨汤",
+      "description": "湖北人煨汤的头一样。洪湖九孔藕粉糯，配猪肋排在砂罐里煨两小时，汤色微红、藕块拉丝，只下姜片和一撮盐，喝完汤再捞藕吃。",
+      "difficulty": 1, "servings": 4, "prepTime": 15, "cookTime": 120, "totalTime": 135,
+      "tags": "汤羹,煨汤,家常,湖北名菜", "flavorProfile": "清甜醇厚",
+      "calories": 430, "protein": 26.0, "fat": 24.0, "carbs": 22.0,
+      "tips": "煨汤要挑粉藕（表皮偏黄、七孔九孔那种），脆藕煸不糯；水一次加足中途不添；盐最后放，早放肉柴。",
+      "cover": { "slug": "hubei-lianoupagu", "visual": "Hubei slow-simmered pork rib soup with whole lotus root chunks in a clay jar, clear amber broth, scattered scallion" },
+      "ingredients": [
+        ["莲藕", "500", "g", true],
+        ["猪排骨", "500", "g", true],
+        ["生姜", "20", "g", true],
+        ["大葱", "1", "根", false],
+        ["料酒", "20", "ml", false],
+        ["白胡椒粉", "2", "g", false],
+        ["盐", "5", "g", true],
+        ["清水", "2000", "ml", true]
+      ],
+      "steps": [
+        ["排骨斩段冷水下锅，加姜片料酒烧开撇净血沫，捞出冲净", 15],
+        ["莲藕去皮切滚刀块，立刻泡进清水里防黑", 10],
+        ["砂罐一次添足清水，下排骨和姜片大火烧开", 10],
+        ["转微火加盖煨60分钟", 62],
+        ["下藕块继续煨45分钟至藕色转红、筷子能插透", 48],
+        ["加盐和少许白胡椒粉调味，撒葱花端罐上桌", 4]
+      ]
+    },
+    {
+      "title": "清蒸武昌鱼",
+      "description": "「才饮长沙水，又食武昌鱼」。樊口鳊鱼两面剞刀，铺上火腿丝、香菇丝和冬笋丝旺火蒸十分钟，倒掉腥水再淋蒸鱼豉油与热油，肉细刺少。",
+      "difficulty": 2, "servings": 4, "prepTime": 20, "cookTime": 15, "totalTime": 35,
+      "tags": "清蒸,河鲜,宴客,湖北名菜", "flavorProfile": "清鲜本味",
+      "calories": 260, "protein": 34.0, "fat": 10.0, "carbs": 6.0,
+      "tips": "鱼要现杀现蒸，蒸锅水大开再下鱼；七两到一斤的鱼蒸八到十分钟；蒸出的腥水一定要倒掉再淋豉油。",
+      "cover": { "slug": "hubei-qingzhengwuchangyu", "visual": "whole steamed bream fish topped with julienned cured ham mushroom and bamboo shoot, glossy soy dressing, white oval steaming plate" },
+      "ingredients": [
+        ["鳊鱼", "1", "条(约700g)", true],
+        ["火腿", "40", "g", true],
+        ["干香菇", "20", "g", false],
+        ["冬笋", "80", "g", false],
+        ["生姜", "20", "g", true],
+        ["大葱", "1", "根", true],
+        ["小葱", "2", "根", true],
+        ["料酒", "25", "ml", true],
+        ["蒸鱼豉油", "30", "ml", true],
+        ["白糖", "3", "g", false],
+        ["盐", "4", "g", true],
+        ["食用油", "25", "ml", true]
+      ],
+      "steps": [
+        ["鱼去鳞鳃内脏洗净，两面各剞三刀，用盐和料酒里外抹匀腌10分钟", 12],
+        ["火腿、冬笋、泡发的香菇和姜全部切细丝，小葱打结", 10],
+        ["盘底垫姜片和葱结，鱼摆上，表面铺三色丝", 5],
+        ["蒸锅水烧开后入鱼，旺火蒸8至10分钟", 10],
+        ["取出拣去葱结，把盘里的腥水倒干净", 3],
+        ["淋蒸鱼豉油和少许白糖，另起一勺滚油浇在鱼身上激香", 3]
+      ]
+    },
+    {
+      "title": "热干面",
+      "description": "武汉的早晨从一碗面开始。碱面煮到八成熟摊凉拌油，吃前滚汤里烫十秒，浇油泄的芝麻酱、生抽和卤水，撒酸豆角萝卜丁与葱花，拌匀了根根挂酱。",
+      "difficulty": 2, "servings": 3, "prepTime": 30, "cookTime": 10, "totalTime": 40,
+      "tags": "面食,早餐,小吃,武汉名吃", "flavorProfile": "麻酱咸香",
+      "calories": 520, "protein": 16.0, "fat": 22.0, "carbs": 62.0,
+      "tips": "面煮到八成熟就要摊凉拌油扇凉，隔一夜再烫才筋道；芝麻酱必须用油泄，加水泄会泻汤发澥。",
+      "cover": { "slug": "hubei-reganmian", "visual": "Wuhan hot dry noodles in bowl coated with sesame paste soy sauce pickled beans radish and scallion, chopsticks lifting glossy noodles" },
+      "ingredients": [
+        ["碱水面", "400", "g", true],
+        ["芝麻酱", "50", "g", true],
+        ["酸豆角", "50", "g", true],
+        ["萝卜干", "40", "g", true],
+        ["卤水汁", "20", "ml", false],
+        ["生抽", "30", "ml", true],
+        ["老抽", "10", "ml", false],
+        ["小葱", "20", "g", true],
+        ["辣椒油", "15", "ml", false],
+        ["芝麻香油", "15", "ml", false],
+        ["白糖", "5", "g", false],
+        ["熟芝麻", "10", "g", false],
+        ["盐", "3", "g", true],
+        ["食用油", "25", "ml", true]
+      ],
+      "steps": [
+        ["芝麻酱分次加香油和少许凉开水，顺一个方向泄成能流动的稀酱", 8],
+        ["酸豆角和萝卜干切小丁，小葱切葱花", 6],
+        ["水烧开下碱面，煮到八成熟（芯刚软）立刻捞出", 4],
+        ["面摊开淋食用油，边扇边挑散晾凉，防粘并收干表面水分", 8],
+        ["吃前把面入滚水烫10秒捞起甩干装碗", 2],
+        ["依次浇芝麻酱、生抽、老抽和卤水", 3],
+        ["撒酸豆角、萝卜丁、葱花和熟芝麻，按口味点辣椒油，拌到根挂酱", 3]
+      ]
+    },
+    {
+      "title": "沔阳三蒸",
+      "description": "沔阳「三蒸九扣」的头席。肉、菜分笼裹上炒过的粘米粉蒸，米粉吃透水、肉片糯而不腻，南瓜垫底吸足荤油，蒸笼一揭满屋粉香。",
+      "difficulty": 2, "servings": 4, "prepTime": 40, "cookTime": 60, "totalTime": 100,
+      "tags": "蒸菜,米粉,宴客,湖北名菜", "flavorProfile": "粉糯咸香",
+      "calories": 560, "protein": 26.0, "fat": 32.0, "carbs": 40.0,
+      "tips": "米粉要用炒至微黄的粘米粉，拌好后静置半小时让粉吃透肉汁；蒸中途洒两次高汤，粉才不会夹生。",
+      "cover": { "slug": "hubei-mianyansanzheng", "visual": "steamed pork belly slices coated with rice flour layered over pumpkin chunks in a bamboo steamer, Hubei san zheng dish, glossy and fragrant" },
+      "ingredients": [
+        ["带皮五花肉", "400", "g", true],
+        ["粘米粉", "120", "g", true],
+        ["老南瓜", "400", "g", true],
+        ["土豆", "200", "g", false],
+        ["生姜", "20", "g", true],
+        ["大葱", "1", "根", true],
+        ["大蒜", "20", "g", false],
+        ["郫县豆瓣酱", "15", "g", false],
+        ["生抽", "35", "ml", true],
+        ["老抽", "15", "ml", true],
+        ["料酒", "25", "ml", true],
+        ["白糖", "10", "g", false],
+        ["五香粉", "3", "g", true],
+        ["干荷叶", "2", "张", false],
+        ["高汤", "200", "ml", true],
+        ["盐", "4", "g", true]
+      ],
+      "steps": [
+        ["干锅下粘米粉小火炒至微黄出香，盛出晾凉", 8],
+        ["五花肉切薄片，南瓜和土豆切块，姜末葱花蒜末备好", 15],
+        ["肉片加生抽老抽料酒白糖五香粉姜末和豆瓣酱抓匀，腌20分钟", 22],
+        ["倒进米粉翻拌，让每片都裹上厚厚一层，再静置30分钟回水", 32],
+        ["南瓜块和土豆块拌少许盐与米粉，垫在蒸笼底", 8],
+        ["肉片皮朝下码在菜上，荷叶盖面，旺火上汽蒸50分钟", 52],
+        ["中途开盖两次沿边洒高汤，让粉吃足水", 6],
+        ["蒸到肉烂粉糯、南瓜成泥，扣入大盘撒葱花", 6]
+      ]
+    },
+    {
+      "title": "珍珠圆子",
+      "description": "泡透的糯米裹在肉丸外，蒸熟后颗颗晶莹如珍珠，咬开是打足水的嫩猪肉馅，底下垫南瓜吸汁，湖北年席上甜咸交界的那一口。",
+      "difficulty": 2, "servings": 4, "prepTime": 40, "cookTime": 25, "totalTime": 245,
+      "tags": "蒸菜,丸子,年菜,湖北名菜", "flavorProfile": "清鲜弹嫩",
+      "calories": 430, "protein": 22.0, "fat": 14.0, "carbs": 55.0,
+      "tips": "糯米要提前泡足3小时才蒸得透亮；肉馅分次打水朝一个方向搅上劲才嫩；米沥干再滚裹，裹匀不露馅。",
+      "cover": { "slug": "hubei-zhenzhuyuanzi", "visual": "steamed pork meatballs coated in glossy translucent glutinous rice pearls arranged over pumpkin slices in a bamboo steamer, Hubei banquet dish" },
+      "ingredients": [
+        ["糯米", "150", "g", true],
+        ["猪前腿肉馅", "300", "g", true],
+        ["老南瓜", "400", "g", false],
+        ["鸡蛋", "1", "个", true],
+        ["淀粉", "25", "g", true],
+        ["生姜", "15", "g", true],
+        ["大葱", "1", "根", true],
+        ["生抽", "20", "ml", true],
+        ["料酒", "15", "ml", true],
+        ["白糖", "5", "g", false],
+        ["高汤", "120", "ml", false],
+        ["盐", "4", "g", true],
+        ["清水", "400", "ml", true]
+      ],
+      "steps": [
+        ["糯米淘净加清水泡3小时，捞出沥干至不沾手", 185],
+        ["姜葱切末泡水成葱姜水；肉馅加盐生抽料酒和葱姜水，分三次打入并顺一个方向搅上劲", 15],
+        ["拌入鸡蛋和淀粉继续搅到起胶，静置10分钟", 12],
+        ["肉馅挤成核桃大的丸子，放进糯米里滚裹一层，手掌轻搓收口", 12],
+        ["南瓜切厚片铺蒸盘，丸子上留空隙摆开", 8],
+        ["上汽后中火蒸25分钟，至糯米透明、丸子鼓胀", 26],
+        ["高汤加少许盐和淀粉勾薄芡淋面，撒葱花", 4]
+      ]
+    },
+    {
+      "title": "潜江油焖小龙虾",
+      "description": "潜江虾清水吐净再刷洗，剪头去虾线，高温炸红后配干辣椒花椒姜蒜焖烧，啤酒代水收汁。虾壳入味、虾肉弹甜，最后那盆红汤要拌一碗面。",
+      "difficulty": 2, "servings": 4, "prepTime": 40, "cookTime": 25, "totalTime": 65,
+      "tags": "河鲜,辣,夜宵,潜江名菜", "flavorProfile": "麻辣酱香",
+      "calories": 320, "protein": 30.0, "fat": 16.0, "carbs": 8.0,
+      "tips": "虾要刷净鳃和腹部、抽掉虾线；先高温炸一遍壳才红亮入味；焖的时间别长，超过十分钟虾肉就老。",
+      "cover": { "slug": "hubei-qianjianglongxia", "visual": "pile of braised crayfish in glossy deep red chili oil with garlic ginger dried chilies and scallion, big platter, Qianjiang style" },
+      "ingredients": [
+        ["小龙虾", "1500", "g", true],
+        ["啤酒", "330", "ml", true],
+        ["干辣椒", "25", "g", true],
+        ["花椒", "15", "粒", true],
+        ["生姜", "30", "g", true],
+        ["大蒜", "40", "g", true],
+        ["大葱", "1", "根", true],
+        ["香叶", "2", "片", false],
+        ["八角", "2", "个", false],
+        ["生抽", "40", "ml", true],
+        ["老抽", "15", "ml", true],
+        ["白糖", "15", "g", false],
+        ["五香粉", "3", "g", false],
+        ["盐", "5", "g", true],
+        ["食用油", "120", "ml", true],
+        ["清水", "300", "ml", true]
+      ],
+      "steps": [
+        ["小龙虾刷净腹部和鳃，掐尾抽出虾线，剪去虾枪再冲两遍", 25],
+        ["姜切片、蒜拍碎、葱切段、干辣椒切段", 8],
+        ["宽油烧至八成热，虾下锅炸30秒至壳红硬立刻捞出", 3],
+        ["锅留底油，小火炸香花椒干辣椒八角香叶", 4],
+        ["下姜蒜葱段炒出香味，加生抽老抽白糖五香粉翻匀", 4],
+        ["虾回锅颠匀，倒入啤酒和清水没过一半虾身", 4],
+        ["加盖中火焖8分钟，中途翻一次让上层的虾也吃到汁", 9],
+        ["开大火收至汤汁浓红挂壳，试咸淡补盐，装盆带汤上桌", 5]
+      ]
+    },
+    {
+      "title": "汪集鸡汤",
+      "description": "新洲汪集用老井水煨土鸡，只下姜片和一撮枸杞，微火两小时。汤面浮一层黄亮鸡油，鸡肉捞出来蘸生抽吃，汤甜得能照见人。",
+      "difficulty": 1, "servings": 4, "prepTime": 15, "cookTime": 150, "totalTime": 165,
+      "tags": "汤羹,煨汤,滋补,武汉名吃", "flavorProfile": "原汁清甜",
+      "calories": 380, "protein": 32.0, "fat": 24.0, "carbs": 4.0,
+      "tips": "整鸡下锅不斩块，肉才不柴；全程微沸、盖子留缝；盐起锅前放，早放汤浑肉老。",
+      "cover": { "slug": "hubei-wangjijitang", "visual": "whole free-range chicken simmering in clear golden broth with ginger slices and goji berries in a covered clay pot, Hubei soup" },
+      "ingredients": [
+        ["老母鸡", "1", "只(约1000g)", true],
+        ["生姜", "30", "g", true],
+        ["大葱", "1", "根", false],
+        ["枸杞", "15", "g", false],
+        ["红枣", "6", "颗", false],
+        ["料酒", "20", "ml", false],
+        ["盐", "6", "g", true],
+        ["清水", "2500", "ml", true]
+      ],
+      "steps": [
+        ["鸡洗净去尾臊和肺，斩去爪尖，整只入冷水浸泡20分钟出血水", 22],
+        ["冷水下锅加姜片和料酒，大火烧开撇净浮沫", 15],
+        ["转微火，加盖留缝煨90分钟", 92],
+        ["下红枣继续煨40分钟至鸡肉能用筷子插透", 42],
+        ["撒枸杞煮5分钟，加盐调味", 6],
+        ["连罐上桌，鸡肉另碟蘸生抽食用", 4]
+      ]
+    },
+    {
+      "title": "糍粑鱼",
+      "description": "湖北的年菜。草鱼抹盐和花椒腌一天，挂通风处晾到表皮发黏，再煎到两面焦壳，配姜蒜干辣椒和糖醋汁烧透。外皮带韧、肉紧咸香，因口感像糍粑得名。",
+      "difficulty": 2, "servings": 4, "prepTime": 40, "cookTime": 25, "totalTime": 65,
+      "tags": "河鲜,年菜,咸鲜,湖北年菜", "flavorProfile": "咸甜微辣",
+      "calories": 340, "protein": 34.0, "fat": 18.0, "carbs": 8.0,
+      "tips": "腌后晾足两小时收干表皮，煎时不粘不碎；糖醋汁分次淋，让鱼慢慢吃透；火太大壳焦里还生。",
+      "cover": { "slug": "hubei-cibayu", "visual": "pan-fried salted grass fish pieces glazed in sweet sour soy sauce with dried chilies ginger and garlic, Hubei New Year fish dish" },
+      "ingredients": [
+        ["草鱼", "1", "条(约800g)", true],
+        ["盐", "12", "g", true],
+        ["花椒", "15", "粒", true],
+        ["生姜", "25", "g", true],
+        ["大蒜", "25", "g", true],
+        ["大葱", "1", "根", false],
+        ["干辣椒", "15", "g", true],
+        ["生抽", "25", "ml", true],
+        ["香醋", "20", "ml", true],
+        ["白糖", "15", "g", true],
+        ["料酒", "25", "ml", true],
+        ["淀粉", "20", "g", false],
+        ["清水", "200", "ml", true],
+        ["食用油", "80", "ml", true]
+      ],
+      "steps": [
+        ["鱼去头尾和骨，肉切成巴掌大的厚片，洗净沥干", 15],
+        ["盐和花椒干锅小火炒香，放凉后里外抹匀鱼片，腌2小时以上（隔夜更香）", 130],
+        ["取出用温水冲一下，厨房纸吸干，挂通风处晾2小时至表皮发黏", 125],
+        ["干辣椒切段，姜切片，蒜拍碎，糖生抽香醋清水对成碗汁", 8],
+        ["锅烧热下油，鱼片拍薄淀粉，中火煎至两面硬壳金黄，盛出", 10],
+        ["锅留底油爆香姜蒜干辣椒，鱼片回锅，沿锅边烹料酒", 4],
+        ["分三次淋入碗汁，小火烧到汁浓挂鱼，撒葱段出锅", 8]
+      ]
+    },
+    {
+      "title": "钟祥蟠龙菜",
+      "description": "嘉靖皇帝的「龙菜」。猪瘦肉剁茸拌蛋清淀粉，摊成蛋皮卷起蒸制定型，切片码盘，肉嫩如糕、蛋皮金黄起花，是钟祥宴席的头一道。",
+      "difficulty": 3, "servings": 4, "prepTime": 60, "cookTime": 40, "totalTime": 100,
+      "tags": "蒸菜,宴客,刀工,湖北名菜", "flavorProfile": "细嫩鲜香",
+      "calories": 320, "protein": 28.0, "fat": 18.0, "carbs": 8.0,
+      "tips": "肉茸要朝一个方向搅到起胶，清水分次打进去才嫩；蒸好压重石定型再切，片才薄而不散。",
+      "cover": { "slug": "hubei-panlongcai", "visual": "sliced steamed egg-wrapped pork meatloaf with golden egg skin and fine pink filling, fanned on a plate, Zhongxiang banquet dish, soy dipping sauce" },
+      "ingredients": [
+        ["猪瘦肉", "300", "g", true],
+        ["五花肉", "100", "g", true],
+        ["鸡蛋", "4", "个", true],
+        ["淀粉", "40", "g", true],
+        ["生姜", "15", "g", true],
+        ["大葱", "1", "根", true],
+        ["生抽", "20", "ml", true],
+        ["料酒", "15", "ml", true],
+        ["白糖", "5", "g", false],
+        ["盐", "5", "g", true],
+        ["清水", "120", "ml", true],
+        ["食用油", "25", "ml", true]
+      ],
+      "steps": [
+        ["瘦肉和五花肉剁成细茸，葱姜泡水留葱姜水", 25],
+        ["肉茸加盐生抽料酒白糖和葱姜水，顺一个方向搅打上劲，分次打进清水", 15],
+        ["拌入淀粉和4个蛋黄（蛋清单留），搅成稠滑馅", 8],
+        ["蛋清加少许淀粉水摊成薄蛋皮，平铺案板", 10],
+        ["馅抹在蛋皮上，从一头卷成紧实的长卷，用纱布或保鲜膜裹紧", 10],
+        ["上锅中火蒸35分钟至定型", 36],
+        ["取出压上重石晾凉，切薄片码盘", 25],
+        ["回锅蒸10分钟，配生抽姜丝蘸食", 12]
+      ]
+    },
+    {
+      "title": "洪山菜薹炒腊肉",
+      "description": "洪山菜薹紫红脆甜，配自家熏的腊肉片大火爆炒。腊肉出油、菜薹吸香，只放一点干辣椒和蒜，是武汉冬天最金贵的一把菜。",
+      "difficulty": 1, "servings": 3, "prepTime": 15, "cookTime": 10, "totalTime": 25,
+      "tags": "小炒,素菜,冬季,武汉名菜", "flavorProfile": "腊香脆甜",
+      "calories": 260, "protein": 12.0, "fat": 20.0, "carbs": 8.0,
+      "tips": "菜薹要掐掉老皮、撕去茎上筋，只留嫩茎；先炒腊肉出油再下菜，大火快炒才脆不黑发。",
+      "cover": { "slug": "hubei-caitailarou", "visual": "stir-fried purple-red flowering cabbage stems with sliced smoked cured pork and dried chili, glossy, Wuhan winter home dish" },
+      "ingredients": [
+        ["菜心", "400", "g", true],
+        ["腊肉", "150", "g", true],
+        ["大蒜", "20", "g", true],
+        ["生姜", "10", "g", false],
+        ["干辣椒", "8", "g", true],
+        ["料酒", "15", "ml", false],
+        ["生抽", "10", "ml", false],
+        ["白糖", "3", "g", false],
+        ["盐", "2", "g", true],
+        ["食用油", "25", "ml", true]
+      ],
+      "steps": [
+        ["菜薹掐段，撕去茎上的老筋，洗净沥干；腊肉斜切薄片", 12],
+        ["干辣椒切段，蒜拍碎", 4],
+        ["热锅下油，腊肉片中火煸至透明出油、边缘微卷", 5],
+        ["下干辣椒和蒜末爆香，烹料酒", 2],
+        ["转大火下菜薹快速翻炒至变色断生", 3],
+        ["加生抽白糖和盐翻匀，立刻出锅（久了出水就不脆）", 2]
+      ]
+    },
+    {
+      "title": "黄州东坡肉",
+      "description": "苏轼在黄州写下「慢著火，少著水，火候足时它自美」，这块肉就是从那口锅里出来的：整方五花肉以酒代水配冰糖，砂锅微火焖两小时，酥烂不腻。",
+      "difficulty": 2, "servings": 4, "prepTime": 20, "cookTime": 120, "totalTime": 140,
+      "tags": "红烧,猪肉,宴客,黄冈名菜", "flavorProfile": "酱甜酥烂",
+      "calories": 620, "protein": 28.0, "fat": 50.0, "carbs": 10.0,
+      "tips": "肉先冷水煮至五成熟再切方，定型不散；全程以酒代水、微火慢焖，中途别翻动；最后大火收汁上色。",
+      "cover": { "slug": "hubei-huangzhou-dongporou", "visual": "square of glossy dark braised pork belly in shallow soy-wine sauce on white plate, scallion and ginger, Huangzhou Dongpo pork" },
+      "ingredients": [
+        ["带皮五花肉", "800", "g", true],
+        ["黄酒", "250", "ml", true],
+        ["生抽", "60", "ml", true],
+        ["老抽", "25", "ml", true],
+        ["冰糖", "40", "g", true],
+        ["生姜", "30", "g", true],
+        ["大葱", "2", "根", true],
+        ["盐", "3", "g", false],
+        ["清水", "200", "ml", true]
+      ],
+      "steps": [
+        ["整块五花肉皮面朝下冷水下锅，煮至五成熟捞出，切成四方大块", 25],
+        ["砂锅底铺姜片和葱段（防糊并垫香），肉皮朝下摆入", 8],
+        ["冰糖加生抽老抽和清水调匀倒入，再淋黄酒", 5],
+        ["大火烧开后转最小火，加盖慢焖90分钟", 92],
+        ["肉翻面使上色均匀，继续焖20分钟至筷子能一插到底", 22],
+        ["开盖转大火收浓汁至红亮挂肉，别搅碎肉块", 6],
+        ["取出拆去葱姜，肉块皮朝上装盘，淋净汁", 4]
+      ]
+    },
+    {
+      "title": "武汉面窝",
+      "description": "早点摊上的金黄圈。大米加黄豆泡透磨成稀浆，掺葱花和盐，倒进中间凸起的铁勺入油锅，炸到外焦里松——薄的那圈脆，厚的边沿软。",
+      "difficulty": 2, "servings": 4, "prepTime": 40, "cookTime": 20, "totalTime": 300,
+      "tags": "早餐,炸物,小吃,武汉名吃", "flavorProfile": "豆香松脆",
+      "calories": 300, "protein": 8.0, "fat": 14.0, "carbs": 34.0,
+      "tips": "米和豆要泡足4小时，磨成的浆能挂勺却仍稀；油温五成下勺，浆一倒就脱模；中心薄处先上色，别炸过头发苦。",
+      "cover": { "slug": "hubei-mianwo", "visual": "golden fried rice and lentil doughnuts with a raised center hole, crispy lacy edges, stacked on paper, Wuhan breakfast street food" },
+      "ingredients": [
+        ["大米", "300", "g", true],
+        ["黄豆", "100", "g", true],
+        ["大葱", "1", "根", true],
+        ["生姜", "10", "g", false],
+        ["酵母", "2", "g", false],
+        ["盐", "5", "g", true],
+        ["清水", "400", "ml", true],
+        ["食用油", "800", "ml", true]
+      ],
+      "steps": [
+        ["大米和黄豆分别淘净，清水泡4小时以上至能用手指捻碎", 245],
+        ["连部分泡米水一起磨成稀浆，稠度能挂勺又流动", 12],
+        ["加酵母和盐拌匀，室温醒30分钟；葱切葱花拌进浆里", 32],
+        ["面窝勺入油锅一起烧热，让勺子吃透油", 4],
+        ["舀一勺浆倒入，晃平后下锅，中火炸至自动脱模浮起", 4],
+        ["翻面炸至两面金黄硬壳，中心薄处起脆", 4],
+        ["捞出立着沥油，稍晾后趁热吃", 2]
+      ]
+    },
+    {
+      "title": "鲜鱼糊汤粉",
+      "description": "小鱼煮到化在汤里，过筛成糊，加姜末和白胡椒粉熬稠，下细米粉勾成糊状。一碗撒葱花，配一根油条蘸着吃，是武汉冬天的暖手早点。",
+      "difficulty": 2, "servings": 3, "prepTime": 30, "cookTime": 40, "totalTime": 70,
+      "tags": "米粉,早餐,汤粉,武汉名吃", "flavorProfile": "胡椒鲜辣",
+      "calories": 420, "protein": 22.0, "fat": 8.0, "carbs": 62.0,
+      "tips": "鱼要煮到骨肉分离、压散再过筛，汤才成糊；米粉下锅后要不断搅，糊底就毁了整锅；白胡椒粉下手要重才够味。",
+      "cover": { "slug": "hubei-hutangfen", "visual": "thick fish porridge noodle soup bowl with fine rice noodles, white pepper, chopped scallion, youtiao fried dough stick dipped beside, Wuhan breakfast" },
+      "ingredients": [
+        ["草鱼", "400", "g", true],
+        ["干米粉", "150", "g", true],
+        ["生姜", "30", "g", true],
+        ["大葱", "1", "根", true],
+        ["大蒜", "15", "g", false],
+        ["白胡椒粉", "5", "g", true],
+        ["料酒", "20", "ml", false],
+        ["生抽", "15", "ml", false],
+        ["盐", "5", "g", true],
+        ["油条", "1", "根", false],
+        ["清水", "1200", "ml", true],
+        ["食用油", "25", "ml", true]
+      ],
+      "steps": [
+        ["干米粉温水泡1小时至软，捞出沥干", 62],
+        ["鱼洗净斩块，姜一半切片一半剁末", 12],
+        ["热锅下油，鱼块煎至两面发白，加姜片和料酒", 5],
+        ["冲入沸水，大火滚煮25分钟至鱼肉散烂、汤色发白", 26],
+        ["用勺压散鱼块，连汤过筛，鱼骨鱼刺滤净，留成鱼糊汤", 10],
+        ["糊汤回锅烧开，下姜末和泡好的米粉，中火边煮边搅至稠", 8],
+        ["加盐、生抽和大量白胡椒粉调味，盛碗撒葱花，配油条蘸食", 4]
+      ]
+    },
+    {
+      "title": "土家油茶汤",
+      "description": "恩施土家族的待客茶。猪油下茶叶炒香，冲水煮出茶色后滤净，倒进盛着炒米、黄豆、花生和蒜苗的碗里，咸香带焦，一碗下肚从胃暖到背。",
+      "difficulty": 2, "servings": 4, "prepTime": 20, "cookTime": 25, "totalTime": 45,
+      "tags": "饮品,汤羹,待客,恩施土家", "flavorProfile": "咸香焦苦",
+      "calories": 380, "protein": 12.0, "fat": 26.0, "carbs": 26.0,
+      "tips": "茶叶必须下油锅炒过才出香、不带涩；大米要干锅炒到金黄爆花才叫炒米；料现放才脆，泡久了就绵了。",
+      "cover": { "slug": "hubei-youchatang", "visual": "savory tea soup bowl topped with toasted rice puffed soybeans peanuts and scallion, Enshi Tujia oil tea, clay pot beside" },
+      "ingredients": [
+        ["茶叶", "10", "g", true],
+        ["猪油", "40", "g", true],
+        ["大米", "200", "g", true],
+        ["黄豆", "60", "g", true],
+        ["花生", "60", "g", true],
+        ["生姜", "20", "g", true],
+        ["大蒜叶", "20", "g", true],
+        ["食用油", "30", "ml", true],
+        ["盐", "5", "g", true],
+        ["清水", "1000", "ml", true]
+      ],
+      "steps": [
+        ["干锅下大米小火炒至金黄爆花，盛出成炒米", 10],
+        ["黄豆和花生分别用油小火炒熟或炸酥，撒少许盐拌匀", 12],
+        ["姜切末，蒜苗切小段，茶叶选粗老一点的", 6],
+        ["锅下猪油烧化，茶叶下锅中小火炒至酥脆出香、颜色转深", 4],
+        ["冲入沸水，加姜末煮5分钟熬出茶色", 6],
+        ["滤净茶叶渣，茶汤回锅加盐烧沸", 4],
+        ["碗里放炒米、黄豆、花生和蒜苗，冲入滚烫茶汤，立刻喝", 4]
+      ]
+    },
+    {
+      "title": "恩施炕土豆",
+      "description": "「炕」是土家话里少油慢煎的意思。小土豆煮到刚熟，下猪油炕到表皮起一层金黄硬壳，撒辣椒面、蒜末和葱花，外脆里沙，是恩施夜市的一碗乡愁。",
+      "difficulty": 1, "servings": 3, "prepTime": 20, "cookTime": 25, "totalTime": 45,
+      "tags": "小吃,素菜,夜宵,恩施名吃", "flavorProfile": "焦香麻辣",
+      "calories": 320, "protein": 7.0, "fat": 18.0, "carbs": 34.0,
+      "tips": "土豆先煮到筷子刚插透，太熟一炕就散；全程中小火慢炕，别急着翻；出锅趁热撒料才粘得住。",
+      "cover": { "slug": "hubei-kangtudou", "visual": "pan-seared small golden potato chunks with crispy skins tossed in chili powder garlic and scallion, Enshi night street snack in paper cup" },
+      "ingredients": [
+        ["土豆", "600", "g", true],
+        ["猪油", "40", "g", true],
+        ["辣椒面", "12", "g", true],
+        ["花椒粉", "2", "g", false],
+        ["大蒜", "20", "g", true],
+        ["小葱", "15", "g", true],
+        ["生抽", "15", "ml", false],
+        ["盐", "3", "g", true],
+        ["食用油", "30", "ml", true],
+        ["清水", "80", "ml", true]
+      ],
+      "steps": [
+        ["小土豆去皮或对半切开，冷水下锅加少许盐煮至筷子刚能插透，捞出沥干", 18],
+        ["蒜切末、小葱切花，辣椒面和盐预混", 6],
+        ["平底锅下猪油和食用油，中火烧化", 3],
+        ["土豆平铺锅底，中小火慢炕至底面结金黄硬壳再翻面", 12],
+        ["反复翻炕4至5次，让每面都起壳、内里绵沙", 10],
+        ["淋生抽和少许水激一下，撒蒜末、葱花和辣椒花椒面，颠匀出锅", 3]
+      ]
+    }
+  ]
+}

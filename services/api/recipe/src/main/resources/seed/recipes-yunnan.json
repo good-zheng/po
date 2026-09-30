@@ -1,0 +1,447 @@
+{
+  "region": "云南菜",
+  "recipes": [
+    {
+      "title": "过桥米线",
+      "description": "云南米线的排面。滚鸡汤加盖一层鸡油封住热气，先下生肉片、鹌鹑蛋，再烫蔬菜，最后卧米线，全靠汤的高温把料焖熟。大海碗上桌，配料分小碟摆一圈。",
+      "difficulty": 3, "servings": 2, "prepTime": 30, "cookTime": 120, "totalTime": 150,
+      "tags": "米线,汤粉,云南名菜,宴客", "flavorProfile": "鲜香醇厚",
+      "calories": 620, "protein": 38.0, "fat": 22.0, "carbs": 70.0,
+      "tips": "汤要沸到能烫熟肉片，老鸡加猪筒骨熬够两小时，起锅前泼一勺滚鸡油封口保温；肉片切得越薄越安全，不放心的先把肉片快速汆熟；下料顺序是荤在先、素在后、米线最后。",
+      "cover": { "slug": "yunnan-guoqiaomixian", "visual": "Yunnan crossing-bridge rice noodles, huge bowl of golden chicken broth sealed with chicken oil, thin raw pork slices quail eggs and greens in small plates around it, bowl of white rice noodles" },
+      "ingredients": [
+        ["米线", "200", "g", true],
+        ["土鸡", "1", "只(约1000g)", true],
+        ["猪筒骨", "500", "g", true],
+        ["猪里脊", "150", "g", true],
+        ["鸡胸肉", "100", "g", false],
+        ["鹌鹑蛋", "6", "个", false],
+        ["豌豆尖", "150", "g", true],
+        ["腐皮", "50", "g", false],
+        ["火腿", "40", "g", false],
+        ["生姜", "20", "g", true],
+        ["小葱", "2", "根", false],
+        ["白胡椒粉", "2", "g", false],
+        ["盐", "6", "g", true],
+        ["清水", "2500", "ml", true]
+      ],
+      "steps": [
+        ["土鸡宰净斩大块，和猪筒骨一起冷水下锅，加姜片烧开，撇净浮沫", 15],
+        ["转小火加盖熬90分钟，滤出汤里的料渣，舀出面上鸡油留用", 92],
+        ["猪里脊、鸡胸肉和火腿切薄片，分小碟码好；豌豆尖、腐皮洗净沥干", 15],
+        ["鹌鹑蛋煮熟去壳；另起一锅水煮开，下米线烫透捞出盛进空碗", 10],
+        ["鸡油回烧至冒烟泼进汤碗封住热气，滚汤连大碗上桌", 2],
+        ["先磕入鹌鹑蛋，再依次下肉片、腐皮和豌豆尖，用汤温烫熟，最后把米线挑进汤里，边烫边吃", 4]
+      ]
+    },
+    {
+      "title": "汽锅鸡",
+      "description": "建水汽锅的看家菜。汽锅中间立一根空心管，锅里不放水，全靠蒸汽沿管子往上顶、在锅盖冷凝成汤，两小时蒸出一锅清澈的原味鸡汤，只下姜片和盐。",
+      "difficulty": 2, "servings": 4, "prepTime": 20, "cookTime": 180, "totalTime": 200,
+      "tags": "蒸菜,汤羹,云南名菜,原汁原味", "flavorProfile": "清鲜本味",
+      "calories": 320, "protein": 32.0, "fat": 18.0, "carbs": 4.0,
+      "tips": "汽锅不能用普通汤锅替，锅沿和底锅接缝要用湿纱布封严，漏气就蒸不出汤；底锅水烧干前记得添热水；中途千万别揭盖加水，一锅汤全靠蒸汽凝出来。",
+      "cover": { "slug": "yunnan-qiguoji", "visual": "Yunnan steam-pot chicken in an unglazed beige clay qiguo with a hollow central tube, clear golden broth, chicken pieces with ginger slices and goji berries, steam rising" },
+      "ingredients": [
+        ["土鸡", "1", "只(约1200g)", true],
+        ["生姜", "20", "g", true],
+        ["枸杞", "10", "g", false],
+        ["干香菇", "30", "g", false],
+        ["猪油", "5", "g", false],
+        ["料酒", "20", "ml", false],
+        ["盐", "5", "g", true]
+      ],
+      "steps": [
+        ["土鸡洗净斩四大块，冷水下锅加料酒烧开，焯去血沫后捞出冲凉", 12],
+        ["汽锅内壁抹一层薄薄的猪油防粘，姜片铺底，鸡块皮朝上码进去", 6],
+        ["香菇泡发，和枸杞一起摆在鸡块上，淋料酒，锅里不加水", 5],
+        ["汽锅坐进盛足水的汤锅，锅沿用湿布封严，大火烧开后转中火蒸2小时", 125],
+        ["端出汽锅，加盐调味，撇去表面浮油，连锅上桌", 3]
+      ]
+    },
+    {
+      "title": "香茅草烤鱼",
+      "description": "傣味烧烤的头牌。鱼两面夹上竹片，塞进拍散的香茅草和蒜末辣椒，炭火慢烤到外皮焦香、香茅的柠檬气渗进鱼肉，闻着就上头。",
+      "difficulty": 2, "servings": 4, "prepTime": 30, "cookTime": 25, "totalTime": 55,
+      "tags": "烧烤,河鲜,傣味,云南名菜", "flavorProfile": "辛香酸辣",
+      "calories": 340, "protein": 40.0, "fat": 14.0, "carbs": 5.0,
+      "tips": "香茅草要拍裂再切末，精油才出得来；没有炭炉用烤箱230℃两层烤15分钟，中途刷一次油；竹片夹紧鱼身能定型，翻面不容易散。",
+      "cover": { "slug": "yunnan-xiangmaocaokaoyu", "visual": "Dai-style grilled fish clamped between bamboo skewers stuffed with lemongrass and chili, charred crispy skin on banana leaf, red chilies and herb flecks" },
+      "ingredients": [
+        ["鲤鱼", "1", "条(约700g)", true],
+        ["香茅草", "3", "根", true],
+        ["大蒜", "30", "g", true],
+        ["小米辣", "20", "g", true],
+        ["香菜", "20", "g", false],
+        ["生姜", "15", "g", false],
+        ["料酒", "20", "ml", true],
+        ["生抽", "20", "ml", true],
+        ["白糖", "3", "g", false],
+        ["盐", "6", "g", true],
+        ["食用油", "25", "ml", true]
+      ],
+      "steps": [
+        ["鱼去鳞鳃和内脏，从背部剖开摊平成一片，腹内黑膜刮净", 12],
+        ["香茅草拍裂，2根切细末，1根编成草绳或塞在鱼腹里", 8],
+        ["蒜末、小米辣圈、盐、生抽、料酒和白糖拌成香料酱，抹遍鱼身里外腌20分钟", 22],
+        ["用竹片把鱼夹住，炭火或烤箱中层烤8分钟", 9],
+        ["翻面刷一层油再烤7至8分钟，至表皮焦脆、鱼眼发白", 8],
+        ["拆去草绳，撒香菜末，连竹片装盘上桌", 2]
+      ]
+    },
+    {
+      "title": "景颇鬼鸡",
+      "description": "景颇族的凉拌手撕鸡。整鸡煮至刚熟，晾凉手撕成丝，配香茅草末、小米辣、蒜末和芫荽，用盐与野花椒拌匀，酸辣辛香、越拌越入味。",
+      "difficulty": 2, "servings": 4, "prepTime": 15, "cookTime": 30, "totalTime": 75,
+      "tags": "凉菜,手撕鸡,傣景颇味,下酒", "flavorProfile": "酸辣辛香",
+      "calories": 280, "protein": 36.0, "fat": 12.0, "carbs": 6.0,
+      "tips": "鸡腿比整鸡好操作，煮15分钟加盖焖10分钟最嫩；一定要彻底晾凉再撕，热撕会成渣；拌好冷藏半小时，香茅和辣椒的味道才融进肉里。",
+      "cover": { "slug": "yunnan-jingpoguji", "visual": "Dai Jingpo style shredded cold chicken salad tossed with chopped lemongrass red chilies coriander and garlic on a rustic dark plate, glossy and spicy" },
+      "ingredients": [
+        ["鸡腿", "4", "只(约600g)", true],
+        ["香茅草", "2", "根", true],
+        ["小米辣", "15", "g", true],
+        ["大蒜", "20", "g", true],
+        ["香菜", "30", "g", true],
+        ["生姜", "15", "g", true],
+        ["花椒粉", "3", "g", false],
+        ["生抽", "25", "ml", true],
+        ["香醋", "15", "ml", false],
+        ["白糖", "3", "g", false],
+        ["盐", "5", "g", true],
+        ["料酒", "20", "ml", false]
+      ],
+      "steps": [
+        ["鸡腿冷水下锅，加姜片、葱和料酒，烧开撇沫后煮15分钟", 20],
+        ["关火加盖焖10分钟，捞出插筷子无血水即熟", 11],
+        ["香茅草拍裂切细末，小米辣切圈，蒜剁泥，香菜切段", 8],
+        ["鸡腿晾凉后顺纹理撕成细丝，粗的鸡骨边肉剔掉", 10],
+        ["把香茅末、辣椒、蒜泥、香菜和盐、生抽、香醋、白糖、花椒粉一起倒进鸡丝", 5],
+        ["用手抓拌均匀，冷藏腌渍30分钟以上再吃", 32]
+      ]
+    },
+    {
+      "title": "大救驾",
+      "description": "腾冲名菜，主角是饵块。饵块切薄片，配火腿、鸡蛋、西红柿和豌豆尖爆炒，酸香开胃、饵片软糯带焦边，据说因救了南明皇帝的驾而得名。",
+      "difficulty": 2, "servings": 3, "prepTime": 15, "cookTime": 12, "totalTime": 27,
+      "tags": "炒饵块,主食,腾冲名菜,家常", "flavorProfile": "酸香浓郁",
+      "calories": 480, "protein": 20.0, "fat": 20.0, "carbs": 58.0,
+      "tips": "饵块买回来略晾干再切，切片不粘刀；下锅前先煸火腿出油，再炒西红柿出沙，饵块最后下、大火快翻，炒太久会糊成一团。",
+      "cover": { "slug": "yunnan-dajiujia", "visual": "Tengchao stir-fried rice cake slices with tomato bits cured ham egg and green peas shoots, glossy slightly saucy, in a black wok" },
+      "ingredients": [
+        ["饵块", "400", "g", true],
+        ["火腿", "40", "g", true],
+        ["鸡蛋", "2", "个", true],
+        ["西红柿", "150", "g", true],
+        ["豌豆尖", "100", "g", false],
+        ["大蒜", "20", "g", true],
+        ["大葱", "1", "根", false],
+        ["生抽", "20", "ml", true],
+        ["白糖", "5", "g", false],
+        ["盐", "4", "g", true],
+        ["猪油", "15", "g", false],
+        ["食用油", "30", "ml", true]
+      ],
+      "steps": [
+        ["饵块切成3毫米厚的片，太黏的话摊开晾10分钟", 12],
+        ["火腿切小片，西红柿切丁，豌豆尖洗净，蒜切末，葱切马耳朵", 8],
+        ["鸡蛋打散，热锅宽油炒成大块盛出", 3],
+        ["锅留底油加猪油，下火腿煸出油，再下蒜末葱白和西红柿丁炒出沙", 5],
+        ["下饵块大火翻炒，加生抽、白糖和少许盐，锅里太干就沿锅边点两次水", 5],
+        ["饵片变软透亮后回鸡蛋、下豌豆尖，翻匀断生即可出锅", 2]
+      ]
+    },
+    {
+      "title": "小锅米线",
+      "description": "昆明人的早点。一只小铜锅现煮，猪油炝锅下肉末，加酸腌菜、西红柿和高汤烧开，再烫米线下豌豆尖，一锅一碗，汤浓味重。",
+      "difficulty": 1, "servings": 1, "prepTime": 10, "cookTime": 12, "totalTime": 22,
+      "tags": "米线,汤粉,早餐,昆明小吃", "flavorProfile": "咸鲜微辣",
+      "calories": 520, "protein": 24.0, "fat": 20.0, "carbs": 62.0,
+      "tips": "米线别煮太久，回软下锅烫30秒就捞，煮烂了不成形；猪油是灵魂，换成植物油香味差一半；一人一小锅，最多加两份料，锅小汤才浓。",
+      "cover": { "slug": "yunnan-xiaoguomixian", "visual": "Kunming small-pot rice noodles in a little copper pot, reddish broth with minced pork tomatoes and greens, chili oil on top, steam rising" },
+      "ingredients": [
+        ["米线", "150", "g", true],
+        ["猪肉末", "80", "g", true],
+        ["豌豆尖", "60", "g", true],
+        ["西红柿", "80", "g", false],
+        ["腐皮", "30", "g", false],
+        ["大蒜", "15", "g", true],
+        ["小葱", "1", "根", false],
+        ["小米辣", "10", "g", false],
+        ["猪油", "15", "g", true],
+        ["高汤", "400", "ml", true],
+        ["生抽", "20", "ml", true],
+        ["白胡椒粉", "1", "g", false],
+        ["盐", "3", "g", true]
+      ],
+      "steps": [
+        ["米线提前用温水泡10分钟至散开，蒜切末，葱切花，小米辣切圈", 11],
+        ["小铜锅下猪油烧化，爆香蒜末和肉末，炒到肉末发白吐油", 3],
+        ["下西红柿丁和小米辣炒出红汁", 2],
+        ["掺高汤烧开，加生抽、白胡椒粉和盐调味", 4],
+        ["下米线和腐皮，煮到米线回软吸味，约1分钟", 2],
+        ["最后下豌豆尖，一烫就断生，撒葱花连锅端上桌", 1]
+      ]
+    },
+    {
+      "title": "牛肝菌炒肉片",
+      "description": "云南人夏天的执念。新鲜牛肝菌切厚片，宽油加大蒜、干辣椒和青椒猛火爆炒，菌片滑嫩带坚果香，油都舍不得倒。",
+      "difficulty": 3, "servings": 4, "prepTime": 20, "cookTime": 10, "totalTime": 30,
+      "tags": "野生菌,爆炒,时令,云南名菜", "flavorProfile": "浓香咸鲜",
+      "calories": 380, "protein": 22.0, "fat": 28.0, "carbs": 8.0,
+      "tips": "菌子只买认识的品种，量不要贪杂；蒜要多，一半拍一半切片，据说蒜变色就弃食；菌片下锅前先干焙出水汽，再宽油爆炒才香而不黏；吃菌三不：不认识的不吃、不熟的不吃、隔夜的不吃。",
+      "cover": { "slug": "yunnan-niuganjunchaoroupian", "visual": "Stir-fried porcini-like Yunnan bolete mushroom slices with pork and green and dried chili in glossy oil, lots of garlic, dark wok with steam" },
+      "ingredients": [
+        ["牛肝菌", "400", "g", true],
+        ["猪瘦肉", "120", "g", true],
+        ["大蒜", "40", "g", true],
+        ["干辣椒", "8", "g", false],
+        ["青辣椒", "30", "g", false],
+        ["生姜", "15", "g", false],
+        ["生抽", "25", "ml", true],
+        ["料酒", "15", "ml", false],
+        ["猪油", "20", "g", false],
+        ["食用油", "40", "ml", true],
+        ["盐", "5", "g", true]
+      ],
+      "steps": [
+        ["牛肝菌用湿布擦净泥沙，切5毫米厚片，碎边留着一起下锅", 12],
+        ["瘦肉切薄片，用料酒和少许生抽抓腌10分钟", 11],
+        ["干辣椒段、青椒滚刀块、姜蒜切片备好，蒜量要盖住菌片", 6],
+        ["净锅烧热下菌片中火干焙，出汽后倒掉黑水，盛出", 6],
+        ["锅重新下食用油和猪油，油宽一些，爆香姜蒜辣椒", 2],
+        ["下肉片滑炒至变色，再倒菌片大火翻匀，加生抽和盐", 3],
+        ["保持猛火炒足4分钟，出锅前尝一下咸淡，配米饭趁热吃", 4]
+      ]
+    },
+    {
+      "title": "酸笋煮鸡",
+      "description": "云南边地的开胃硬菜。自制酸笋切段，和土鸡、花椒、姜蒜同煮，汤味酸香冲鼻、鸡肉不柴，酸笋吸饱鸡油比肉还抢手。",
+      "difficulty": 2, "servings": 4, "prepTime": 20, "cookTime": 60, "totalTime": 80,
+      "tags": "酸汤,炖煮,傣味,下饭", "flavorProfile": "酸香冲辣",
+      "calories": 400, "protein": 34.0, "fat": 24.0, "carbs": 6.0,
+      "tips": "酸笋先干锅焙去水汽，酸味更纯正、汤不浑；买来的酸笋偏咸，泡10分钟再切；鸡先煸后煮，汤才乳白；这锅汤别放太多调料，盐和辣椒足够。",
+      "cover": { "slug": "yunnan-sunsunzhuji", "visual": "Yunnan sour bamboo shoot chicken stew in a clay pot, pale sour broth with bamboo shoot segments chicken pieces red chilies and Sichuan pepper" },
+      "ingredients": [
+        ["酸笋", "300", "g", true],
+        ["土鸡", "半", "只(约600g)", true],
+        ["生姜", "20", "g", true],
+        ["大蒜", "25", "g", false],
+        ["小米辣", "20", "g", true],
+        ["花椒", "3", "g", false],
+        ["香菜", "20", "g", false],
+        ["猪油", "25", "g", true],
+        ["料酒", "20", "ml", false],
+        ["盐", "6", "g", true],
+        ["清水", "1500", "ml", true]
+      ],
+      "steps": [
+        ["酸笋切厚片，净锅小火焙3分钟去水汽，盛出", 5],
+        ["土鸡斩块洗净，加料酒腌10分钟", 11],
+        ["锅下猪油，把鸡块煸到皮微黄、油渗出", 6],
+        ["下姜片、蒜、花椒和小米辣炒香，冲入沸水", 3],
+        ["下酸笋，大火烧开后转中小火煮40分钟", 42],
+        ["加盐调味，再煮10分钟让酸味进肉，撒香菜连锅上桌", 12]
+      ]
+    },
+    {
+      "title": "菌子火锅",
+      "description": "雨季云南的仪式感。牛肝菌、鸡枞、香菇和木耳一锅烩，用猪筒骨或鸡汤做底，先喝一碗汤再涮菜，菌子必须煮够时间才动筷。",
+      "difficulty": 2, "servings": 6, "prepTime": 30, "cookTime": 45, "totalTime": 75,
+      "tags": "火锅,野生菌,时令,聚宴", "flavorProfile": "鲜香醇厚",
+      "calories": 300, "protein": 22.0, "fat": 14.0, "carbs": 12.0,
+      "tips": "菌子种类控制在三到四种，全部洗净切厚片；开锅后计时20分钟再吃，别抢着捞；底汤宁淡勿咸，蘸水单独调（生抽加小米辣和香菜）；涮菜选豌豆尖、豆腐这类不抢味的。",
+      "cover": { "slug": "yunnan-junzihuoguo", "visual": "Yunnan wild mushroom hotpot in a copper pot, mixed boletes termite mushrooms shiitake and wood ear in clear simmering broth, tofu and greens around, dipping sauce bowls" },
+      "ingredients": [
+        ["牛肝菌", "250", "g", true],
+        ["鸡枞菌", "150", "g", true],
+        ["干香菇", "40", "g", false],
+        ["木耳", "30", "g", false],
+        ["猪筒骨", "500", "g", true],
+        ["嫩豆腐", "200", "g", false],
+        ["豌豆尖", "150", "g", false],
+        ["生姜", "20", "g", true],
+        ["大蒜", "30", "g", true],
+        ["小米辣", "15", "g", false],
+        ["食用油", "30", "ml", true],
+        ["盐", "8", "g", true],
+        ["清水", "1500", "ml", true]
+      ],
+      "steps": [
+        ["猪筒骨冷水下锅，加姜片烧开撇沫，小火熬40分钟做底汤", 45],
+        ["牛肝菌、鸡枞切厚片，香菇泡发，木耳泡开撕小朵", 15],
+        ["锅下油，蒜片爆香，菌片一起下锅炒2分钟去腥提香", 4],
+        ["炒过的菌倒进底汤，大火烧开转中火煮20分钟", 22],
+        ["加盐调味，先给每人盛一碗头道菌汤", 3],
+        ["再下豆腐和豌豆尖涮着吃，蘸水用生抽加小米辣、蒜末和香菜调", 8]
+      ]
+    },
+    {
+      "title": "火腿炒豌豆尖",
+      "description": "云南冬天最家常的一盘。宣威火腿切小片煸出油，下蒜和豌豆尖大火快炒，只放一撮糖不加水，豆尖脆嫩、火腿咸香，盘子底只剩一层油。",
+      "difficulty": 1, "servings": 2, "prepTime": 10, "cookTime": 5, "totalTime": 15,
+      "tags": "小炒,时蔬,下饭菜,冬季", "flavorProfile": "咸鲜清甜",
+      "calories": 230, "protein": 14.0, "fat": 16.0, "carbs": 10.0,
+      "tips": "豌豆尖要现摘现炒，洗净后彻底沥干，带水下锅就成煮菜；火腿本身很咸，盐几乎不用放；全程最大火，从下锅到出锅不超过一分钟。",
+      "cover": { "slug": "yunnan-huotuichouwandoujian", "visual": "Stir-fried pea shoots with thin slices of Xuanwei cured ham on a white plate, glossy green leaves with bits of ham, simple home style" },
+      "ingredients": [
+        ["豌豆尖", "300", "g", true],
+        ["火腿", "50", "g", true],
+        ["大蒜", "20", "g", true],
+        ["猪油", "25", "g", true],
+        ["白糖", "2", "g", false],
+        ["盐", "1", "g", false]
+      ],
+      "steps": [
+        ["豌豆尖掐去老根，只留嫩尖和嫩叶，洗净沥干水", 8],
+        ["火腿切薄片，蒜拍扁剁碎", 4],
+        ["锅下猪油烧到冒烟，先煸火腿出油至边卷", 2],
+        ["下蒜末爆香，随即倒豌豆尖", 1],
+        ["大火翻炒十几下，加白糖和少许盐，豆尖塌秧就立刻出锅", 1]
+      ]
+    },
+    {
+      "title": "石屏包浆豆腐",
+      "description": "建水、石屏一带的街头小吃。小方豆腐先用盐水浸透，宽油小火慢煎到两面结硬壳、里面还是浆，蘸干碟或卤汁吃，一口爆浆。",
+      "difficulty": 2, "servings": 4, "prepTime": 15, "cookTime": 20, "totalTime": 35,
+      "tags": "小吃,豆腐,煎炸,夜市", "flavorProfile": "外香内嫩",
+      "calories": 350, "protein": 22.0, "fat": 24.0, "carbs": 10.0,
+      "tips": "豆腐选压得实、有弹性的包浆豆腐或老豆腐，嫩豆腐做不出爆浆；淡盐水浸10分钟定型去豆腥；小火慢煎到外壳硬、鼓起来才成，急火外焦里生；蘸水里蒜和香菜要生。",
+      "cover": { "slug": "yunnan-shipingbaojiangdoufu", "visual": "Shiping style pan-fried burst tofu cubes with golden blistered crisp shells, split one showing silky liquid inside, chili dip powder and scallion coriander sauce beside" },
+      "ingredients": [
+        ["豆腐", "400", "g", true],
+        ["食用油", "60", "ml", true],
+        ["辣椒面", "10", "g", true],
+        ["花椒粉", "3", "g", false],
+        ["孜然粉", "3", "g", false],
+        ["大蒜", "20", "g", true],
+        ["小葱", "2", "根", false],
+        ["香菜", "15", "g", false],
+        ["生抽", "20", "ml", true],
+        ["白糖", "3", "g", false],
+        ["盐", "4", "g", true]
+      ],
+      "steps": [
+        ["豆腐切成3厘米见方的小块，投入淡盐水浸10分钟后彻底沥干", 12],
+        ["平底锅宽油烧到五成热，下豆腐块转小火慢煎", 3],
+        ["每隔两三分钟翻一次面，煎到六面结硬壳、豆腐微微鼓起", 18],
+        ["辣椒面、花椒粉、孜然粉和盐炒香，盛出做成干碟", 3],
+        ["蒜末、葱花、香菜加生抽和少许凉开水调成蘸汁", 3],
+        ["豆腐捞出控油，趁热蘸干碟或蘸汁吃", 2]
+      ]
+    },
+    {
+      "title": "铜锅洋芋焖饭",
+      "description": "云南人把土豆当主角的焖饭。铜锅或厚底锅里猪油拌米，铺上洋芋丁、火腿和青豆，一次加足水焖到土豆起沙、米饭吸味，锅底还有焦香锅巴。",
+      "difficulty": 2, "servings": 4, "prepTime": 20, "cookTime": 35, "totalTime": 55,
+      "tags": "主食,焖饭,土豆,家常", "flavorProfile": "油润咸香",
+      "calories": 560, "protein": 16.0, "fat": 18.0, "carbs": 82.0,
+      "tips": "水比平时煮饭略少，土豆会出水；米提前泡20分钟更匀；猪油换菜籽油也行，但少了那股香；全程中小火，听到锅底咔咔响就关火再焖10分钟，别急着揭盖。",
+      "cover": { "slug": "yunnan-tongguoyangyuminfan", "visual": "Yunnan copper-pot potato rice, fluffy rice studded with diced potatoes ham and green peas, slightly charred crust, in a copper pot with wooden spoon" },
+      "ingredients": [
+        ["大米", "400", "g", true],
+        ["洋芋", "300", "g", true],
+        ["火腿", "50", "g", true],
+        ["青豆", "80", "g", false],
+        ["猪油", "30", "g", true],
+        ["大葱", "1", "根", false],
+        ["盐", "5", "g", true],
+        ["清水", "500", "ml", true]
+      ],
+      "steps": [
+        ["大米淘净泡20分钟，沥干", 22],
+        ["洋芋去皮切2厘米丁，火腿切小丁，葱切花", 8],
+        ["铜锅下猪油化开，先煸火腿丁和葱白出香", 3],
+        ["下洋芋丁翻炒，掺入大米一起拌匀，让每粒米挂上油", 4],
+        ["加盐一次注足清水，大火烧开后转小火加盖焖25分钟", 28],
+        ["撒青豆再焖5分钟，听到锅底有细微响声就关火，焖10分钟揭盖拌匀，撒葱花", 16]
+      ]
+    },
+    {
+      "title": "菠萝饭",
+      "description": "傣味甜点兼主食。糯米泡透蒸熟，拌进白糖和菠萝丁，装回挖空的菠萝壳再蒸一回，开壳时酸甜气扑鼻，米粒带果香。",
+      "difficulty": 1, "servings": 4, "prepTime": 30, "cookTime": 55, "totalTime": 300,
+      "tags": "主食,甜点,傣味,宴客", "flavorProfile": "酸甜果香",
+      "calories": 430, "protein": 8.0, "fat": 3.0, "carbs": 92.0,
+      "tips": "糯米至少泡4小时，指尖能碾碎才蒸得透；菠萝选熟透的，挖肉时留一层果肉别戳穿外壳；蒸回壳里时盖上保鲜膜防滴水；放凉也能吃，夏天冰过更爽口。",
+      "cover": { "slug": "yunnan-boluofan", "visual": "Dai pineapple rice served inside a hollowed pineapple shell, sticky white rice with diced pineapple on top, half pineapple cut aside on wooden board" },
+      "ingredients": [
+        ["糯米", "300", "g", true],
+        ["菠萝", "1", "个(约800g)", true],
+        ["白糖", "40", "g", true],
+        ["蜂蜜", "20", "g", false],
+        ["熟芝麻", "5", "g", false],
+        ["清水", "1000", "ml", false]
+      ],
+      "steps": [
+        ["糯米淘净，加清水浸泡4小时以上，沥干铺在笼布里", 245],
+        ["旺火蒸30分钟至米粒透明无硬芯", 31],
+        ["菠萝顶部切下当盖，刀划井字后挖出果肉，壳留用", 10],
+        ["三分之一果肉切小丁，其余榨汁后与白糖、蜂蜜小火熬到糖化", 8],
+        ["把糖浆拌进蒸好的糯米，加菠萝丁拌匀", 5],
+        ["装回菠萝壳，表面再放些菠萝丁，加盖再蒸15分钟", 16],
+        ["取出撒熟芝麻，连壳上桌，分碗挖着吃", 2]
+      ]
+    },
+    {
+      "title": "鸡枞菌凉米线",
+      "description": "夏天的一碗。米线冰镇过，浇一勺用油浸透的鸡枞，配黄瓜丝、胡萝卜丝和酸辣蘸水式调料，拌开又脆又香，鸡枞油沉在碗底。",
+      "difficulty": 2, "servings": 2, "prepTime": 20, "cookTime": 15, "totalTime": 35,
+      "tags": "凉食,米线,野生菌,夏季", "flavorProfile": "酸辣鲜香",
+      "calories": 470, "protein": 14.0, "fat": 18.0, "carbs": 62.0,
+      "tips": "鸡枞别水洗，用刀刮净泥沙，撕成条后用温油小火浸炸20分钟，油多才香、能放一周；米线煮好过冰水，沥干拌一点油不粘；酸辣汁先淡后调，拌面时再补。",
+      "cover": { "slug": "yunnan-jizongliangmixian", "visual": "Cold rice noodle bowl topped with termite mushroom fried in oil, shredded cucumber carrot chili and coriander, chili oil pooling, chopsticks lifting noodles" },
+      "ingredients": [
+        ["米线", "200", "g", true],
+        ["鸡枞菌", "150", "g", true],
+        ["黄瓜", "100", "g", false],
+        ["胡萝卜", "60", "g", false],
+        ["大蒜", "20", "g", true],
+        ["香菜", "20", "g", false],
+        ["小米辣", "10", "g", false],
+        ["生抽", "25", "ml", true],
+        ["香醋", "20", "ml", true],
+        ["白糖", "8", "g", false],
+        ["辣椒油", "15", "ml", false],
+        ["食用油", "60", "ml", true],
+        ["盐", "4", "g", true]
+      ],
+      "steps": [
+        ["鸡枞菌撕成条，锅里放宽油烧到三成热，下鸡枞小火浸炸20分钟，加盐后连油盛出晾凉", 22],
+        ["大锅水烧开下米线煮透，捞出过冰水，沥干后拌少许油", 10],
+        ["黄瓜、胡萝卜切丝，蒜捣成泥加凉开水做成蒜水，香菜和小米辣切段", 8],
+        ["香醋、生抽、白糖、辣椒油和蒜水调成酸辣汁尝味", 3],
+        ["米线入碗，铺上黄瓜丝胡萝卜丝，浇两勺鸡枞和鸡枞油", 3],
+        ["淋酸辣汁，撒香菜小米辣，吃前拌匀", 2]
+      ]
+    },
+    {
+      "title": "昭通小肉串",
+      "description": "昭通把小肉串烤成了一座城的夜宵。黄牛肉切小片签成一口一串，只刷油撒盐，炭火上烤到微焦，出炉前撒孜然和辣椒面，配生蒜吃。",
+      "difficulty": 2, "servings": 4, "prepTime": 25, "cookTime": 20, "totalTime": 45,
+      "tags": "烧烤,夜宵,牛肉,云南名小吃", "flavorProfile": "干香孜然",
+      "calories": 320, "protein": 28.0, "fat": 20.0, "carbs": 4.0,
+      "tips": "牛肉选后腿或里脊，带一点肥的夹着穿；一片肉一签，串得松一点才烤得匀；盐先淡后补，最后撒料离火，孜然和辣椒面遇久火就苦；家用烤箱230℃上层8至10分钟，中途翻面刷油。",
+      "cover": { "slug": "yunnan-zhaotongxiaorouchuan", "visual": "Zhaotong style tiny beef skewers on charcoal grill, one-bite beef slices with cumin and chili powder, slightly charred edges, bamboo skewers stacked on banana leaf" },
+      "ingredients": [
+        ["黄牛后腿肉", "500", "g", true],
+        ["孜然粉", "5", "g", true],
+        ["辣椒面", "8", "g", true],
+        ["食用油", "20", "ml", true],
+        ["生抽", "20", "ml", false],
+        ["料酒", "15", "ml", false],
+        ["盐", "4", "g", true],
+        ["大蒜", "30", "g", false],
+        ["香菜", "20", "g", false]
+      ],
+      "steps": [
+        ["牛肉顺纹切成3毫米厚小片，加料酒和生抽抓匀腌15分钟", 17],
+        ["每签穿一片肉，串得宽松一些，肥瘦相间", 12],
+        ["炭火烧到无明火、红炭铺平，上串烤1分钟", 2],
+        ["刷一层薄油，翻面再烤1分钟，反复两次", 5],
+        ["肉色转深、边缘起焦时撒盐和辣椒面、孜然粉，再各烤半分钟", 3],
+        ["出炉配生蒜瓣和香菜，趁热吃", 2]
+      ]
+    }
+  ]
+}

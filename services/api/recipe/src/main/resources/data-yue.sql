@@ -82,7 +82,7 @@ INSERT INTO recipe_step (recipe_id, step_number, content, duration) VALUES
   (@r, 5, '食用油烧至冒烟浇在葱姜丝上激香即成', 1);
 
 -- ========== 5. 白灼虾 ==========
-INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('白灼虾', '粤式鲜货最朴素的致敬。鲜活基围虾下葱姜滚水，只见蜷红便捞起，蘸姜葱豉油，虾肉弹牙带甜，讲究的正是鲜字与精准火候。', NULL, 10, 5, 15, 1, 3, '粤菜', '经典,海鲜,清淡,广东名菜', 1, TRUE, 128, 160, 33, 2, 2, '水要大滚、虾要鲜活，全部蜷红变硬即捞别迟疑；过一遍冷开水壳肉分离更好剥，灼久了肉质发粉。', '清鲜原味');
+INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('白灼虾', '粤式鲜货最朴素的致敬。鲜活基围虾下葱姜滚水，只见蜷红便捞起，蘸姜葱豉油，虾肉弹牙带甜，讲究的正是鲜字与精准火候。', 'https://7072-prod-d7g3zal0655a67232-1496875399.cos.ap-shanghai.myqcloud.com/po/covers/yue-baizhuoxia.jpg', 10, 5, 15, 1, 3, '粤菜', '经典,海鲜,清淡,广东名菜', 1, TRUE, 128, 160, 33, 2, 2, '水要大滚、虾要鲜活，全部蜷红变硬即捞别迟疑；过一遍冷开水壳肉分离更好剥，灼久了肉质发粉。', '清鲜原味');
 SET @r = LAST_INSERT_ID();
 INSERT INTO recipe_ingredient (recipe_id, name, amount, unit, is_essential, sort_order, image_url) VALUES
   (@r, '基围虾', '500', 'g', TRUE, 1, '/api/ingredients/hexiaren.jpg'),
@@ -99,7 +99,7 @@ INSERT INTO recipe_step (recipe_id, step_number, content, duration) VALUES
   (@r, 5, '装盘配蘸料上桌', 1);
 
 -- ========== 6. 干炒牛河 ==========
-INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('干炒牛河', '大排档师傅的看家绝活，镬气是命门。河粉干身不结块，牛肉滑油至嫩，旺火快炒不粘锅、不断碎、不糊底，盘底只见油不见汁。', NULL, 20, 12, 32, 3, 2, '粤菜', '经典,镬气,主食,广东名菜', 1, TRUE, 280, 550, 28, 22, 60, '河粉必先拨散干爽才不结团，镬要烧到冒烟再下料，全程猛火快颠；老抽只上色别放多，否则发黑发苦。', '咸香镬气');
+INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('干炒牛河', '大排档师傅的看家绝活，镬气是命门。河粉干身不结块，牛肉滑油至嫩，旺火快炒不粘锅、不断碎、不糊底，盘底只见油不见汁。', 'https://7072-prod-d7g3zal0655a67232-1496875399.cos.ap-shanghai.myqcloud.com/po/covers/yue-ganchaoniuhe.jpg', 20, 12, 32, 3, 2, '粤菜', '经典,镬气,主食,广东名菜', 1, TRUE, 280, 550, 28, 22, 60, '河粉必先拨散干爽才不结团，镬要烧到冒烟再下料，全程猛火快颠；老抽只上色别放多，否则发黑发苦。', '咸香镬气');
 SET @r = LAST_INSERT_ID();
 INSERT INTO recipe_ingredient (recipe_id, name, amount, unit, is_essential, sort_order, image_url) VALUES
   (@r, '河粉', '400', 'g', TRUE, 1, '/api/ingredients/ganmifen.jpg'),
@@ -122,7 +122,7 @@ INSERT INTO recipe_step (recipe_id, step_number, content, duration) VALUES
   (@r, 5, '回入牛肉与韭黄葱段，颠锅快炒收干，盘底见油不见汁即出锅', 2);
 
 -- ========== 7. 腊味煲仔饭 ==========
-INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('腊味煲仔饭', '瓦煲生米煮成熟饭的功夫。丝苗米配腊肠腊肉同焗，沿煲边淋油焏出锅巴，熄火焖透揭盖浇甜豉油拌开，饭干身、腊味润、锅巴脆。', NULL, 30, 40, 70, 2, 2, '粤菜', '经典,主食,腊味,广东名菜', 1, TRUE, 210, 640, 22, 24, 85, '米先浸再煮才夹生不糊，水高出米一指；沿煲边淋一圈油才焏得金黄锅巴，听到吱吱声且闻到焦香即关火焖透。', '咸香锅巴');
+INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('腊味煲仔饭', '瓦煲生米煮成熟饭的功夫。丝苗米配腊肠腊肉同焗，沿煲边淋油焏出锅巴，熄火焖透揭盖浇甜豉油拌开，饭干身、腊味润、锅巴脆。', 'https://7072-prod-d7g3zal0655a67232-1496875399.cos.ap-shanghai.myqcloud.com/po/covers/yue-laweibaozaifan.jpg', 30, 40, 70, 2, 2, '粤菜', '经典,主食,腊味,广东名菜', 1, TRUE, 210, 640, 22, 24, 85, '米先浸再煮才夹生不糊，水高出米一指；沿煲边淋一圈油才焏得金黄锅巴，听到吱吱声且闻到焦香即关火焖透。', '咸香锅巴');
 SET @r = LAST_INSERT_ID();
 INSERT INTO recipe_ingredient (recipe_id, name, amount, unit, is_essential, sort_order, image_url) VALUES
   (@r, '大米', '200', 'g', TRUE, 1, '/api/ingredients/dami.jpg'),
@@ -146,7 +146,7 @@ INSERT INTO recipe_step (recipe_id, step_number, content, duration) VALUES
   (@r, 5, '关火焖10分钟，调甜豉油淋面，摆菜心窝蛋拌匀上桌', 10);
 
 -- ========== 8. 豉油皇炒面 ==========
-INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('豉油皇炒面', '把最寻常的酱油炒出皇者气。碱水面先蒸散水汽，旺火热镬下葱姜芽菜，面少翻多抖煎出香，沿镬边淋豉油皇焦化，干身爽滑油而不腻。', NULL, 15, 12, 27, 2, 2, '粤菜', '经典,主食,镬气,广东名菜', 1, TRUE, 251, 510, 16, 18, 70, '面先蒸后炒去水汽才干身不粘；豉油皇沿滚烫镬边淋下才能焦香出镬气，别一股脑倒面中间，会发咸结块。', '咸香镬气');
+INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('豉油皇炒面', '把最寻常的酱油炒出皇者气。碱水面先蒸散水汽，旺火热镬下葱姜芽菜，面少翻多抖煎出香，沿镬边淋豉油皇焦化，干身爽滑油而不腻。', 'https://7072-prod-d7g3zal0655a67232-1496875399.cos.ap-shanghai.myqcloud.com/po/covers/yue-chiyouhuangchaomian.jpg', 15, 12, 27, 2, 2, '粤菜', '经典,主食,镬气,广东名菜', 1, TRUE, 251, 510, 16, 18, 70, '面先蒸后炒去水汽才干身不粘；豉油皇沿滚烫镬边淋下才能焦香出镬气，别一股脑倒面中间，会发咸结块。', '咸香镬气');
 SET @r = LAST_INSERT_ID();
 INSERT INTO recipe_ingredient (recipe_id, name, amount, unit, is_essential, sort_order, image_url) VALUES
   (@r, '碱水面', '300', 'g', TRUE, 1, '/api/ingredients/jianshuimian.jpg'),
@@ -167,7 +167,7 @@ INSERT INTO recipe_step (recipe_id, step_number, content, duration) VALUES
   (@r, 5, '沿镬边淋入豉油皇，回蛋和韭黄快速炒匀至干身上色出锅', 3);
 
 -- ========== 9. 艇仔粥 ==========
-INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('艇仔粥', '昔日珠江船家的水上早味。绵滑白粥底滚入现切鲩鱼片、河虾、叉烧、浮皮与油条，撒花生蛋丝葱花，一碗尽纳河海鲜味，鲜热绵稠。', NULL, 30, 90, 120, 2, 4, '粤菜', '经典,粥品,小吃,广东名菜', 1, TRUE, 175, 330, 22, 9, 40, '生料全放碗底，靠重新烧至大滚的粥底趁滚烫冲下去烫熟，鱼片虾才嫩；粥底要熬到开花绵滑，忌清汤寡水。', '鲜甜绵滑');
+INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('艇仔粥', '昔日珠江船家的水上早味。绵滑白粥底滚入现切鲩鱼片、河虾、叉烧、浮皮与油条，撒花生蛋丝葱花，一碗尽纳河海鲜味，鲜热绵稠。', 'https://7072-prod-d7g3zal0655a67232-1496875399.cos.ap-shanghai.myqcloud.com/po/covers/yue-tingzaizhou.jpg', 30, 90, 120, 2, 4, '粤菜', '经典,粥品,小吃,广东名菜', 1, TRUE, 175, 330, 22, 9, 40, '生料全放碗底，靠重新烧至大滚的粥底趁滚烫冲下去烫熟，鱼片虾才嫩；粥底要熬到开花绵滑，忌清汤寡水。', '鲜甜绵滑');
 SET @r = LAST_INSERT_ID();
 INSERT INTO recipe_ingredient (recipe_id, name, amount, unit, is_essential, sort_order, image_url) VALUES
   (@r, '大米', '100', 'g', TRUE, 1, '/api/ingredients/dami.jpg'),
@@ -192,7 +192,7 @@ INSERT INTO recipe_step (recipe_id, step_number, content, duration) VALUES
   (@r, 5, '另把粥底烧至大滚趁滚烫冲入碗中烫熟鱼片虾，撒葱花香菜白胡椒粉即食', 5);
 
 -- ========== 10. 及第粥 ==========
-INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('及第粥', '广州老火粥的头名，取“状元及第”吉意。绵粥底现滚猪肝片、猪腰片、猪肉丸三鲜，靠粥的余温烫至刚熟，粉嫩鲜甜，早茶夜宵两相宜。', NULL, 20, 90, 110, 2, 4, '粤菜', '经典,粥品,小吃,广东名菜', 1, TRUE, 265, 270, 18, 6, 35, '猪腰务必片去白色臊腺并泡洗干净否则腥；内脏只在滚粥里烫至刚熟，久煮发硬失粉嫩，粥底先要熬绵。', '鲜甜绵滑');
+INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('及第粥', '广州老火粥的头名，取“状元及第”吉意。绵粥底现滚猪肝片、猪腰片、猪肉丸三鲜，靠粥的余温烫至刚熟，粉嫩鲜甜，早茶夜宵两相宜。', 'https://7072-prod-d7g3zal0655a67232-1496875399.cos.ap-shanghai.myqcloud.com/po/covers/yue-jidizhou.jpg', 20, 90, 110, 2, 4, '粤菜', '经典,粥品,小吃,广东名菜', 1, TRUE, 265, 270, 18, 6, 35, '猪腰务必片去白色臊腺并泡洗干净否则腥；内脏只在滚粥里烫至刚熟，久煮发硬失粉嫩，粥底先要熬绵。', '鲜甜绵滑');
 SET @r = LAST_INSERT_ID();
 INSERT INTO recipe_ingredient (recipe_id, name, amount, unit, is_essential, sort_order, image_url) VALUES
   (@r, '大米', '100', 'g', TRUE, 1, '/api/ingredients/dami.jpg'),
@@ -215,7 +215,7 @@ INSERT INTO recipe_step (recipe_id, step_number, content, duration) VALUES
   (@r, 5, '调味盐、白胡椒粉，撒葱花香菜即成', 1);
 
 -- ========== 11. 蒜蓉粉丝蒸扇贝 ==========
-INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('蒜蓉粉丝蒸扇贝', '海鲜排档的蒸锅台柱。粉丝铺底吸汁，扇贝肉卧蒜蓉，猛火汽蒸几分钟贝肉饱满弹牙，最后葱丝热油一激，蒜香咸鲜全渗进粉丝里。', NULL, 20, 8, 28, 1, 3, '粤菜', '经典,海鲜,蒸菜,广东名菜', 1, TRUE, 175, 205, 16, 9, 15, '蒜蓉一半温油炸成金蒜再拌生蒜，金银蒜最香；扇贝别蒸过火，贝肉一收即出，汽要足时间要短。', '蒜香咸鲜');
+INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('蒜蓉粉丝蒸扇贝', '海鲜排档的蒸锅台柱。粉丝铺底吸汁，扇贝肉卧蒜蓉，猛火汽蒸几分钟贝肉饱满弹牙，最后葱丝热油一激，蒜香咸鲜全渗进粉丝里。', 'https://7072-prod-d7g3zal0655a67232-1496875399.cos.ap-shanghai.myqcloud.com/po/covers/yue-suanrongfensizhengshanbei.jpg', 20, 8, 28, 1, 3, '粤菜', '经典,海鲜,蒸菜,广东名菜', 1, TRUE, 175, 205, 16, 9, 15, '蒜蓉一半温油炸成金蒜再拌生蒜，金银蒜最香；扇贝别蒸过火，贝肉一收即出，汽要足时间要短。', '蒜香咸鲜');
 SET @r = LAST_INSERT_ID();
 INSERT INTO recipe_ingredient (recipe_id, name, amount, unit, is_essential, sort_order, image_url) VALUES
   (@r, '扇贝', '6', '只', TRUE, 1, '/api/ingredients/baoyu.jpg'),
@@ -233,7 +233,7 @@ INSERT INTO recipe_step (recipe_id, step_number, content, duration) VALUES
   (@r, 5, '淋蒸鱼豉油撒葱丝，滚油浇下激香即食', 1);
 
 -- ========== 12. 菠萝咕噜肉 ==========
-INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('菠萝咕噜肉', '粤菜馆的甜酸担当。猪里脊裹蛋液拍粉炸至外酥，回锅裹上番茄糖醋汁，配菠萝块青红椒，酸甜开胃外脆里嫩，是小朋友也爱的老广味。', NULL, 20, 15, 35, 2, 3, '粤菜', '经典,甜酸,猪肉,广东名菜', 1, TRUE, 198, 460, 30, 22, 35, '肉块要复炸才酥而持久；糖醋汁熬浓挂勺再下肉快翻，炒久了外壳吸汁变软就失了脆；菠萝最后放保清香。', '酸甜酥脆');
+INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('菠萝咕噜肉', '粤菜馆的甜酸担当。猪里脊裹蛋液拍粉炸至外酥，回锅裹上番茄糖醋汁，配菠萝块青红椒，酸甜开胃外脆里嫩，是小朋友也爱的老广味。', 'https://7072-prod-d7g3zal0655a67232-1496875399.cos.ap-shanghai.myqcloud.com/po/covers/yue-boluogulou.jpg', 20, 15, 35, 2, 3, '粤菜', '经典,甜酸,猪肉,广东名菜', 1, TRUE, 198, 460, 30, 22, 35, '肉块要复炸才酥而持久；糖醋汁熬浓挂勺再下肉快翻，炒久了外壳吸汁变软就失了脆；菠萝最后放保清香。', '酸甜酥脆');
 SET @r = LAST_INSERT_ID();
 INSERT INTO recipe_ingredient (recipe_id, name, amount, unit, is_essential, sort_order, image_url) VALUES
   (@r, '猪里脊', '300', 'g', TRUE, 1, '/api/ingredients/zhuliji.jpg'),
@@ -257,7 +257,7 @@ INSERT INTO recipe_step (recipe_id, step_number, content, duration) VALUES
   (@r, 5, '倒入炸肉菠萝青红椒快速翻炒裹匀酱汁出锅', 2);
 
 -- ========== 13. 客家盐焗鸡 ==========
-INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('客家盐焗鸡', '客家山区的传世咸香。整鸡抹沙姜五香，埋进炒烫的粗海盐里小火焗熟，借盐的余温逼熟锁汁，皮爽骨香咸鲜入骨，撕开热气腾腾。', NULL, 20, 60, 80, 3, 4, '粤菜', '经典,客家,鸡肉,广东名菜', 1, TRUE, 236, 310, 36, 18, 1, '鸡身必须彻底擦干否则焗不香反腥；粗盐要炒到发黄滚烫再埋，全程小火靠盐的蓄热焗熟，急火会糊盐苦鸡。', '咸香骨软');
+INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('客家盐焗鸡', '客家山区的传世咸香。整鸡抹沙姜五香，埋进炒烫的粗海盐里小火焗熟，借盐的余温逼熟锁汁，皮爽骨香咸鲜入骨，撕开热气腾腾。', 'https://7072-prod-d7g3zal0655a67232-1496875399.cos.ap-shanghai.myqcloud.com/po/covers/yue-kejiayanjuji.jpg', 20, 60, 80, 3, 4, '粤菜', '经典,客家,鸡肉,广东名菜', 1, TRUE, 236, 310, 36, 18, 1, '鸡身必须彻底擦干否则焗不香反腥；粗盐要炒到发黄滚烫再埋，全程小火靠盐的蓄热焗熟，急火会糊盐苦鸡。', '咸香骨软');
 SET @r = LAST_INSERT_ID();
 INSERT INTO recipe_ingredient (recipe_id, name, amount, unit, is_essential, sort_order, image_url) VALUES
   (@r, '三黄鸡', '1', '只(约1100g)', TRUE, 1, '/api/ingredients/tuji.jpg'),
@@ -277,7 +277,7 @@ INSERT INTO recipe_step (recipe_id, step_number, content, duration) VALUES
   (@r, 5, '小火焗约40分钟至熟，敲开盐壳取出抖净余盐，撕件或斩件装盘', 40);
 
 -- ========== 14. 客家酿豆腐 ==========
-INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('客家酿豆腐', '客家南迁不忘中原饺子的乡愁。卤水豆腐中间酿入拌了香菇虾米的猪肉馅，先煎至两面金黄再砂锅焖煮入味，豆腐弹嫩肉馅鲜香汁浓下饭。', NULL, 25, 20, 45, 2, 3, '粤菜', '经典,客家,豆腐,广东名菜', 1, TRUE, 163, 310, 24, 20, 8, '选结实的老豆腐（卤水豆腐）才酿得住不散；挖坑别挖穿，肉馅搅上劲才饱满；馅面朝下先煎定型再翻。', '咸鲜浓郁');
+INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('客家酿豆腐', '客家南迁不忘中原饺子的乡愁。卤水豆腐中间酿入拌了香菇虾米的猪肉馅，先煎至两面金黄再砂锅焖煮入味，豆腐弹嫩肉馅鲜香汁浓下饭。', 'https://7072-prod-d7g3zal0655a67232-1496875399.cos.ap-shanghai.myqcloud.com/po/covers/yue-kejianangdoufu.jpg', 25, 20, 45, 2, 3, '粤菜', '经典,客家,豆腐,广东名菜', 1, TRUE, 163, 310, 24, 20, 8, '选结实的老豆腐（卤水豆腐）才酿得住不散；挖坑别挖穿，肉馅搅上劲才饱满；馅面朝下先煎定型再翻。', '咸鲜浓郁');
 SET @r = LAST_INSERT_ID();
 INSERT INTO recipe_ingredient (recipe_id, name, amount, unit, is_essential, sort_order, image_url) VALUES
   (@r, '水豆腐', '400', 'g', TRUE, 1, '/api/ingredients/doufu.jpg'),
@@ -299,7 +299,7 @@ INSERT INTO recipe_step (recipe_id, step_number, content, duration) VALUES
   (@r, 5, '收汁至浓撒葱花，连砂锅上桌', 2);
 
 -- ========== 15. 梅菜扣肉 ==========
-INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('梅菜扣肉', '惠州梅菜与五花肉的相逢。带皮五花肉煮炸上色切薄片，与炒香的梅菜相间码碗，长时间蒸至肥油尽入菜中，肉烂不散梅菜咸甜回甘。', NULL, 40, 100, 140, 3, 6, '粤菜', '经典,客家,猪肉,广东名菜', 1, TRUE, 147, 490, 30, 38, 8, '炸肉皮防溅务必加盖，炸后泡冷水才起虎皮；梅菜要反复淘洗去沙并炒透才香；蒸足一个半钟肥肉化于菜中才不腻。', '咸甜软糯');
+INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('梅菜扣肉', '惠州梅菜与五花肉的相逢。带皮五花肉煮炸上色切薄片，与炒香的梅菜相间码碗，长时间蒸至肥油尽入菜中，肉烂不散梅菜咸甜回甘。', 'https://7072-prod-d7g3zal0655a67232-1496875399.cos.ap-shanghai.myqcloud.com/po/covers/yue-meicaikourou.jpg', 40, 100, 140, 3, 6, '粤菜', '经典,客家,猪肉,广东名菜', 1, TRUE, 147, 490, 30, 38, 8, '炸肉皮防溅务必加盖，炸后泡冷水才起虎皮；梅菜要反复淘洗去沙并炒透才香；蒸足一个半钟肥肉化于菜中才不腻。', '咸甜软糯');
 SET @r = LAST_INSERT_ID();
 INSERT INTO recipe_ingredient (recipe_id, name, amount, unit, is_essential, sort_order, image_url) VALUES
   (@r, '带皮五花肉', '750', 'g', TRUE, 1, '/api/ingredients/wuhuarou.jpg'),
@@ -323,7 +323,7 @@ INSERT INTO recipe_step (recipe_id, step_number, content, duration) VALUES
   (@r, 6, '取出翻扣入盘淋上倒出的汁即成', 2);
 
 -- ========== 16. 胡椒猪肚鸡 ==========
-INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('胡椒猪肚鸡', '冬日暖胃的老火靓汤。整猪肚塞鸡块，加拍破的白胡椒与姜煲足两小时，汤色奶白胡椒辛香窜鼻，猪肚爽脆鸡肉鲜甜，先喝汤再剪件蘸料。', NULL, 30, 120, 150, 2, 4, '粤菜', '经典,汤羹,暖身,广东名菜', 1, TRUE, 230, 300, 30, 18, 4, '猪肚用盐、面粉、料酒反复揉搓去黏液焯水刮净白膜才不腥；白胡椒要拍破才出辛香；大火滚煲汤才奶白。', '辛香醇厚');
+INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('胡椒猪肚鸡', '冬日暖胃的老火靓汤。整猪肚塞鸡块，加拍破的白胡椒与姜煲足两小时，汤色奶白胡椒辛香窜鼻，猪肚爽脆鸡肉鲜甜，先喝汤再剪件蘸料。', 'https://7072-prod-d7g3zal0655a67232-1496875399.cos.ap-shanghai.myqcloud.com/po/covers/yue-huojiaozhuduji.jpg', 30, 120, 150, 2, 4, '粤菜', '经典,汤羹,暖身,广东名菜', 1, TRUE, 230, 300, 30, 18, 4, '猪肚用盐、面粉、料酒反复揉搓去黏液焯水刮净白膜才不腥；白胡椒要拍破才出辛香；大火滚煲汤才奶白。', '辛香醇厚');
 SET @r = LAST_INSERT_ID();
 INSERT INTO recipe_ingredient (recipe_id, name, amount, unit, is_essential, sort_order, image_url) VALUES
   (@r, '猪肚', '1', '个(约700g)', TRUE, 1, '/api/ingredients/shuzhudu.jpg'),
@@ -343,7 +343,7 @@ INSERT INTO recipe_step (recipe_id, step_number, content, duration) VALUES
   (@r, 5, '取出猪肚剪成条回锅，加红枣枸杞再煲10分钟，起锅加盐调味', 10);
 
 -- ========== 17. 姜撞奶 ==========
-INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('姜撞奶', '番禺沙湾的甜蜜魔法。老姜磨汁挤进碗底，全脂牛奶煮至七八十度从高处一冲撞入，静置数分钟凝成嫩滑奶冻，姜香辛辣与奶甜交融。', NULL, 15, 14, 29, 2, 2, '粤菜', '经典,甜品,小吃,广东名菜', 1, TRUE, 172, 340, 17, 18, 28, '牛奶温度是成败关键，约70-80℃最宜，煮沸或太凉都凝不住；从高处一气冲撞不搅动，盖住静置五分钟即成冻。', '姜香嫩滑');
+INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('姜撞奶', '番禺沙湾的甜蜜魔法。老姜磨汁挤进碗底，全脂牛奶煮至七八十度从高处一冲撞入，静置数分钟凝成嫩滑奶冻，姜香辛辣与奶甜交融。', 'https://7072-prod-d7g3zal0655a67232-1496875399.cos.ap-shanghai.myqcloud.com/po/covers/yue-jiangzhuangnai.jpg', 15, 14, 29, 2, 2, '粤菜', '经典,甜品,小吃,广东名菜', 1, TRUE, 172, 340, 17, 18, 28, '牛奶温度是成败关键，约70-80℃最宜，煮沸或太凉都凝不住；从高处一气冲撞不搅动，盖住静置五分钟即成冻。', '姜香嫩滑');
 SET @r = LAST_INSERT_ID();
 INSERT INTO recipe_ingredient (recipe_id, name, amount, unit, is_essential, sort_order, image_url) VALUES
   (@r, '牛奶', '500', 'ml', TRUE, 1, '/api/ingredients/doufu.jpg'),
@@ -357,7 +357,7 @@ INSERT INTO recipe_step (recipe_id, step_number, content, duration) VALUES
   (@r, 4, '静置5分钟不要搅动，凝成嫩滑奶冻即可食用', 5);
 
 -- ========== 18. 陈皮红豆沙 ==========
-INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('陈皮红豆沙', '粤式糖水的暖心收尾。新会陈皮浸软刮瓤与红豆同煲至豆壳尽化绵沙起沙，冰糖调味，一碗红润浓稠，陈皮甘香解腻，冷食热食皆宜。', NULL, 30, 120, 150, 1, 4, '粤菜', '经典,甜品,糖水,广东名菜', 1, TRUE, 128, 280, 12, 1, 55, '陈皮务必泡软刮去内层白瓤，否则发苦；豆要煲到开花再用勺背碾擦才起沙，加冰糖后勤搅防粘底糊锅。', '甘香绵沙');
+INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('陈皮红豆沙', '粤式糖水的暖心收尾。新会陈皮浸软刮瓤与红豆同煲至豆壳尽化绵沙起沙，冰糖调味，一碗红润浓稠，陈皮甘香解腻，冷食热食皆宜。', 'https://7072-prod-d7g3zal0655a67232-1496875399.cos.ap-shanghai.myqcloud.com/po/covers/yue-chenpihongdousha.jpg', 30, 120, 150, 1, 4, '粤菜', '经典,甜品,糖水,广东名菜', 1, TRUE, 128, 280, 12, 1, 55, '陈皮务必泡软刮去内层白瓤，否则发苦；豆要煲到开花再用勺背碾擦才起沙，加冰糖后勤搅防粘底糊锅。', '甘香绵沙');
 SET @r = LAST_INSERT_ID();
 INSERT INTO recipe_ingredient (recipe_id, name, amount, unit, is_essential, sort_order, image_url) VALUES
   (@r, '红豆', '200', 'g', TRUE, 1, '/api/ingredients/xuedou.jpg'),
