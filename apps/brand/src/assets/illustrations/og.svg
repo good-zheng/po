@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="628" viewBox="0 0 1200 628">
+  <defs>
+    <linearGradient id="og-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0B1220"/>
+      <stop offset="0.6" stop-color="#0E1728"/>
+      <stop offset="1" stop-color="#160F2B"/>
+    </linearGradient>
+    <radialGradient id="og-b" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#0161EF" stop-opacity=".55"/>
+      <stop offset="1" stop-color="#0161EF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="og-o" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#FB923C" stop-opacity=".5"/>
+      <stop offset="1" stop-color="#FB923C" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="og-v" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#8B5CF6" stop-opacity=".45"/>
+      <stop offset="1" stop-color="#6D28D9" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="og-p" width="34" height="34" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.6" fill="#334155" fill-opacity=".55"/>
+    </pattern>
+  </defs>
+
+  <rect width="1200" height="628" fill="url(#og-bg)"/>
+  <rect width="1200" height="628" fill="url(#og-p)"/>
+  <ellipse cx="140" cy="120" rx="380" ry="280" fill="url(#og-b)"/>
+  <ellipse cx="1080" cy="560" rx="320" ry="240" fill="url(#og-o)"/>
+  <ellipse cx="1010" cy="110" rx="280" ry="220" fill="url(#og-v)"/>
+
+  <text x="80" y="216" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="132" font-weight="700" fill="#F7F4EE">叮叮厨</text>
+  <circle cx="504" cy="182" r="18" fill="#FB923C"/>
+  <text x="80" y="304" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="52" font-weight="700" fill="#93C5FD">会说话的菜谱与 AI 做菜助手</text>
+  <path d="M80 356 h520" stroke="#243252" stroke-width="4"/>
+  <text x="80" y="424" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="34" fill="#94A3B8">独立开发 · 全栈作品</text>
+  <text x="80" y="486" font-family="Microsoft YaHei, PingFang SC, sans-serif" font-size="34" fill="#64748B">三端客户端 · 两个后端 · 一条 AI 链路</text>
+
+  <!-- 右侧：做菜模式手机 -->
+  <g transform="translate(760 96) scale(0.86)">
+    <rect width="240" height="470" rx="40" fill="#161f33" stroke="#2A3A5C" stroke-width="3"/>
+    <rect x="18" y="18" width="204" height="434" rx="30" fill="#0C1424"/>
+    <rect x="86" y="32" width="68" height="10" rx="5" fill="#1E2B44"/>
+    <rect x="40" y="64" width="120" height="12" rx="6" fill="#1E2B44"/>
+    <rect x="40" y="64" width="72" height="12" rx="6" fill="#0161EF"/>
+    <circle cx="186" cy="70" r="10" fill="#FB923C"/>
+    <rect x="40" y="98" width="160" height="112" rx="16" fill="#16213A" stroke="#243252" stroke-width="2"/>
+    <rect x="58" y="120" width="96" height="11" rx="5.5" fill="#93C5FD"/>
+    <rect x="58" y="146" width="126" height="9" rx="4.5" fill="#334155"/>
+    <rect x="58" y="166" width="92" height="9" rx="4.5" fill="#334155"/>
+    <g transform="translate(120 288)">
+      <circle r="58" fill="none" stroke="#1B283F" stroke-width="14"/>
+      <circle r="58" fill="none" stroke="#FB923C" stroke-width="14" stroke-linecap="round"
+              stroke-dasharray="364" stroke-dashoffset="130" transform="rotate(-90)"/>
+      <path d="M0 0 v-30" stroke="#F7F4EE" stroke-width="8" stroke-linecap="round"/>
+      <path d="M0 0 h22" stroke="#F7F4EE" stroke-width="8" stroke-linecap="round" opacity=".75"/>
+    </g>
+    <g fill="#8B5CF6" transform="translate(40 372)">
+      <rect x="0" y="14" width="9" height="22" rx="4.5"/>
+      <rect x="21" y="4" width="9" height="42" rx="4.5"/>
+      <rect x="42" y="0" width="9" height="50" rx="4.5"/>
+      <rect x="63" y="12" width="9" height="26" rx="4.5"/>
+      <rect x="84" y="2" width="9" height="46" rx="4.5"/>
+      <rect x="105" y="16" width="9" height="18" rx="4.5"/>
+      <rect x="126" y="6" width="9" height="38" rx="4.5"/>
+      <rect x="147" y="18" width="9" height="14" rx="4.5"/>
+    </g>
+  </g>
+
+  <!-- 语音气泡 -->
+  <g transform="translate(548 128)">
+    <rect width="180" height="88" rx="24" fill="#16213A" stroke="#2A3A5C" stroke-width="3"/>
+    <rect x="22" y="24" width="96" height="11" rx="5.5" fill="#8B5CF6"/>
+    <rect x="22" y="48" width="130" height="9" rx="4.5" fill="#334155"/>
+  </g>
+
+  <!-- 食材点缀 -->
+  <g transform="translate(596 616)">
+    <ellipse rx="40" ry="36" fill="#F7F4EE"/>
+    <path d="M0 -36 C 18 -12 18 14 0 34 M0 -36 C -18 -12 -18 14 0 34" stroke="#D9D3C6" stroke-width="4" fill="none"/>
+  </g>
+  <g transform="translate(1090 456) rotate(24)">
+    <path d="M0 0 C 30 -10 54 8 58 34 C 26 40 4 26 0 0 Z" fill="#34D399" opacity=".85"/>
+  </g>
+  <g fill="#93C5FD">
+    <circle cx="668" cy="330" r="6" opacity=".7"/>
+    <circle cx="1140" cy="240" r="5" opacity=".6"/>
+  </g>
+</svg>

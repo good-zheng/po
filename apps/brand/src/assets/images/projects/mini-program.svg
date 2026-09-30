@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 800" role="img" aria-label="插画：手机里的小程序界面，旁边飘着带厨师帽的对话气泡">
+  <defs>
+    <linearGradient id="mp-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0B1220"/>
+      <stop offset="1" stop-color="#131026"/>
+    </linearGradient>
+    <radialGradient id="mp-b" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#0161EF" stop-opacity=".5"/>
+      <stop offset="1" stop-color="#0161EF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="mp-o" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#FB923C" stop-opacity=".42"/>
+      <stop offset="1" stop-color="#FB923C" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="mp-p" width="34" height="34" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.6" fill="#334155" fill-opacity=".5"/>
+    </pattern>
+  </defs>
+
+  <rect width="1280" height="800" fill="url(#mp-bg)"/>
+  <rect width="1280" height="800" fill="url(#mp-p)"/>
+  <ellipse cx="240" cy="180" rx="330" ry="250" fill="url(#mp-b)"/>
+  <ellipse cx="1060" cy="660" rx="300" ry="220" fill="url(#mp-o)"/>
+
+  <!-- 手机 -->
+  <g transform="rotate(-6 470 420)">
+    <rect x="352" y="150" width="236" height="500" rx="38" fill="#161f33" stroke="#2A3A5C" stroke-width="3"/>
+    <rect x="368" y="168" width="204" height="464" rx="28" fill="#0C1424"/>
+    <rect x="438" y="180" width="64" height="9" rx="4.5" fill="#1E2B44"/>
+    <!-- 游客可逛：菜谱卡片列表 -->
+    <g>
+      <rect x="388" y="208" width="164" height="96" rx="16" fill="#16213A"/>
+      <rect x="402" y="224" width="60" height="60" rx="12" fill="#FB923C" fill-opacity=".85"/>
+      <rect x="476" y="232" width="64" height="10" rx="5" fill="#93C5FD"/>
+      <rect x="476" y="256" width="60" height="8" rx="4" fill="#334155"/>
+      <rect x="476" y="274" width="44" height="8" rx="4" fill="#334155"/>
+    </g>
+    <g>
+      <rect x="388" y="318" width="164" height="96" rx="16" fill="#16213A"/>
+      <rect x="402" y="334" width="60" height="60" rx="12" fill="#8B5CF6" fill-opacity=".85"/>
+      <rect x="476" y="342" width="64" height="10" rx="5" fill="#93C5FD"/>
+      <rect x="476" y="366" width="60" height="8" rx="4" fill="#334155"/>
+      <rect x="476" y="384" width="44" height="8" rx="4" fill="#334155"/>
+    </g>
+    <rect x="388" y="428" width="164" height="96" rx="16" fill="#111A2C"/>
+    <rect x="402" y="444" width="60" height="60" rx="12" fill="#1F2A44"/>
+    <rect x="476" y="452" width="64" height="10" rx="5" fill="#243252"/>
+    <rect x="476" y="476" width="60" height="8" rx="4" fill="#1B283F"/>
+    <!-- 底部 tab -->
+    <g fill="#243252">
+      <circle cx="416" cy="580" r="12"/>
+      <circle cx="470" cy="580" r="12" fill="#0161EF"/>
+      <circle cx="524" cy="580" r="12"/>
+    </g>
+  </g>
+
+  <!-- 语音气泡 + 厨师帽 -->
+  <g>
+    <rect x="672" y="196" width="332" height="184" rx="36" fill="#16213A" stroke="#2A3A5C" stroke-width="3"/>
+    <path d="M724 380 l-12 52 l62 -40 z" fill="#16213A" stroke="#2A3A5C" stroke-width="3"/>
+    <g transform="translate(838 320)">
+      <circle cx="-34" cy="-44" r="28" fill="#F7F4EE"/>
+      <circle cx="0" cy="-60" r="32" fill="#F7F4EE"/>
+      <circle cx="34" cy="-44" r="28" fill="#F7F4EE"/>
+      <rect x="-36" y="-48" width="72" height="46" fill="#F7F4EE"/>
+      <rect x="-46" y="-6" width="92" height="36" rx="10" fill="#F7F4EE"/>
+      <path d="M-46 12 h92" stroke="#D9D3C6" stroke-width="4"/>
+      <path d="M-18 -34 q18 -14 36 0" stroke="#D9D3C6" stroke-width="4" fill="none" opacity=".7"/>
+    </g>
+  </g>
+
+  <!-- 声波 -->
+  <g fill="#8B5CF6" transform="translate(700 470)">
+    <rect x="0" y="26" width="12" height="28" rx="6"/>
+    <rect x="26" y="12" width="12" height="56" rx="6"/>
+    <rect x="52" y="0" width="12" height="80" rx="6"/>
+    <rect x="78" y="20" width="12" height="40" rx="6"/>
+    <rect x="104" y="8" width="12" height="64" rx="6"/>
+    <rect x="130" y="30" width="12" height="20" rx="6"/>
+  </g>
+
+  <!-- 登录闸门：只在动作处出现 -->
+  <g transform="translate(900 452)">
+    <rect x="0" y="0" width="184" height="86" rx="24" fill="#0161EF"/>
+    <rect x="26" y="26" width="90" height="12" rx="6" fill="#F7F4EE" opacity=".9"/>
+    <rect x="26" y="50" width="56" height="10" rx="5" fill="#F7F4EE" opacity=".55"/>
+    <circle cx="152" cy="43" r="16" fill="#F7F4EE" opacity=".9"/>
+    <path d="M146 43 l5 5 l9 -10" stroke="#0161EF" stroke-width="4" fill="none" stroke-linecap="round"/>
+  </g>
+
+  <g fill="#93C5FD">
+    <circle cx="1120" cy="150" r="6" opacity=".7"/>
+    <circle cx="120" cy="520" r="5" opacity=".6"/>
+    <circle cx="230" cy="700" r="4" opacity=".5"/>
+  </g>
+</svg>

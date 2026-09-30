@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-label="插画：四级下降的台阶，小球逐级落下，最后一级仍然吐出回答气泡">
+  <defs>
+    <linearGradient id="c2-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#10091F"/>
+      <stop offset="0.55" stop-color="#0B1220"/>
+      <stop offset="1" stop-color="#0E1A2E"/>
+    </linearGradient>
+    <radialGradient id="c2-v" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#8B5CF6" stop-opacity=".46"/>
+      <stop offset="1" stop-color="#6D28D9" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="c2-g" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#34D399" stop-opacity=".4"/>
+      <stop offset="1" stop-color="#34D399" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="c2-p" width="34" height="34" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.6" fill="#334155" fill-opacity=".5"/>
+    </pattern>
+  </defs>
+
+  <rect width="1280" height="720" fill="url(#c2-bg)"/>
+  <rect width="1280" height="720" fill="url(#c2-p)"/>
+  <ellipse cx="300" cy="140" rx="340" ry="250" fill="url(#c2-v)"/>
+  <ellipse cx="1020" cy="640" rx="320" ry="230" fill="url(#c2-g)"/>
+
+  <!-- 四级台阶 -->
+  <g>
+    <g transform="translate(120 210)">
+      <rect width="250" height="70" rx="16" fill="#16213A" stroke="#8B5CF6" stroke-width="4"/>
+      <circle cx="34" cy="35" r="12" fill="#8B5CF6"/>
+      <rect x="62" y="22" width="120" height="12" rx="6" fill="#93C5FD"/>
+      <rect x="62" y="44" width="80" height="9" rx="4.5" fill="#334155"/>
+    </g>
+    <g transform="translate(370 320)">
+      <rect width="250" height="70" rx="16" fill="#16213A" stroke="#0161EF" stroke-width="4"/>
+      <circle cx="34" cy="35" r="12" fill="#0161EF"/>
+      <rect x="62" y="22" width="104" height="12" rx="6" fill="#93C5FD"/>
+      <rect x="62" y="44" width="128" height="9" rx="4.5" fill="#334155"/>
+    </g>
+    <g transform="translate(620 430)">
+      <rect width="250" height="70" rx="16" fill="#111A2C" stroke="#2A3A5C" stroke-width="4"/>
+      <circle cx="34" cy="35" r="12" fill="#FB923C"/>
+      <rect x="62" y="22" width="116" height="12" rx="6" fill="#334155"/>
+      <rect x="62" y="44" width="72" height="9" rx="4.5" fill="#1F2A44"/>
+    </g>
+    <g transform="translate(870 540)">
+      <rect width="290" height="86" rx="18" fill="#0F2A22" stroke="#34D399" stroke-width="5"/>
+      <circle cx="38" cy="43" r="14" fill="#34D399"/>
+      <path d="M30 43 l6 7 l12 -14" stroke="#0B1220" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <rect x="68" y="28" width="140" height="12" rx="6" fill="#93C5FD"/>
+      <rect x="68" y="52" width="96" height="9" rx="4.5" fill="#334155"/>
+    </g>
+  </g>
+
+  <!-- 小球与落点虚线 -->
+  <g fill="none" stroke="#F87171" stroke-width="6" stroke-linecap="round" stroke-dasharray="14 14" opacity=".9">
+    <path d="M250 200 q60 -60 130 60"/>
+    <path d="M500 310 q60 -60 130 60"/>
+    <path d="M750 420 q60 -60 130 60"/>
+  </g>
+  <g>
+    <circle cx="250" cy="176" r="20" fill="#F87171"/>
+    <circle cx="940" cy="512" r="20" fill="#34D399"/>
+  </g>
+
+  <!-- 顶层断开标记 -->
+  <g transform="translate(150 120)">
+    <circle r="34" fill="#1B283F" stroke="#F87171" stroke-width="5"/>
+    <path d="M-14 -14 L14 14" stroke="#F87171" stroke-width="6" stroke-linecap="round"/>
+    <path d="M14 -14 L-14 14" stroke="#F87171" stroke-width="6" stroke-linecap="round"/>
+  </g>
+
+  <!-- 仍然有回应：气泡 -->
+  <g transform="translate(880 372)">
+    <rect width="230" height="104" rx="24" fill="#16213A" stroke="#34D399" stroke-width="3"/>
+    <rect x="24" y="26" width="120" height="12" rx="6" fill="#34D399"/>
+    <rect x="24" y="52" width="170" height="9" rx="4.5" fill="#334155"/>
+    <rect x="24" y="72" width="96" height="9" rx="4.5" fill="#334155"/>
+  </g>
+
+  <g fill="#93C5FD">
+    <circle cx="1160" cy="140" r="6" opacity=".7"/>
+    <circle cx="80" cy="560" r="5" opacity=".55"/>
+  </g>
+</svg>

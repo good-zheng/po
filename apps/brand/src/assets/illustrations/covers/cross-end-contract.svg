@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-label="插画：中间一块契约板，三条接口分别连向手机、平板与浏览器">
+  <defs>
+    <linearGradient id="c3-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0B1220"/>
+      <stop offset="1" stop-color="#101A2E"/>
+    </linearGradient>
+    <radialGradient id="c3-b" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#0161EF" stop-opacity=".5"/>
+      <stop offset="1" stop-color="#0161EF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="c3-o" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#FB923C" stop-opacity=".4"/>
+      <stop offset="1" stop-color="#FB923C" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="c3-p" width="34" height="34" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.6" fill="#334155" fill-opacity=".5"/>
+    </pattern>
+  </defs>
+
+  <rect width="1280" height="720" fill="url(#c3-bg)"/>
+  <rect width="1280" height="720" fill="url(#c3-p)"/>
+  <ellipse cx="640" cy="330" rx="360" ry="270" fill="url(#c3-b)"/>
+  <ellipse cx="1080" cy="620" rx="280" ry="200" fill="url(#c3-o)"/>
+
+  <!-- 中央契约板 -->
+  <g transform="translate(498 196)">
+    <rect width="284" height="308" rx="26" fill="#F7F4EE"/>
+    <rect x="0" y="0" width="284" height="60" rx="26" fill="#0161EF"/>
+    <path d="M0 60 h284" stroke="#D9D3C6" stroke-width="3"/>
+    <g stroke="#F7F4EE" stroke-width="7" fill="none" stroke-linecap="round">
+      <path d="M52 22 h-16 v22 h16"/>
+      <path d="M96 22 h16 v22 h-16"/>
+    </g>
+    <rect x="130" y="26" width="112" height="12" rx="6" fill="#F7F4EE" opacity=".8"/>
+    <g fill="#334155">
+      <rect x="28" y="86" width="146" height="12" rx="6"/>
+      <rect x="44" y="114" width="176" height="9" rx="4.5" fill="#94A3B8"/>
+      <rect x="44" y="136" width="110" height="9" rx="4.5" fill="#94A3B8"/>
+      <rect x="28" y="170" width="120" height="12" rx="6"/>
+      <rect x="44" y="198" width="158" height="9" rx="4.5" fill="#94A3B8"/>
+      <rect x="44" y="220" width="92" height="9" rx="4.5" fill="#94A3B8"/>
+      <rect x="28" y="254" width="134" height="12" rx="6"/>
+      <rect x="44" y="278" width="120" height="9" rx="4.5" fill="#CBD5E1"/>
+    </g>
+  </g>
+
+  <!-- 三个插头（同一形状） -->
+  <g fill="#34D399">
+    <g transform="translate(392 262)">
+      <rect width="106" height="24" rx="12"/>
+      <circle cx="106" cy="12" r="18" fill="none" stroke="#34D399" stroke-width="6"/>
+    </g>
+    <g transform="translate(782 262)">
+      <rect width="106" height="24" rx="12"/>
+      <circle cx="0" cy="12" r="18" fill="none" stroke="#34D399" stroke-width="6"/>
+    </g>
+    <g transform="translate(580 504)">
+      <rect width="24" height="96" rx="12"/>
+      <circle cx="12" cy="0" r="18" fill="none" stroke="#34D399" stroke-width="6"/>
+    </g>
+  </g>
+
+  <!-- 左：手机 -->
+  <g transform="translate(168 176)">
+    <rect width="170" height="300" rx="30" fill="#161f33" stroke="#2A3A5C" stroke-width="3"/>
+    <rect x="14" y="16" width="142" height="268" rx="22" fill="#0C1424"/>
+    <rect x="32" y="44" width="90" height="12" rx="6" fill="#93C5FD"/>
+    <rect x="32" y="70" width="66" height="9" rx="4.5" fill="#334155"/>
+    <rect x="32" y="100" width="106" height="70" rx="12" fill="#16213A"/>
+    <rect x="32" y="190" width="106" height="70" rx="12" fill="#111A2C"/>
+  </g>
+
+  <!-- 右：平板 -->
+  <g transform="translate(942 176)">
+    <rect width="220" height="300" rx="26" fill="#161f33" stroke="#2A3A5C" stroke-width="3"/>
+    <rect x="14" y="14" width="192" height="272" rx="18" fill="#0C1424"/>
+    <rect x="34" y="40" width="110" height="12" rx="6" fill="#93C5FD"/>
+    <g fill="#16213A">
+      <rect x="34" y="70" width="152" height="56" rx="12"/>
+      <rect x="34" y="136" width="152" height="56" rx="12"/>
+      <rect x="34" y="202" width="152" height="56" rx="12"/>
+    </g>
+    <g fill="#334155">
+      <rect x="48" y="88" width="70" height="10" rx="5"/>
+      <rect x="48" y="154" width="90" height="10" rx="5"/>
+      <rect x="48" y="220" width="56" height="10" rx="5"/>
+    </g>
+  </g>
+
+  <!-- 下：浏览器窗口 -->
+  <g transform="translate(430 606)">
+    <rect width="420" height="86" rx="18" fill="#111A2C" stroke="#2A3A5C" stroke-width="3"/>
+    <rect width="420" height="26" rx="13" fill="#16213A"/>
+    <g fill="#334155">
+      <circle cx="20" cy="13" r="5"/>
+      <circle cx="38" cy="13" r="5"/>
+    </g>
+    <rect x="18" y="42" width="180" height="12" rx="6" fill="#93C5FD"/>
+    <rect x="18" y="62" width="120" height="9" rx="4.5" fill="#243252"/>
+    <rect x="300" y="42" width="96" height="28" rx="14" fill="#0161EF"/>
+  </g>
+
+  <g fill="#93C5FD">
+    <circle cx="1150" cy="120" r="6" opacity=".7"/>
+    <circle cx="110" cy="580" r="5" opacity=".55"/>
+  </g>
+</svg>

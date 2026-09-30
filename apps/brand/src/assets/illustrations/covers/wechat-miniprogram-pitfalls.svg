@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-label="插画：一条弯折的路，路上立着五个警示牌和一个坑，尽头是手机与旗帜">
+  <defs>
+    <linearGradient id="c5-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0B1220"/>
+      <stop offset="1" stop-color="#0E1A2E"/>
+    </linearGradient>
+    <radialGradient id="c5-o" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#FB923C" stop-opacity=".42"/>
+      <stop offset="1" stop-color="#FB923C" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="c5-b" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#0161EF" stop-opacity=".46"/>
+      <stop offset="1" stop-color="#0161EF" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="c5-p" width="34" height="34" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.6" fill="#334155" fill-opacity=".5"/>
+    </pattern>
+  </defs>
+
+  <rect width="1280" height="720" fill="url(#c5-bg)"/>
+  <rect width="1280" height="720" fill="url(#c5-p)"/>
+  <ellipse cx="260" cy="150" rx="340" ry="250" fill="url(#c5-b)"/>
+  <ellipse cx="1040" cy="600" rx="320" ry="230" fill="url(#c5-o)"/>
+
+  <!-- 路 -->
+  <path d="M60 560 C 240 560 240 380 420 380 C 600 380 600 560 780 560 C 940 560 940 360 1120 360"
+        fill="none" stroke="#16213A" stroke-width="72" stroke-linecap="round"/>
+  <path d="M60 560 C 240 560 240 380 420 380 C 600 380 600 560 780 560 C 940 560 940 360 1120 360"
+        fill="none" stroke="#2A3A5C" stroke-width="6" stroke-dasharray="26 22" stroke-linecap="round"/>
+
+  <!-- 坑 -->
+  <g transform="translate(660 566)">
+    <ellipse rx="66" ry="26" fill="#050810"/>
+    <ellipse rx="44" ry="16" fill="#0B1220"/>
+  </g>
+
+  <!-- 五个警示牌 -->
+  <g>
+    <g transform="translate(230 470)">
+      <path d="M0 -46 L44 32 H-44 Z" fill="#FB923C"/>
+      <path d="M0 -20 v26" stroke="#0B1220" stroke-width="8" stroke-linecap="round"/>
+      <circle cy="18" r="5" fill="#0B1220"/>
+      <rect x="-5" y="32" width="10" height="52" fill="#334155"/>
+    </g>
+    <g transform="translate(420 300)">
+      <path d="M0 -46 L44 32 H-44 Z" fill="#FB923C"/>
+      <path d="M0 -20 v26" stroke="#0B1220" stroke-width="8" stroke-linecap="round"/>
+      <circle cy="18" r="5" fill="#0B1220"/>
+      <rect x="-5" y="32" width="10" height="52" fill="#334155"/>
+    </g>
+    <g transform="translate(660 486)">
+      <path d="M0 -46 L44 32 H-44 Z" fill="#F87171"/>
+      <path d="M0 -20 v26" stroke="#0B1220" stroke-width="8" stroke-linecap="round"/>
+      <circle cy="18" r="5" fill="#0B1220"/>
+      <rect x="-5" y="32" width="10" height="46" fill="#334155"/>
+    </g>
+    <g transform="translate(880 470)">
+      <path d="M0 -46 L44 32 H-44 Z" fill="#FB923C"/>
+      <path d="M0 -20 v26" stroke="#0B1220" stroke-width="8" stroke-linecap="round"/>
+      <circle cy="18" r="5" fill="#0B1220"/>
+      <rect x="-5" y="32" width="10" height="52" fill="#334155"/>
+    </g>
+    <g transform="translate(1010 280)">
+      <path d="M0 -46 L44 32 H-44 Z" fill="#FB923C"/>
+      <path d="M0 -20 v26" stroke="#0B1220" stroke-width="8" stroke-linecap="round"/>
+      <circle cy="18" r="5" fill="#0B1220"/>
+      <rect x="-5" y="32" width="10" height="52" fill="#334155"/>
+    </g>
+  </g>
+
+  <!-- 起点：小程序图标形状（两个相连的圆点） -->
+  <g transform="translate(120 470)">
+    <circle cx="0" cy="0" r="30" fill="#0161EF"/>
+    <circle cx="42" cy="16" r="20" fill="#8B5CF6"/>
+  </g>
+
+  <!-- 终点：手机 + 旗 -->
+  <g transform="translate(1104 128)">
+    <rect width="130" height="230" rx="26" fill="#161f33" stroke="#34D399" stroke-width="4"/>
+    <rect x="12" y="14" width="106" height="202" rx="18" fill="#0C1424"/>
+    <rect x="28" y="38" width="74" height="11" rx="5.5" fill="#93C5FD"/>
+    <rect x="28" y="62" width="52" height="8" rx="4" fill="#334155"/>
+    <rect x="28" y="92" width="74" height="56" rx="12" fill="#16213A"/>
+    <rect x="28" y="168" width="74" height="26" rx="13" fill="#0161EF"/>
+  </g>
+  <g transform="translate(1024 108)">
+    <path d="M0 0 v140" stroke="#34D399" stroke-width="8" stroke-linecap="round"/>
+    <path d="M4 4 h72 l-16 22 l16 22 h-72 z" fill="#34D399"/>
+  </g>
+
+  <g fill="#93C5FD">
+    <circle cx="1180" cy="620" r="6" opacity=".7"/>
+    <circle cx="80" cy="200" r="5" opacity=".55"/>
+    <circle cx="560" cy="140" r="4" opacity=".5"/>
+  </g>
+</svg>

@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-label="插画：一张菜谱卡片逐层长成一个带语音气泡的应用">
+  <defs>
+    <linearGradient id="c1-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0B1220"/>
+      <stop offset="1" stop-color="#141026"/>
+    </linearGradient>
+    <radialGradient id="c1-b" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#0161EF" stop-opacity=".5"/>
+      <stop offset="1" stop-color="#0161EF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="c1-o" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#FB923C" stop-opacity=".42"/>
+      <stop offset="1" stop-color="#FB923C" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="c1-p" width="34" height="34" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.6" fill="#334155" fill-opacity=".5"/>
+    </pattern>
+  </defs>
+
+  <rect width="1280" height="720" fill="url(#c1-bg)"/>
+  <rect width="1280" height="720" fill="url(#c1-p)"/>
+  <ellipse cx="240" cy="140" rx="340" ry="250" fill="url(#c1-b)"/>
+  <ellipse cx="1060" cy="600" rx="300" ry="220" fill="url(#c1-o)"/>
+
+  <!-- 底：菜谱卡片 -->
+  <g transform="translate(120 402)">
+    <rect width="300" height="216" rx="22" fill="#F7F4EE"/>
+    <rect x="24" y="24" width="96" height="96" rx="14" fill="#FB923C" opacity=".9"/>
+    <rect x="140" y="34" width="130" height="14" rx="7" fill="#334155"/>
+    <rect x="140" y="62" width="104" height="10" rx="5" fill="#94A3B8"/>
+    <rect x="140" y="84" width="118" height="10" rx="5" fill="#94A3B8"/>
+    <rect x="24" y="142" width="252" height="10" rx="5" fill="#CBD5E1"/>
+    <rect x="24" y="166" width="180" height="10" rx="5" fill="#CBD5E1"/>
+    <rect x="24" y="190" width="120" height="10" rx="5" fill="#E2E8F0"/>
+  </g>
+
+  <!-- 中：服务层 -->
+  <g transform="translate(470 250)">
+    <rect width="264" height="74" rx="18" fill="#16213A" stroke="#2A3A5C" stroke-width="3"/>
+    <circle cx="36" cy="37" r="12" fill="#34D399"/>
+    <rect x="64" y="24" width="120" height="12" rx="6" fill="#93C5FD"/>
+    <rect x="64" y="46" width="80" height="9" rx="4.5" fill="#334155"/>
+    <g transform="translate(0 96)">
+      <rect width="264" height="74" rx="18" fill="#111A2C" stroke="#243252" stroke-width="3"/>
+      <circle cx="36" cy="37" r="12" fill="#8B5CF6"/>
+      <rect x="64" y="24" width="104" height="12" rx="6" fill="#334155"/>
+      <rect x="64" y="46" width="128" height="9" rx="4.5" fill="#1F2A44"/>
+    </g>
+  </g>
+
+  <!-- 顶：手机 + 气泡 -->
+  <g transform="translate(816 96)">
+    <rect width="196" height="400" rx="34" fill="#161f33" stroke="#2A3A5C" stroke-width="3"/>
+    <rect x="16" y="18" width="164" height="364" rx="26" fill="#0C1424"/>
+    <rect x="70" y="30" width="56" height="9" rx="4.5" fill="#1E2B44"/>
+    <rect x="34" y="58" width="128" height="12" rx="6" fill="#93C5FD"/>
+    <rect x="34" y="84" width="96" height="9" rx="4.5" fill="#334155"/>
+    <rect x="34" y="112" width="128" height="96" rx="14" fill="#16213A"/>
+    <rect x="50" y="130" width="76" height="10" rx="5" fill="#8B5CF6"/>
+    <rect x="50" y="152" width="96" height="8" rx="4" fill="#334155"/>
+    <rect x="50" y="172" width="60" height="8" rx="4" fill="#334155"/>
+    <g transform="translate(98 274)">
+      <circle r="44" fill="none" stroke="#1B283F" stroke-width="12"/>
+      <circle r="44" fill="none" stroke="#FB923C" stroke-width="12" stroke-linecap="round"
+              stroke-dasharray="276" stroke-dashoffset="96" transform="rotate(-90)"/>
+    </g>
+    <rect x="34" y="342" width="128" height="30" rx="15" fill="#0161EF"/>
+  </g>
+
+  <!-- 生长虚线 -->
+  <g fill="none" stroke="#34D399" stroke-width="6" stroke-linecap="round" stroke-dasharray="16 14" opacity=".85">
+    <path d="M420 470 q100 -10 100 -110"/>
+    <path d="M734 330 q90 -20 90 -120"/>
+  </g>
+
+  <!-- 芽 -->
+  <g transform="translate(240 350)">
+    <path d="M0 40 v-34" stroke="#34D399" stroke-width="8" stroke-linecap="round"/>
+    <path d="M0 12 C -30 4 -38 -18 -34 -34 C -8 -30 2 -12 0 12 Z" fill="#34D399" opacity=".9"/>
+    <path d="M2 0 C 30 -6 40 -28 36 -46 C 10 -42 -2 -22 2 0 Z" fill="#10B981" opacity=".9"/>
+  </g>
+
+  <g fill="#93C5FD">
+    <circle cx="1140" cy="560" r="6" opacity=".7"/>
+    <circle cx="620" cy="120" r="5" opacity=".6"/>
+    <circle cx="100" cy="220" r="4" opacity=".5"/>
+  </g>
+</svg>

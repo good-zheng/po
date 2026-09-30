@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 800" role="img" aria-label="插画：中间一份类型契约文档，三条线连向小程序、App 与后台，旁边是 monorepo 目录树">
+  <defs>
+    <linearGradient id="ct-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0E1A2E"/>
+      <stop offset="1" stop-color="#120E24"/>
+    </linearGradient>
+    <radialGradient id="ct-b" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#0161EF" stop-opacity=".46"/>
+      <stop offset="1" stop-color="#0161EF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="ct-v" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#8B5CF6" stop-opacity=".44"/>
+      <stop offset="1" stop-color="#6D28D9" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="ct-p" width="34" height="34" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.6" fill="#334155" fill-opacity=".5"/>
+    </pattern>
+  </defs>
+
+  <rect width="1280" height="800" fill="url(#ct-bg)"/>
+  <rect width="1280" height="800" fill="url(#ct-p)"/>
+  <ellipse cx="640" cy="380" rx="360" ry="280" fill="url(#ct-b)"/>
+  <ellipse cx="1080" cy="180" rx="280" ry="220" fill="url(#ct-v)"/>
+
+  <!-- 契约文档 -->
+  <g transform="translate(498 214)">
+    <rect width="284" height="352" rx="26" fill="#F7F4EE"/>
+    <rect x="0" y="0" width="284" height="64" rx="26" fill="#0161EF"/>
+    <path d="M0 64 h284" stroke="#D9D3C6" stroke-width="3"/>
+    <g stroke="#F7F4EE" stroke-width="7" fill="none" stroke-linecap="round">
+      <path d="M56 26 h-16 v26 h16"/>
+      <path d="M104 26 h16 v26 h-16"/>
+    </g>
+    <rect x="140" y="30" width="104" height="12" rx="6" fill="#F7F4EE" opacity=".8"/>
+    <g fill="#334155">
+      <rect x="30" y="92" width="150" height="12" rx="6"/>
+      <rect x="46" y="122" width="180" height="10" rx="5" fill="#94A3B8"/>
+      <rect x="46" y="146" width="120" height="10" rx="5" fill="#94A3B8"/>
+      <rect x="30" y="182" width="128" height="12" rx="6"/>
+      <rect x="46" y="212" width="164" height="10" rx="5" fill="#94A3B8"/>
+      <rect x="46" y="236" width="96" height="10" rx="5" fill="#94A3B8"/>
+      <rect x="30" y="272" width="142" height="12" rx="6"/>
+      <rect x="46" y="302" width="150" height="10" rx="5" fill="#94A3B8"/>
+    </g>
+  </g>
+
+  <!-- 三条分发线 -->
+  <g fill="none" stroke="#FB923C" stroke-width="6" stroke-linecap="round" stroke-dasharray="18 14">
+    <path d="M498 300 q-140 -30 -230 40"/>
+    <path d="M782 300 q140 -30 230 40"/>
+    <path d="M640 566 v70"/>
+  </g>
+  <g fill="#FB923C">
+    <path d="M272 336 l-24 8 l24 8 z"/>
+    <path d="M1012 336 l24 8 l-24 8 z"/>
+    <path d="M628 636 h24 l-12 24 z"/>
+  </g>
+
+  <!-- 左：设备（小程序 / App） -->
+  <g transform="translate(150 360)">
+    <rect width="132" height="230" rx="24" fill="#161f33" stroke="#2A3A5C" stroke-width="3"/>
+    <rect x="12" y="14" width="108" height="202" rx="16" fill="#0C1424"/>
+    <rect x="26" y="34" width="66" height="10" rx="5" fill="#93C5FD"/>
+    <rect x="26" y="58" width="80" height="8" rx="4" fill="#334155"/>
+    <rect x="26" y="82" width="56" height="8" rx="4" fill="#334155"/>
+    <rect x="26" y="150" width="80" height="26" rx="13" fill="#0161EF"/>
+  </g>
+
+  <!-- 右：后台窗口 -->
+  <g transform="translate(1000 360)">
+    <rect width="180" height="150" rx="18" fill="#111A2C" stroke="#2A3A5C" stroke-width="3"/>
+    <rect width="180" height="30" rx="18" fill="#16213A"/>
+    <g fill="#334155">
+      <circle cx="22" cy="15" r="5"/>
+      <circle cx="40" cy="15" r="5"/>
+    </g>
+    <rect x="16" y="48" width="148" height="10" rx="5" fill="#93C5FD"/>
+    <rect x="16" y="70" width="120" height="8" rx="4" fill="#243252"/>
+    <rect x="16" y="90" width="136" height="8" rx="4" fill="#243252"/>
+    <rect x="16" y="110" width="96" height="8" rx="4" fill="#1F2A44"/>
+  </g>
+
+  <!-- 下：目录树 -->
+  <g transform="translate(430 650)">
+    <g fill="#8B5CF6" opacity=".9">
+      <path d="M0 12 h34 l8 10 h48 v34 h-90 z"/>
+    </g>
+    <g fill="#334155">
+      <rect x="110" y="18" width="86" height="10" rx="5"/>
+      <rect x="110" y="40" width="130" height="10" rx="5" fill="#243252"/>
+      <rect x="266" y="18" width="86" height="10" rx="5"/>
+      <rect x="266" y="40" width="120" height="10" rx="5" fill="#243252"/>
+      <rect x="424" y="18" width="70" height="10" rx="5"/>
+      <rect x="424" y="40" width="104" height="10" rx="5" fill="#243252"/>
+    </g>
+    <g transform="translate(604 6)">
+      <circle r="22" fill="#34D399"/>
+      <path d="M-9 0 l6 7 l12 -13" stroke="#0B1220" stroke-width="5" fill="none" stroke-linecap="round"/>
+    </g>
+  </g>
+
+  <g fill="#93C5FD">
+    <circle cx="1180" cy="640" r="6" opacity=".7"/>
+    <circle cx="120" cy="180" r="5" opacity=".6"/>
+    <circle cx="330" cy="120" r="4" opacity=".5"/>
+  </g>
+</svg>

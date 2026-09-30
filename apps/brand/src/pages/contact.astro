@@ -1,0 +1,85 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+import HeroText from '~/components/widgets/HeroText.astro';
+import Features2 from '~/components/widgets/Features2.astro';
+import Note from '~/components/widgets/Note.astro';
+import FAQs from '~/components/widgets/FAQs.astro';
+import { CONTACT } from '~/contact';
+
+const metadata = {
+  title: '联系',
+  description: `怎么找到我：邮件 ${CONTACT.email}、微信 ${CONTACT.wechat}、手机 ${CONTACT.phone}，以及适合带着什么问题来找我。`,
+};
+---
+
+<Layout metadata={metadata}>
+  <!-- HeroText Widget *************** -->
+
+  <HeroText tagline="联系" title="找我聊几句" subtitle="描述清楚你卡在哪一步，我回得比想象的快。" />
+
+  <!-- Note Widget ******************* -->
+
+  <Note
+    title="站内不放表单"
+    description="这是一个静态站，没有后端。表单必须先接一个收件服务才会真的送到我手上，与其放一个吞掉消息的假表单，不如直接用下面的渠道。"
+  />
+
+  <!-- Features2 Widget ************** -->
+
+  <Features2
+    title="渠道"
+    subtitle="邮件和手机点击即可直达；微信需要手动搜索添加，备注来意我更容易判断该回什么。"
+    columns={2}
+    items={[
+      {
+        title: '邮件',
+        description: `${CONTACT.email} —— 适合带代码、带日志、带复现步骤的问题，也适合正式沟通。`,
+        icon: 'tabler:mail',
+        href: `mailto:${CONTACT.email}`,
+      },
+      {
+        title: '手机',
+        description: `${CONTACT.phone} —— 紧急排查（线上服务连不上、小程序审核卡住）时直接打电话。`,
+        icon: 'tabler:phone',
+        href: `tel:${CONTACT.phoneE164}`,
+      },
+      {
+        title: '微信',
+        description: `${CONTACT.wechat} —— 搜索添加，备注来意。聊进度和约时间方便，长内容还是走邮件。`,
+        icon: 'tabler:brand-wechat',
+      },
+      {
+        title: '直接读代码',
+        description: '想知道某个决定怎么落地的，看仓库里的知识手册和部署台账比问我更清楚。',
+        icon: 'tabler:school',
+      },
+    ]}
+  />
+
+  <!-- FAQs Widget ******************* -->
+
+  <FAQs
+    tagline="适合聊什么"
+    title="带着这些问题来，我能给出有用的回答"
+    collapsible={false}
+    columns={2}
+    items={[
+      {
+        title: '跨端契约怎么管',
+        description: '一份类型定义服务三端、字段变更的落地顺序、以及哪些字段值得放进共享包。',
+      },
+      {
+        title: 'AI 功能怎么落地到生产',
+        description: '降级路径的设计、意图路由阈值的调法、以及为什么不要相信「演示时是正常的」。',
+      },
+      {
+        title: '微信小程序的坑',
+        description: 'WXSS 限制、WebSocket 与合法域名、上传审核项、真机与工具表现不一致的排查路径。',
+      },
+      {
+        title: '一个人怎么把全栈跑通',
+        description: '目录分层、脚本入口、验证顺序，以及怎么让三个月后的自己还能接手。',
+      },
+    ]}
+  />
+</Layout>

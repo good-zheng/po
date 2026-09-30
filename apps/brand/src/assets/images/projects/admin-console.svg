@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 800" role="img" aria-label="插画：管理后台窗口的表格与表单，右侧是审批通过标记和封面上传卡片">
+  <defs>
+    <linearGradient id="adm-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0B1220"/>
+      <stop offset="1" stop-color="#141026"/>
+    </linearGradient>
+    <radialGradient id="adm-b" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#0161EF" stop-opacity=".48"/>
+      <stop offset="1" stop-color="#0161EF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="adm-g" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#34D399" stop-opacity=".4"/>
+      <stop offset="1" stop-color="#34D399" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="adm-p" width="34" height="34" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.6" fill="#334155" fill-opacity=".5"/>
+    </pattern>
+  </defs>
+
+  <rect width="1280" height="800" fill="url(#adm-bg)"/>
+  <rect width="1280" height="800" fill="url(#adm-p)"/>
+  <ellipse cx="280" cy="180" rx="340" ry="250" fill="url(#adm-b)"/>
+  <ellipse cx="1080" cy="640" rx="300" ry="220" fill="url(#adm-g)"/>
+
+  <!-- 后台窗口 -->
+  <g transform="translate(140 150)">
+    <rect width="640" height="480" rx="28" fill="#111A2C" stroke="#2A3A5C" stroke-width="3"/>
+    <rect width="640" height="66" rx="28" fill="#16213A"/>
+    <path d="M0 66 h640" stroke="#2A3A5C" stroke-width="3"/>
+    <g fill="#334155">
+      <circle cx="36" cy="33" r="9" fill="#F87171"/>
+      <circle cx="64" cy="33" r="9" fill="#FB923C"/>
+      <circle cx="92" cy="33" r="9" fill="#34D399"/>
+    </g>
+    <rect x="140" y="24" width="240" height="18" rx="9" fill="#0C1424"/>
+    <!-- 侧栏 -->
+    <rect x="0" y="66" width="150" height="414" fill="#0E1728"/>
+    <g>
+      <rect x="24" y="102" width="102" height="26" rx="13" fill="#0161EF"/>
+      <rect x="24" y="148" width="84" height="12" rx="6" fill="#243252"/>
+      <rect x="24" y="180" width="96" height="12" rx="6" fill="#1F2A44"/>
+      <rect x="24" y="212" width="72" height="12" rx="6" fill="#1F2A44"/>
+      <rect x="24" y="244" width="90" height="12" rx="6" fill="#1F2A44"/>
+    </g>
+    <!-- 表格 -->
+    <g transform="translate(182 100)">
+      <rect width="424" height="40" rx="12" fill="#16213A"/>
+      <rect x="16" y="14" width="70" height="12" rx="6" fill="#334155"/>
+      <rect x="150" y="14" width="90" height="12" rx="6" fill="#334155"/>
+      <rect x="300" y="14" width="60" height="12" rx="6" fill="#334155"/>
+      <g transform="translate(0 56)">
+        <rect width="424" height="52" rx="12" fill="#121C2E"/>
+        <rect x="16" y="20" width="86" height="12" rx="6" fill="#93C5FD"/>
+        <rect x="150" y="20" width="110" height="12" rx="6" fill="#243252"/>
+        <rect x="300" y="16" width="70" height="20" rx="10" fill="#34D399" fill-opacity=".3"/>
+      </g>
+      <g transform="translate(0 122)">
+        <rect width="424" height="52" rx="12" fill="#121C2E"/>
+        <rect x="16" y="20" width="70" height="12" rx="6" fill="#93C5FD"/>
+        <rect x="150" y="20" width="94" height="12" rx="6" fill="#243252"/>
+        <rect x="300" y="16" width="70" height="20" rx="10" fill="#FB923C" fill-opacity=".3"/>
+      </g>
+      <g transform="translate(0 188)">
+        <rect width="424" height="52" rx="12" fill="#121C2E"/>
+        <rect x="16" y="20" width="96" height="12" rx="6" fill="#93C5FD"/>
+        <rect x="150" y="20" width="80" height="12" rx="6" fill="#243252"/>
+        <rect x="300" y="16" width="70" height="20" rx="10" fill="#334155"/>
+      </g>
+      <g transform="translate(0 254)">
+        <rect width="424" height="52" rx="12" fill="#0F1828"/>
+        <rect x="16" y="20" width="78" height="12" rx="6" fill="#243252"/>
+        <rect x="150" y="20" width="104" height="12" rx="6" fill="#1B283F"/>
+        <rect x="300" y="16" width="70" height="20" rx="10" fill="#1B283F"/>
+      </g>
+    </g>
+  </g>
+
+  <!-- 表单面板 -->
+  <g transform="translate(828 168)">
+    <rect width="300" height="268" rx="26" fill="#16213A" stroke="#2A3A5C" stroke-width="3"/>
+    <rect x="26" y="30" width="120" height="12" rx="6" fill="#93C5FD"/>
+    <rect x="26" y="64" width="248" height="34" rx="12" fill="#0C1424" stroke="#243252" stroke-width="2"/>
+    <rect x="26" y="110" width="248" height="34" rx="12" fill="#0C1424" stroke="#243252" stroke-width="2"/>
+    <rect x="26" y="156" width="160" height="34" rx="12" fill="#0C1424" stroke="#243252" stroke-width="2"/>
+    <rect x="26" y="212" width="120" height="36" rx="18" fill="#0161EF"/>
+    <rect x="162" y="212" width="112" height="36" rx="18" fill="#1B283F"/>
+  </g>
+
+  <!-- 封面上传 -->
+  <g transform="translate(828 470)">
+    <rect width="180" height="140" rx="22" fill="#0C1424" stroke="#2A3A5C" stroke-width="3" stroke-dasharray="12 10"/>
+    <path d="M90 92 v-46" stroke="#FB923C" stroke-width="8" stroke-linecap="round"/>
+    <path d="M70 64 l20 -20 l20 20" fill="none" stroke="#FB923C" stroke-width="8" stroke-linecap="round"/>
+  </g>
+
+  <!-- 审批通过 -->
+  <g transform="translate(1076 500)">
+    <circle r="62" fill="#34D399"/>
+    <path d="M-26 2 l18 20 l34 -38" stroke="#0B1220" stroke-width="12" fill="none" stroke-linecap="round"/>
+  </g>
+  <g stroke="#34D399" stroke-width="5" fill="none" opacity=".5">
+    <circle cx="1076" cy="500" r="86"/>
+  </g>
+
+  <g fill="#93C5FD">
+    <circle cx="1188" cy="130" r="6" opacity=".7"/>
+    <circle cx="90" cy="620" r="5" opacity=".55"/>
+  </g>
+</svg>

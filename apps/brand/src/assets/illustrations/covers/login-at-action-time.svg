@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-label="插画：一路敞开的门框通向一个输入框，只有按下发送时才遇到闸机和锁">
+  <defs>
+    <linearGradient id="c4-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0B1220"/>
+      <stop offset="1" stop-color="#141026"/>
+    </linearGradient>
+    <radialGradient id="c4-v" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#8B5CF6" stop-opacity=".44"/>
+      <stop offset="1" stop-color="#6D28D9" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="c4-b" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#0161EF" stop-opacity=".46"/>
+      <stop offset="1" stop-color="#0161EF" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="c4-p" width="34" height="34" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.6" fill="#334155" fill-opacity=".5"/>
+    </pattern>
+  </defs>
+
+  <rect width="1280" height="720" fill="url(#c4-bg)"/>
+  <rect width="1280" height="720" fill="url(#c4-p)"/>
+  <ellipse cx="240" cy="160" rx="340" ry="250" fill="url(#c4-v)"/>
+  <ellipse cx="1040" cy="560" rx="320" ry="240" fill="url(#c4-b)"/>
+
+  <!-- 地面与路径 -->
+  <path d="M0 616 h1280" stroke="#1E2B44" stroke-width="4"/>
+  <g fill="none" stroke="#34D399" stroke-width="6" stroke-linecap="round" stroke-dasharray="18 18" opacity=".8">
+    <path d="M120 596 h760"/>
+  </g>
+
+  <!-- 三扇敞开的门 -->
+  <g>
+    <g transform="translate(120 300)">
+      <rect width="120" height="296" rx="10" fill="none" stroke="#2A3A5C" stroke-width="6"/>
+      <rect x="12" y="12" width="96" height="272" rx="6" fill="#0161EF" opacity=".12"/>
+      <rect x="66" y="20" width="42" height="256" rx="6" fill="#16213A" stroke="#34D399" stroke-width="4"/>
+      <circle cx="76" cy="150" r="6" fill="#34D399"/>
+    </g>
+    <g transform="translate(360 300)">
+      <rect width="120" height="296" rx="10" fill="none" stroke="#2A3A5C" stroke-width="6"/>
+      <rect x="12" y="12" width="96" height="272" rx="6" fill="#0161EF" opacity=".12"/>
+      <rect x="66" y="20" width="42" height="256" rx="6" fill="#16213A" stroke="#34D399" stroke-width="4"/>
+      <circle cx="76" cy="150" r="6" fill="#34D399"/>
+    </g>
+    <g transform="translate(600 300)">
+      <rect width="120" height="296" rx="10" fill="none" stroke="#2A3A5C" stroke-width="6"/>
+      <rect x="12" y="12" width="96" height="272" rx="6" fill="#0161EF" opacity=".12"/>
+      <rect x="66" y="20" width="42" height="256" rx="6" fill="#16213A" stroke="#34D399" stroke-width="4"/>
+      <circle cx="76" cy="150" r="6" fill="#34D399"/>
+    </g>
+  </g>
+
+  <!-- 输入框：字已经打好了 -->
+  <g transform="translate(232 168)">
+    <rect width="500" height="76" rx="38" fill="#16213A" stroke="#2A3A5C" stroke-width="3"/>
+    <rect x="28" y="32" width="180" height="12" rx="6" fill="#93C5FD"/>
+    <rect x="220" y="32" width="96" height="12" rx="6" fill="#334155"/>
+    <rect x="330" y="28" width="4" height="20" rx="2" fill="#FB923C"/>
+    <circle cx="452" cy="38" r="24" fill="#0161EF"/>
+    <path d="M442 38 h20 M454 30 l8 8 l-8 8" stroke="#F7F4EE" stroke-width="5" fill="none" stroke-linecap="round"/>
+  </g>
+
+  <!-- 闸机：只有这里上锁 -->
+  <g transform="translate(920 268)">
+    <rect width="150" height="330" rx="14" fill="#111A2C" stroke="#F87171" stroke-width="5"/>
+    <rect x="24" y="40" width="102" height="12" rx="6" fill="#F87171" opacity=".8"/>
+    <g transform="translate(75 170)">
+      <rect x="-40" y="-6" width="80" height="66" rx="14" fill="#F87171"/>
+      <path d="M-22 -6 v-22 a22 22 0 0 1 44 0 v22" fill="none" stroke="#F87171" stroke-width="10"/>
+      <circle cy="26" r="9" fill="#0B1220"/>
+    </g>
+    <rect x="24" y="252" width="102" height="12" rx="6" fill="#334155"/>
+    <rect x="24" y="278" width="66" height="12" rx="6" fill="#1F2A44"/>
+  </g>
+
+  <!-- 闸机后的界面（字没丢） -->
+  <g transform="translate(1090 268)">
+    <rect width="150" height="330" rx="14" fill="#0F2A22" stroke="#34D399" stroke-width="5"/>
+    <rect x="24" y="40" width="102" height="12" rx="6" fill="#34D399" opacity=".8"/>
+    <rect x="24" y="80" width="102" height="60" rx="12" fill="#16213A"/>
+    <rect x="38" y="98" width="70" height="10" rx="5" fill="#93C5FD"/>
+    <rect x="38" y="118" width="46" height="8" rx="4" fill="#334155"/>
+    <rect x="24" y="252" width="102" height="30" rx="15" fill="#0161EF"/>
+  </g>
+
+  <g fill="#93C5FD">
+    <circle cx="1150" cy="140" r="6" opacity=".7"/>
+    <circle cx="80" cy="520" r="5" opacity=".55"/>
+  </g>
+</svg>

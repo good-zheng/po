@@ -1,0 +1,154 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+
+import Hero from '~/components/widgets/Hero.astro';
+import Content from '~/components/widgets/Content.astro';
+import Steps2 from '~/components/widgets/Steps2.astro';
+import Features3 from '~/components/widgets/Features3.astro';
+import CallToAction from '~/components/widgets/CallToAction.astro';
+import { CONTACT } from '~/contact';
+
+const metadata = {
+  title: '关于我',
+  description: '独立开发者。写业务后端，也写 Agent 链路和三个端的界面。这是关于我以及我怎么做东西的一页。',
+};
+---
+
+<Layout metadata={metadata}>
+  <!-- Hero Widget ******************* -->
+
+  <Hero tagline="关于我">
+    <Fragment slot="title">
+      郑志泓<span class="text-accent dark:text-white">，一个人把项目做完的那种开发者</span>
+    </Fragment>
+
+    <Fragment slot="subtitle">
+      从数据库表结构到小程序的合法域名，中间所有环节我都得自己负责，所以习惯把链路打通再谈功能。不擅长讲概念，擅长把东西跑到真机上。
+    </Fragment>
+
+    <Fragment slot="content">
+      <p class="max-w-2xl mx-auto mt-6 text-sm text-muted">
+        邮件
+        <a class="underline" href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a> · 微信
+        <span class="font-medium text-heading">{CONTACT.wechat}</span> · 手机
+        <a class="underline" href={`tel:${CONTACT.phoneE164}`}>{CONTACT.phone}</a>。这一页只保留能被代码仓库验证的事实。
+      </p>
+    </Fragment>
+  </Hero>
+
+  <!-- Content Widget **************** -->
+
+  <Content
+    tagline="我做什么"
+    title="一份需求过来，我需要负责到哪一步"
+    items={[
+      {
+        title: '前后端不是两个工种，是一条链路',
+        description:
+          '叮叮厨里我从表结构写到小程序输入框。跨端联调时最容易甩锅的那段——字段叫什么、分页怎么算、错误怎么包——在我这里不存在，因为只有一处定义。',
+      },
+      {
+        title: 'AI 功能要能上线，不能只会演示',
+        description:
+          '模型会限流、向量服务会不通、Redis 会挂。所以每个环节都写了退化路径，演示环境和生产的表现差别可控。',
+      },
+      {
+        title: '平台限制先摸清再设计',
+        description:
+          '微信小程序不支持 flex-wrap、不支持 calc、WebSocket 不走云调用、上传要按需注入。这些不是抱怨清单，是设计前提，知道之后方案才不会返工。',
+      },
+      {
+        title: '文档是给人复用的，包括三个月后的我',
+        description: '部署台账、知识手册、脚本入口都留在仓库里。密钥值永远不进仓库，平台常量永远从控制台逐字复制。',
+      },
+    ]}
+  >
+    <Fragment slot="content">
+      <h3 class="text-2xl font-bold tracking-tight sm:text-3xl mb-2 text-heading">工作方式</h3>
+      <p class="text-muted">先跑起来，再跑对，最后跑稳。每一步都要有能验证的东西：一个测试、一条日志、一次真机截图。</p>
+    </Fragment>
+    <Fragment slot="bg">
+      <div class="absolute inset-0 bg-orange-50 dark:bg-transparent"></div>
+    </Fragment>
+  </Content>
+
+  <!-- Steps2 Widget ***************** -->
+
+  <Steps2
+    id="how"
+    tagline="几个具体习惯"
+    title="如果非要说方法论，大概是这三条"
+    items={[
+      {
+        title: '改契约先于改实现',
+        description:
+          '字段名、响应信封、分页语义都在共享类型包里定下来，三端同时看到编译错误，比在联调时发现要便宜得多。',
+        icon: 'tabler:file-shredder',
+      },
+      {
+        title: '把「坏掉」当成正常状态来设计',
+        description: '外部依赖一定会坏。设计时就决定坏掉时用户看到什么，而不是出事以后再想。',
+        icon: 'tabler:shield-check',
+      },
+      {
+        title: '不确定的地址不许凭记忆写',
+        description: '域名、环境 ID、仓库名一律从控制台复制。这类错误的表现是「看起来配好了但连不上」，最难查。',
+        icon: 'tabler:copy-check',
+      },
+    ]}
+  />
+
+  <!-- Features3 Widget ************** -->
+
+  <Features3
+    title="手上的技术栈"
+    subtitle="按在这个项目里真实用到的程度排列，不是简历式罗列。"
+    columns={4}
+    items={[
+      {
+        title: 'TypeScript / React',
+        description: 'Taro 小程序、Expo App、Umi 管理后台，三端同一套语言。',
+        icon: 'tabler:brand-typescript',
+      },
+      { title: 'Java / Spring Boot', description: '业务 API、认证审批、TTS 与对象存储接入。', icon: 'tabler:coffee' },
+      {
+        title: 'Python / FastAPI',
+        description: 'WebSocket 流式聊天、LangGraph Agent 编排、混合意图路由。',
+        icon: 'tabler:brand-python',
+      },
+      {
+        title: 'MySQL / Redis',
+        description: 'schema.sql 掌管表结构；Redis Stack 承载会话检查点。',
+        icon: 'tabler:database',
+      },
+      {
+        title: '工程化',
+        description: 'pnpm workspace monorepo、跨平台脚本包装、提交规范与静态检查。',
+        icon: 'tabler:settings',
+      },
+      { title: '部署运维', description: '微信云托管、Docker 构建走国内镜像源、Nginx 网关形态。', icon: 'tabler:cloud' },
+      {
+        title: 'AI 应用',
+        description: 'DeepSeek 语言模型、阿里云百炼向量、讯飞语音合成，以及它们的降级策略。',
+        icon: 'tabler:sparkles',
+      },
+      {
+        title: '界面实现',
+        description: 'NativeWind、Ant Design、Tailwind CSS。能把设计稿落到像素，也能自己定简朴的方案。',
+        icon: 'tabler:palette',
+      },
+    ]}
+  />
+
+  <!-- CallToAction Widget *********** -->
+
+  <CallToAction
+    layout="card"
+    title="想看看我做的东西？"
+    subtitle="项目页写了叮叮厨的构成与几个关键取舍，开发手记里是具体的坑。"
+    actions={[
+      { variant: 'primary', text: '回项目介绍', href: '/#projects', icon: 'tabler:arrow-left' },
+      { text: '看开发手记', href: '/blog' },
+    ]}
+  />
+</Layout>

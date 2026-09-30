@@ -1,0 +1,74 @@
+site:
+  name: 叮叮厨
+  # TODO 部署前替换为真实域名。sitemap、Open Graph 与 RSS 里的绝对链接都基于这里。
+  site: 'https://example.com'
+  base: '/'
+  trailingSlash: false
+
+  googleSiteVerificationId: ''
+
+# Default SEO metadata
+metadata:
+  title:
+    default: 叮叮厨
+    template: '%s · 叮叮厨'
+  description: 叮叮厨：菜谱内容平台 + AI 做菜助手。微信小程序、Expo App、管理后台、Java 与 Python 双后端，一套跨端契约。
+  robots:
+    index: true
+    follow: true
+  openGraph:
+    site_name: 叮叮厨
+    images:
+      - url: '~/assets/images/og.png'
+        width: 1200
+        height: 628
+    type: website
+  twitter:
+    # TODO 有公开社交账号后再填 handle 与 site，留空则不输出对应 meta。
+    handle: ''
+    site: ''
+    cardType: summary_large_image
+
+i18n:
+  language: zh-CN
+  textDirection: ltr
+
+apps:
+  blog:
+    isEnabled: true
+    postsPerPage: 6
+
+    post:
+      isEnabled: true
+      permalink: '/%slug%' # Variables: %slug%, %year%, %month%, %day%, %hour%, %minute%, %second%, %category%
+      robots:
+        index: true
+
+    list:
+      isEnabled: true
+      pathname: 'blog' # Blog main path
+      robots:
+        index: true
+
+    category:
+      isEnabled: true
+      pathname: 'category'
+      robots:
+        index: true
+
+    tag:
+      isEnabled: true
+      pathname: 'tag'
+      robots:
+        index: false
+
+    isRelatedPostsEnabled: true
+    relatedPostsCount: 4
+
+analytics:
+  vendors:
+    googleAnalytics:
+      id: null # or "G-XXXXXXXXXX"
+
+ui:
+  theme: 'system' # Values: "system" | "light" | "dark" | "light:only" | "dark:only"

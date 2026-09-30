@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 800" role="img" aria-label="插画：层叠的服务器与数据库，右侧是一个统一响应信封，左侧有代码括号">
+  <defs>
+    <linearGradient id="api-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0B1220"/>
+      <stop offset="1" stop-color="#0E1A2E"/>
+    </linearGradient>
+    <radialGradient id="api-b" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#0161EF" stop-opacity=".5"/>
+      <stop offset="1" stop-color="#0161EF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="api-g" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#34D399" stop-opacity=".38"/>
+      <stop offset="1" stop-color="#34D399" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="api-p" width="34" height="34" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.6" fill="#334155" fill-opacity=".5"/>
+    </pattern>
+  </defs>
+
+  <rect width="1280" height="800" fill="url(#api-bg)"/>
+  <rect width="1280" height="800" fill="url(#api-p)"/>
+  <ellipse cx="300" cy="220" rx="340" ry="250" fill="url(#api-b)"/>
+  <ellipse cx="1040" cy="600" rx="300" ry="230" fill="url(#api-g)"/>
+
+  <!-- 代码括号 -->
+  <g stroke="#8B5CF6" stroke-width="12" fill="none" stroke-linecap="round" opacity=".8">
+    <path d="M170 380 h-46 v140 h46"/>
+    <path d="M250 380 h46 v140 h-46"/>
+  </g>
+  <g fill="#93C5FD" opacity=".7">
+    <circle cx="210" cy="424" r="8"/>
+    <circle cx="210" cy="464" r="8"/>
+    <circle cx="210" cy="504" r="8"/>
+  </g>
+
+  <!-- 服务分层 -->
+  <g transform="translate(392 176)">
+    <g>
+      <rect width="360" height="96" rx="22" fill="#16213A" stroke="#2A3A5C" stroke-width="3"/>
+      <circle cx="40" cy="48" r="12" fill="#34D399"/>
+      <rect x="70" y="34" width="150" height="12" rx="6" fill="#93C5FD"/>
+      <rect x="70" y="58" width="96" height="9" rx="4.5" fill="#334155"/>
+      <rect x="272" y="38" width="60" height="20" rx="10" fill="#0161EF" fill-opacity=".55"/>
+    </g>
+    <g transform="translate(0 128)">
+      <rect width="360" height="96" rx="22" fill="#16213A" stroke="#2A3A5C" stroke-width="3"/>
+      <circle cx="40" cy="48" r="12" fill="#FB923C"/>
+      <rect x="70" y="34" width="128" height="12" rx="6" fill="#93C5FD"/>
+      <rect x="70" y="58" width="120" height="9" rx="4.5" fill="#334155"/>
+      <rect x="272" y="38" width="60" height="20" rx="10" fill="#0161EF" fill-opacity=".55"/>
+    </g>
+    <g transform="translate(0 256)">
+      <rect width="360" height="96" rx="22" fill="#111A2C" stroke="#243252" stroke-width="3"/>
+      <circle cx="40" cy="48" r="12" fill="#8B5CF6"/>
+      <rect x="70" y="34" width="142" height="12" rx="6" fill="#334155"/>
+      <rect x="70" y="58" width="86" height="9" rx="4.5" fill="#1F2A44"/>
+      <rect x="272" y="38" width="60" height="20" rx="10" fill="#1F2A44"/>
+    </g>
+    <g stroke="#334155" stroke-width="4" stroke-dasharray="10 10">
+      <path d="M180 96 v32"/>
+      <path d="M180 224 v32"/>
+    </g>
+  </g>
+
+  <!-- 数据库柱 -->
+  <g transform="translate(800 452)">
+    <ellipse cx="86" cy="26" rx="86" ry="26" fill="#16213A" stroke="#2A3A5C" stroke-width="3"/>
+    <path d="M0 26 v110 c0 14 38 26 86 26 s86 -12 86 -26 v-110" fill="#111A2C" stroke="#2A3A5C" stroke-width="3"/>
+    <path d="M0 76 c0 14 38 26 86 26 s86 -12 86 -26" fill="none" stroke="#2A3A5C" stroke-width="3"/>
+    <path d="M0 116 c0 14 38 26 86 26 s86 -12 86 -26" fill="none" stroke="#2A3A5C" stroke-width="3"/>
+    <ellipse cx="86" cy="26" rx="60" ry="16" fill="#0161EF" fill-opacity=".35"/>
+  </g>
+
+  <!-- 统一响应信封 -->
+  <g transform="translate(902 168)">
+    <rect width="286" height="200" rx="26" fill="#F7F4EE"/>
+    <path d="M0 62 h286" stroke="#D9D3C6" stroke-width="3"/>
+    <path d="M0 26 l143 84 l143 -84" fill="none" stroke="#0161EF" stroke-width="8" stroke-linecap="round"/>
+    <rect x="28" y="90" width="120" height="12" rx="6" fill="#334155"/>
+    <rect x="28" y="118" width="176" height="10" rx="5" fill="#94A3B8"/>
+    <rect x="28" y="142" width="92" height="10" rx="5" fill="#94A3B8"/>
+    <g transform="translate(214 140)">
+      <circle r="30" fill="#34D399"/>
+      <path d="M-13 0 l9 10 l17 -19" stroke="#0B1220" stroke-width="7" fill="none" stroke-linecap="round"/>
+    </g>
+  </g>
+
+  <!-- 连线 -->
+  <g stroke="#FB923C" stroke-width="6" fill="none" stroke-linecap="round" opacity=".8">
+    <path d="M752 300 q70 -30 150 -22"/>
+    <path d="M872 452 q40 -40 40 -84"/>
+  </g>
+
+  <g fill="#93C5FD">
+    <circle cx="1186" cy="470" r="6" opacity=".7"/>
+    <circle cx="120" cy="660" r="5" opacity=".55"/>
+    <circle cx="620" cy="120" r="4" opacity=".5"/>
+  </g>
+</svg>

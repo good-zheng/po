@@ -1,0 +1,442 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+
+import Hero from '~/components/widgets/Hero.astro';
+import Note from '~/components/widgets/Note.astro';
+import SocialProof from '~/components/widgets/SocialProof.astro';
+import Projects from '~/components/widgets/Projects.astro';
+import Bento from '~/components/widgets/Bento.astro';
+import QuickStart from '~/components/widgets/QuickStart.astro';
+import Features from '~/components/widgets/Features.astro';
+import Timeline from '~/components/widgets/Timeline.astro';
+import BlogHighlightedPosts from '~/components/widgets/BlogHighlightedPosts.astro';
+import FAQs from '~/components/widgets/FAQs.astro';
+import Stats from '~/components/widgets/Stats.astro';
+import CallToAction from '~/components/widgets/CallToAction.astro';
+import StructuredData from '~/components/common/StructuredData.astro';
+import { SITE, I18N } from 'astrowind:config';
+import favIconSvg from '~/assets/favicons/favicon.svg';
+
+const metadata = {
+  title: '叮叮厨 — 菜谱平台与 AI 做菜助手',
+  description:
+    '叮叮厨：菜谱内容平台 + AI 做菜助手。微信小程序、Expo App、管理后台三端，Java 与 Python 双后端，一套跨端契约，部署在微信云托管。',
+  ignoreTitleTemplate: true,
+};
+
+const organizationId = `${SITE?.site}/#organization`;
+const structuredData = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    '@id': `${SITE?.site}/#website`,
+    name: SITE?.name,
+    url: SITE?.site,
+    inLanguage: I18N?.language,
+    publisher: { '@id': organizationId },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    '@id': organizationId,
+    name: SITE?.name,
+    url: SITE?.site,
+    logo: new URL(favIconSvg.src, SITE?.site).toString(),
+  },
+];
+---
+
+<Layout metadata={metadata}>
+  <StructuredData slot="head" schema={structuredData} />
+  <!-- Hero Widget ******************* -->
+
+  <Hero
+    tagline="独立开发 · 全栈作品"
+    badge="进行中"
+    image={{
+      src: '~/assets/images/hero.svg',
+      alt: '插画：手机立在厨房台面上，屏幕里是分步的做菜界面、计时环与声波，旁边飘着 AI 语音气泡和食材清单',
+      format: 'svg',
+    }}
+    actions={[
+      { variant: 'primary', text: '看项目', href: '#projects', icon: 'tabler:chef-hat' },
+      { text: '开发手记', href: '/blog' },
+    ]}
+  >
+    <Fragment slot="title">
+      叮叮厨：<span class="text-accent dark:text-white">会说话</span>的菜谱与 AI 做菜助手
+    </Fragment>
+
+    <Fragment slot="subtitle">
+      一份菜谱从被读到被做出来，中间隔着火候、克数和腾不出手的那几分钟。叮叮厨把这一段交给语音和
+      AI：步骤一句句读给你听，计时结束敲一下铃，随时能问一句「现在该干什么」。
+    </Fragment>
+
+    <Fragment slot="content">
+      <p class="max-w-2xl mx-auto mt-6 text-sm text-muted">
+        三端客户端、两个后端服务、一条 AI 链路，全部由我一个人设计与实现，跑在微信云托管上。
+      </p>
+    </Fragment>
+  </Hero>
+
+  <!-- SocialProof Widget ************ -->
+
+  <SocialProof
+    id="proof"
+    classes={{ container: '!pb-14 md:!pb-20' }}
+    items={[
+      { value: '3', label: '端：小程序 / App / 管理后台', icon: 'tabler:devices', color: 'text-orange-500' },
+      { value: '190+', label: '自动化测试用例', icon: 'tabler:test-pipe', color: 'text-emerald-500' },
+      { value: '4', label: '层 AI 降级路径', icon: 'tabler:layers-intersect', color: 'text-sky-500' },
+      { value: '0', label: '个入库密钥', icon: 'tabler:key-off', color: 'text-rose-500' },
+    ]}
+  />
+
+  <!-- Note Widget ******************* -->
+
+  <Note
+    variant="info"
+    title="说明"
+    description="这是项目与个人的介绍站，不是线上产品官网。页面里的图都是示意插画，不是产品截图；真实截图与公开访问地址会在部署完成后补上。"
+  />
+
+  <!-- Projects Widget *************** -->
+
+  <Projects
+    id="projects"
+    tagline="项目构成"
+    title="六个部分，一条链路"
+    subtitle="从用户手指点下去的那一下，到服务器把音频合成好返回来，中间每一段都是自己写的。"
+    columns={2}
+    items={[
+      {
+        title: '微信小程序（面向用户的主入口）',
+        description:
+          'Taro 4.2.1 + React。首页与菜谱对游客完全开放，只有「开始做菜」和「发送消息」这两个动作才要求登录；AI 指导走 WebSocket 流式，进做菜页就预取全部步骤音频。',
+        tags: ['Taro', 'React', 'WebSocket', '按需注入'],
+        image: {
+          src: '~/assets/images/projects/mini-program.svg',
+          alt: '插画：小程序菜谱列表与一个带厨师帽的语音气泡',
+          format: 'svg',
+        },
+      },
+      {
+        title: '移动端 App',
+        description:
+          'Expo SDK 57 + expo-router + NativeWind。与小程序逐屏对齐：菜谱详情的份数换算、做菜模式的铃声与震动、收起的计时器、完成播报，两端行为一致。',
+        tags: ['Expo', 'React Native', 'NativeWind'],
+        image: {
+          src: '~/assets/images/projects/mobile-app.svg',
+          alt: '插画：手机与平板显示同一屏做菜界面，中间是同步箭头',
+          format: 'svg',
+        },
+      },
+      {
+        title: '业务后端 API',
+        description:
+          'Java 17 + Spring Boot 4.1.1，Maven reactor 拆成 shared / identity / recipe / api-bootstrap。MyBatis-Plus 做持久层，表结构以 schema.sql 为准；讯飞 TTS 与腾讯云 COS 都在这侧。',
+        tags: ['Spring Boot', 'MyBatis-Plus', 'MySQL', 'JWT'],
+        image: {
+          src: '~/assets/images/projects/backend-api.svg',
+          alt: '插画：分层的后端服务与数据库，右侧是一个统一响应信封',
+          format: 'svg',
+        },
+        result: '统一 Result&lt;T&gt; 信封，三端共用一套解包',
+      },
+      {
+        title: 'AI 聊天服务',
+        description:
+          'FastAPI + LangGraph。Orchestrator 下挂烹饪 VerticalAgent，意图路由用 dense embedding + BM25 混合检索；语言模型走 DeepSeek，向量走阿里云百炼。对外只有一个 /ws/chat。',
+        tags: ['FastAPI', 'LangGraph', 'DeepSeek'],
+        image: {
+          src: '~/assets/images/projects/ai-service.svg',
+          alt: '插画：编排节点分发给多个垂直 Agent，含向量检索与流式回答气泡',
+          format: 'svg',
+        },
+      },
+      {
+        title: '管理后台',
+        description:
+          'Umi Max 4 + React 19 + Ant Design 6。菜谱与分类维护、封面上传、用户注册审批流；表单和列表都直接吃同一份跨端类型。',
+        tags: ['Ant Design Pro', 'React Query', 'Biome'],
+        image: {
+          src: '~/assets/images/projects/admin-console.svg',
+          alt: '插画：管理后台的列表与表单，右侧是封面上传和审批通过标记',
+          format: 'svg',
+        },
+      },
+      {
+        title: '契约与工程化',
+        description:
+          'pnpm workspace monorepo。packages/types 是三端字段的唯一来源；根目录一组 pnpm 脚本屏蔽 Windows 与镜像源差异；部署留下台账，不靠记忆里的地址。',
+        tags: ['pnpm workspace', '@po/types', 'CloudRun'],
+        image: {
+          src: '~/assets/images/projects/contracts.svg',
+          alt: '插画：一份类型契约连向小程序、App 与后台，下方是 monorepo 目录树',
+          format: 'svg',
+        },
+      },
+    ]}
+  />
+
+  <!-- Bento Widget ****************** -->
+
+  <Bento
+    id="architecture"
+    tagline="架构"
+    title="一次请求走过的路"
+    subtitle="端不直接请求 AI，AI 也不直接碰数据库；两边各司其职，中间靠契约缝合。"
+    columns={3}
+    items={[
+      {
+        title: '客户端只认一个信封',
+        description: '所有 HTTP 响应都是 Result&lt;T&gt;，分页统一 Page 语义。换后端框架不用改编。',
+        icon: 'tabler:package',
+      },
+      {
+        title: 'HTTP 与 WebSocket 分家',
+        description: '读数据走 Java 的 /api，聊天走 Python 的 /ws/chat。两条协议各用各的连接方式，互不拖累。',
+        icon: 'tabler:arrows-split-2',
+        span: 2,
+      },
+      {
+        title: '语音只返回 URL',
+        description: '后端把合成好的音频放进对象存储，接口回一个公网 URL；小程序进页面即批量预热。',
+        icon: 'tabler:volume',
+      },
+      {
+        title: '会话状态可插拔',
+        description: 'Agent 的检查点优先落 Redis Stack，不可用则退内存，功能不受影响，只是记不住上下文。',
+        icon: 'tabler:database',
+      },
+      {
+        title: '密钥永远不进仓库',
+        description: '模型、对象存储、云托管的凭据一律只在各自 .env；文档与代码里不出现任何真实值。',
+        icon: 'tabler:shield-lock',
+      },
+    ]}
+  />
+
+  <!-- QuickStart Widget ************* -->
+
+  <QuickStart
+    id="quick-start"
+    tagline="跑起来"
+    title="本地起这套东西要几步"
+    subtitle="不是营销话术，这里是仓库里真实存在的脚本。"
+    commands={[
+      { command: 'pnpm install', comment: '装工作区依赖（Node ≥ 22）' },
+      { command: 'docker compose up -d mysql redis', comment: '先起基础设施' },
+      { command: 'pnpm types:build', comment: '先出跨端契约' },
+      { command: 'pnpm api:start', comment: 'Java 业务后端 :8080' },
+      { command: 'pnpm chat:start', comment: 'AI 聊天服务 :5090' },
+      { command: 'pnpm mini:dev', comment: '微信小程序，用开发者工具打开 dist/' },
+    ]}
+    items={[
+      {
+        title: '一个仓库，三种语言生态',
+        description:
+          'TypeScript / Java / Python 各管各的构建，但都从同一个根 <code>package.json</code> 的脚本入口出发，不用记目录。',
+        icon: 'tabler:git-branch',
+      },
+      {
+        title: '验证比写代码更认真',
+        description:
+          '<code>pnpm api:verify</code>、<code>chat:test</code>、<code>admin:test</code>、<code>mini:build</code> 全绿才算改完。改契约字段先看类型包报不报错。',
+        icon: 'tabler:circle-check',
+      },
+    ]}
+  >
+    <Fragment slot="bg">
+      <div
+        class="absolute inset-0 bg-[radial-gradient(60%_55%_at_15%_20%,rgb(251_146_60/0.25),transparent_65%),radial-gradient(50%_50%_at_85%_25%,rgb(244_114_182/0.18),transparent_65%)] dark:bg-[radial-gradient(60%_55%_at_15%_20%,rgb(234_88_12/0.22),transparent_65%),radial-gradient(50%_50%_at_85%_25%,rgb(217_70_239/0.14),transparent_65%)]"
+      >
+      </div>
+    </Fragment>
+  </QuickStart>
+
+  <!-- Features Widget *************** -->
+
+  <Features
+    id="decisions"
+    tagline="关键决策"
+    title="真正难的部分是取舍"
+    subtitle="功能列表谁都会写。下面这几条是踩过之后才会做的决定。"
+    columns={2}
+    items={[
+      {
+        title: '登录只发生在动作那一刻',
+        description:
+          '游客可以逛完整个应用，包括 AI 聊天页的完整界面。点「发送」才跳登录，输入框里已经打好的字不丢。tab 页永不自动重定向——曾经这么做，返回就是白屏。',
+        icon: 'tabler:login',
+      },
+      {
+        title: 'AI 链路要「坏掉也看起来正常」',
+        description:
+          '模型不可用回显、Redis 不可用退内存、embedding 不可用退关键词路由、网络不可用退本地规则，四层降级。代价是排障不能只看行为，必须看日志。',
+        icon: 'tabler:plug-connected',
+      },
+      {
+        title: '跨端字段只有一处定义',
+        description:
+          '新增一个菜谱字段，先改 packages/types 和 schema.sql，再改实体和三端消费点。契约漂移是多端项目里最贵的一类 bug。',
+        icon: 'tabler:file-text',
+      },
+      {
+        title: '平台常量禁止凭记忆填写',
+        description:
+          '云托管的域名、环境 ID、镜像仓库名一律从控制台逐字复制进台账。猜出来的地址会安静地连到别处，或者根本连不上。',
+        icon: 'tabler:copy',
+      },
+      {
+        title: '先改脚本，再改代码',
+        description:
+          'Windows 上 <code>bash x.sh</code> 会撞上 WSL 存根。所有 shell 入口统一走 Node 包装器显式定位 Git Bash，跨平台才不是一句口号。',
+        icon: 'tabler:terminal-2',
+      },
+      {
+        title: '删掉不做的业务线',
+        description:
+          '这个项目最初还带着一条小说业务线。确认它不会做之后整块删掉，只留烹饪 Agent——半途而废的功能比没有功能更贵。',
+        icon: 'tabler:eraser',
+      },
+    ]}
+  />
+
+  <!-- Stats Widget ****************** -->
+
+  <Stats
+    title="数字"
+    countUp
+    stats={[
+      { title: '客户端形态', amount: '3' },
+      { title: '后端服务', amount: '2' },
+      { title: '自动化测试用例', amount: '190+' },
+      { title: '未提交的密钥', amount: '0' },
+    ]}
+  />
+
+  <!-- Timeline Widget *************** -->
+
+  <Timeline
+    id="story"
+    tagline="时间线"
+    title="十天，从空仓库到能下锅"
+    subtitle="日期取自仓库提交记录，没有倒推美化。"
+    layout="alternate"
+    items={[
+      {
+        date: '2026-09-20',
+        title: '空仓库',
+        description: '第一次提交。这时候连要做什么业务都还没定。',
+        icon: 'tabler:git-commit',
+      },
+      {
+        date: '2026-09-21',
+        title: '搭 monorepo 骨架',
+        description: 'pnpm workspace、目录分层、基础脚手架立起来，前后端各自有能跑的最小形态。',
+        icon: 'tabler:layout-sidebar',
+      },
+      {
+        date: '2026-09-23',
+        title: '移动端与持久层同时落地',
+        description: 'Expo App 成型，菜谱互动补齐；后端全量迁到 MyBatis-Plus，表结构改由 schema.sql 掌管。',
+        icon: 'tabler:device-mobile',
+      },
+      {
+        date: '2026-09-24',
+        title: '砍掉一条业务线，接上烹饪 Agent',
+        description:
+          '删掉不再会做的小说业务线，新增烹饪 Agent 并把 AI 聊天接进 App。项目从「什么都能做」变成「只做一件事」。',
+        icon: 'tabler:sparkles',
+        highlight: true,
+      },
+      {
+        date: '2026-09-25 起',
+        title: '小程序、语音与上云',
+        description:
+          'Taro 小程序逐屏对齐 App；讯飞 TTS 加对象存储做步骤播报与预热；微信 OpenID 登录与注册审批；api / chat / redis 部署到微信云托管，踩完合法域名这一课。',
+        icon: 'tabler:cloud',
+      },
+      {
+        date: '现在',
+        title: '回头收拾自己写的东西',
+        description: '清死代码、统一脚本入口、补知识文档与测试，然后才是正在看的这个介绍站。',
+        icon: 'tabler:brush',
+        ghost: true,
+      },
+    ]}
+  />
+
+  <!-- HighlightedPosts Widget ******* -->
+
+  <BlogHighlightedPosts
+    title="开发手记"
+    postIds={[
+      'dingdingchu-case-study',
+      'ai-graceful-degradation',
+      'cross-end-contract',
+      'login-at-action-time',
+      'wechat-miniprogram-pitfalls',
+    ]}
+    information="把这些写下来，是为了下次不用重新踩一遍。"
+  />
+
+  <!-- FAQs Widget ******************* -->
+
+  <FAQs
+    id="faqs"
+    tagline="常见疑问"
+    title="关于这个项目，别人常问的"
+    subtitle="都是真问题，答案里没有一句营销话术。"
+    schema
+    collapsible={false}
+    columns={2}
+    items={[
+      {
+        title: '一个人做这些，时间花在哪了？',
+        description:
+          '大头不在写功能，在打通链路：让小程序在真机上连上云托管、让 AI 在断网时还能像样地回答、让三端读到的字段是同一个意思。',
+      },
+      {
+        title: '为什么同时有 Java 和 Python 两个后端？',
+        description:
+          '菜谱、用户、审批、文件这些是典型的业务 CRUD，Spring 生态最顺手；意图路由、Agent 编排、向量检索这一层只有 Python 生态跟得上。两边各自部署，不让同步接口互相拖累。',
+      },
+      {
+        title: 'AI 回答错了怎么办？',
+        description:
+          '做菜场景下它不会造成不可逆后果，所以策略是先保证「永远有回应」，四层降级就是为此存在的。真正需要小心的是它安静地不工作，所以链路上每一步都要求看日志而不是看表现。',
+      },
+      {
+        title: '为什么不直接用现成的 SaaS？',
+        description:
+          '语音播报要在做菜流程里预取、要按步骤缓存、要在断网时退回本地规则，这些细节是通用方案给不了的。这个项目本质上就是在做这些细节。',
+      },
+      {
+        title: '现在能用吗？',
+        description:
+          '微信小程序已构建为体验版；对外公开访问地址在配置完域名之后开放。这个介绍站目前是本地版本，域名还是占位符。',
+      },
+      {
+        title: '下一个版本做什么？',
+        description:
+          '把手势和语音输入做进做菜模式（手上沾着油时打字不现实），以及把菜谱结构化成能根据家里现有食材反推的方案。',
+      },
+    ]}
+  />
+
+  <!-- CallToAction Widget *********** -->
+
+  <CallToAction
+    id="cta"
+    layout="banner"
+    tagline="联系"
+    title="想做点类似的东西，或者只是想知道某个坑怎么爬出来"
+    subtitle="写代码之外，也乐意把踩过的过程讲清楚。"
+    actions={[
+      { variant: 'primary', text: '给我写信', href: '/contact', icon: 'tabler:mail' },
+      { text: '看看我怎么做东西', href: '/about' },
+    ]}
+  />
+</Layout>
