@@ -9,7 +9,12 @@ apps/*/.umi*/
 packages/*/dist/
 services/api/**/target/
 services/chat/.pytest_cache/
+.pytest_cache/
 services/chat/**/__pycache__/
+# 编译缓存全局忽略：tools 下的 Python 缓存和 Taro 的 .swc 之前会漏进 git status
+__pycache__/
+.swc/
+*.tsbuildinfo
 services/chat/*.egg-info/
 services/agent-core/.venv/
 services/agent-core/.pytest_cache/
@@ -27,13 +32,21 @@ services/agent-cooking/**/__pycache__/
 !.env.example
 services/api/src/main/resources/application-local.yaml
 services/api/api-bootstrap/src/main/resources/application-local.yaml
+# 生产密钥不入库：profile 文件与备忘 json 一律忽略
+services/api/api-bootstrap/src/main/resources/application-prod.yaml
+services/api/application-prod.json
+services/chat/deploy-prod.json
+services/api/api-bootstrap/uploads/
 services/api/uploads/
 services/chat/.venv/
 services/chat/agent_*.json
+# Google OAuth 控制台下载的 client_secret_*.json（曾落在 apps/cooking-mini/）
+client_secret_*.json
 **/logs/
 
 # Scratch and generated asset sources
 vibe_images/
+.tmp/
 /covers-list.tsv
 /ingredients-count.txt
 /ingredients-image-list.tsv
