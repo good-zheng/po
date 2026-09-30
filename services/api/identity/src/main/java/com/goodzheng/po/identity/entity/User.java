@@ -34,11 +34,16 @@ public class User {
 
     private String phoneNumber;
 
+    private String wechatOpenid;
+
     /** 角色: superadmin, admin, user */
     private String role = "user";
 
     /** 状态: active, inactive, invited, suspended */
     private String status = "active";
+
+    /** 审批状态: pending, approved, rejected */
+    private String approvalStatus = "approved";
 
     /** 不允许更新（等价原 JPA updatable = false） */
     @TableField(updateStrategy = FieldStrategy.NEVER)

@@ -1,9 +1,12 @@
 package com.goodzheng.po.identity.controller;
 
+import com.goodzheng.po.identity.constant.ApprovalStatusConstants;
 import com.goodzheng.po.identity.constant.RoleConstants;
+import com.goodzheng.po.identity.dto.ApprovalRequest;
 import com.goodzheng.po.identity.dto.ChangePasswordRequest;
 import com.goodzheng.po.identity.dto.ProfileRequest;
 import com.goodzheng.po.shared.dto.Result;
+import com.goodzheng.po.shared.storage.ObjectStorage;
 import com.goodzheng.po.identity.dto.UserRequest;
 import com.goodzheng.po.identity.entity.User;
 import com.goodzheng.po.identity.repository.UserMapper;
@@ -50,6 +53,7 @@ public class UserController {
 
     private final UserService userService;
     private final UserMapper userMapper;
+    private final ObjectStorage storage;
 
     // ── 分页列表（管理员及以上） ────────────────────────
     @GetMapping
@@ -62,6 +66,13 @@ public class UserController {
                 ? userService.search(keyword, pageRequest)
                 : userService.list(pageRequest);
         return Result.success(result);
+    }
+
+    // ── 待审批用户列表（管理员及以上） ────────────────────
+    @GetMapping("/pending")
+    public Result<List<User>> pendingList() {
+        List<User> users = userService.listByApprovalStatus(ApprovalStatusConstants.PENDING);
+        return Result.success(users);
     }
 
     // ── 单个详情（管理员及以上） ────────────────────────
@@ -136,15 +147,14 @@ public class UserController {
             }
             String filename = UUID.randomUUID().toString().replace("-", "")
                     + "." + ALLOWED_IMAGE_TYPES.get(contentType);
-            Path dir = Paths.get("uploads", "avatars");
-            try (InputStream in = file.getInputStream()) {
-                Files.createDirectories(dir);
-                Files.copy(in, dir.resolve(filename), StandardCopyOption.REPLACE_EXISTING);
+            // 落腾讯云 COS，返回桶公网 URL（云托管本地磁盘临时、多实例不共享）
+            String url;
+            try {
+                url = storage.upload("avatars/" + filename, file.getBytes(), contentType);
             } catch (IOException e) {
                 throw new RuntimeException("头像保存失败: " + e.getMessage());
             }
             // 直接写入当前用户 avatar 字段，前端无需二次提交
-            String url = "/api/avatars/" + filename;
             UserRequest request = new UserRequest();
             request.setAvatar(url);
             userService.update(user.getId(), request);
@@ -220,6 +230,22 @@ public class UserController {
             request.setUsername(target.getUsername());
             request.setRole(newRole);
             return Result.success(userService.update(id, request));
+        } catch (RuntimeException e) {
+            return Result.error(400, e.getMessage());
+        }
+    }
+
+    // ── 审批用户（管理员及以上） ────────────────────────
+    @PutMapping("/{id}/approval")
+    public Result<User> approve(
+            @PathVariable Long id,
+            @RequestBody ApprovalRequest request) {
+        try {
+            String action = request.getAction();
+            if (!ApprovalStatusConstants.APPROVED.equals(action) && !ApprovalStatusConstants.REJECTED.equals(action)) {
+                throw new RuntimeException("审批操作无效，仅支持 approved 或 rejected");
+            }
+            return Result.success(userService.updateApprovalStatus(id, action));
         } catch (RuntimeException e) {
             return Result.error(400, e.getMessage());
         }

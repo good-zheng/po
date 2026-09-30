@@ -24,6 +24,17 @@
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-spring-boot4-starter</artifactId>
         </dependency>
+        <!-- @ConfigurationProperties 绑定（版本由 spring-boot BOM 管理） -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot</artifactId>
+        </dependency>
+        <!-- 腾讯云 COS：用户产物（头像/上传/TTS 音频）落桶，云托管本地磁盘不可靠 -->
+        <dependency>
+            <groupId>com.qcloud</groupId>
+            <artifactId>cos_api</artifactId>
+            <version>5.6.279</version>
+        </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>

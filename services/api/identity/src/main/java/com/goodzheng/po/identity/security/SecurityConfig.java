@@ -58,8 +58,9 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // 公开：登录/注册
-                        .requestMatchers("/auth/login", "/auth/register").permitAll()
+                        // 公开：登录/注册/微信登录/OpenID登录/App注册
+                        .requestMatchers("/auth/login", "/auth/register", "/auth/wechat-login",
+                                "/auth/openid-login", "/auth/app-register").permitAll()
                         // 容器错误转发（404/405/500 等）：放行以免真实状态码被改写成 401
                         .requestMatchers("/error").permitAll()
                         // 个人中心：任何已登录来源（App 用户维护自己的资料、密码、头像）
@@ -72,6 +73,8 @@ public class SecurityConfig {
                         // 通用文件上传：任何已登录用户；上传产物 /files/** 公开可读
                         .requestMatchers(HttpMethod.POST, "/files/upload").authenticated()
                         .requestMatchers(HttpMethod.GET, "/files/**").permitAll()
+                        // TTS 语音合成与音频文件：公开（音频播放器不带 Authorization 头）
+                        .requestMatchers("/tts", "/tts/**").permitAll()
                         // 审核队列与审核操作：仅管理端管理员（须在 GET /recipes/* 与 PUT /recipes/* 规则之前）
                         .requestMatchers("/recipes/review").access(ADMIN_CLIENT)
                         .requestMatchers(HttpMethod.PUT, "/recipes/*/audit").access(ADMIN_CLIENT)
@@ -82,7 +85,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,
                                 "/recipes", "/recipes/*",
                                 "/recipe-categories", "/recipe-categories/*",
-                                "/avatars/**", "/covers/**", "/ingredients/**").permitAll()
+                                "/avatars/**", "/covers/**", "/ingredients/**", "/sounds/**").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
                         // 用户管理：仅管理端管理员
                         .requestMatchers("/users/**").access(ADMIN_CLIENT)

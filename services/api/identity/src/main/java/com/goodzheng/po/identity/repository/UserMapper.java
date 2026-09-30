@@ -16,11 +16,29 @@ public interface UserMapper extends BaseMapper<User> {
         return Optional.ofNullable(selectOne(new LambdaQueryWrapper<User>().eq(User::getUsername, username)));
     }
 
+    default Optional<User> findByPhoneNumber(String phoneNumber) {
+        return Optional.ofNullable(selectOne(new LambdaQueryWrapper<User>().eq(User::getPhoneNumber, phoneNumber)));
+    }
+
+    default Optional<User> findByWechatOpenid(String wechatOpenid) {
+        return Optional.ofNullable(selectOne(new LambdaQueryWrapper<User>().eq(User::getWechatOpenid, wechatOpenid)));
+    }
+
     default boolean existsByUsername(String username) {
         return selectCount(new LambdaQueryWrapper<User>().eq(User::getUsername, username)) > 0;
     }
 
     default List<User> findAllById(Collection<Long> ids) {
         return selectBatchIds(ids);
+    }
+
+    default List<User> findByApprovalStatus(String approvalStatus) {
+        return selectList(new LambdaQueryWrapper<User>()
+                .eq(User::getApprovalStatus, approvalStatus)
+                .orderByDesc(User::getCreateTime));
+    }
+
+    default long countByApprovalStatus(String approvalStatus) {
+        return selectCount(new LambdaQueryWrapper<User>().eq(User::getApprovalStatus, approvalStatus));
     }
 }

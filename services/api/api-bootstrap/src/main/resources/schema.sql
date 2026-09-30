@@ -13,12 +13,15 @@ CREATE TABLE IF NOT EXISTS `sys_user` (
     `first_name`    VARCHAR(64)  DEFAULT NULL,
     `last_name`     VARCHAR(64)  DEFAULT NULL,
     `phone_number`  VARCHAR(32)  DEFAULT NULL,
-    `role`          VARCHAR(32)  NOT NULL DEFAULT 'user',
-    `status`        VARCHAR(32)  NOT NULL DEFAULT 'active',
+    `wechat_openid` VARCHAR(64)  DEFAULT NULL,
+    `role`            VARCHAR(32)  NOT NULL DEFAULT 'user',
+    `status`          VARCHAR(32)  NOT NULL DEFAULT 'active',
+    `approval_status` VARCHAR(32)  NOT NULL DEFAULT 'approved',
     `create_time`   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `update_time`   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`),
-    UNIQUE KEY `uk_sys_user_username` (`username`)
+    UNIQUE KEY `uk_sys_user_username` (`username`),
+    UNIQUE KEY `uk_sys_user_wechat_openid` (`wechat_openid`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT ='用户表';
 
 CREATE TABLE IF NOT EXISTS `recipe` (

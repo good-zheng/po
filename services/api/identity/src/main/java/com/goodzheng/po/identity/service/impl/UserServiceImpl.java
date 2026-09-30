@@ -1,6 +1,7 @@
 package com.goodzheng.po.identity.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.goodzheng.po.identity.constant.ApprovalStatusConstants;
 import com.goodzheng.po.identity.dto.UserRequest;
 import com.goodzheng.po.identity.entity.User;
 import com.goodzheng.po.identity.repository.UserMapper;
@@ -56,6 +57,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<User> listByApprovalStatus(String approvalStatus) {
+        return userMapper.findByApprovalStatus(approvalStatus);
+    }
+
+    @Override
     @Transactional
     public User create(UserRequest request) {
         if (userMapper.existsByUsername(request.getUsername())) {
@@ -94,6 +101,18 @@ public class UserServiceImpl implements UserService {
         if (request.getPassword() != null && !request.getPassword().isBlank()) {
             user.setPassword(passwordEncoder.encode(request.getPassword()));
         }
+        userMapper.updateById(user);
+        return user;
+    }
+
+    @Override
+    @Transactional
+    public User updateApprovalStatus(Long id, String approvalStatus) {
+        if (!ApprovalStatusConstants.isValid(approvalStatus)) {
+            throw new RuntimeException("非法审批状态");
+        }
+        User user = getById(id);
+        user.setApprovalStatus(approvalStatus);
         userMapper.updateById(user);
         return user;
     }

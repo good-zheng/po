@@ -13,11 +13,15 @@ public interface UserService {
 
     Page<User> search(String keyword, Pageable pageable);
 
+    List<User> listByApprovalStatus(String approvalStatus);
+
     User getById(Long id);
 
     User create(UserRequest request);
 
     User update(Long id, UserRequest request);
+
+    User updateApprovalStatus(Long id, String approvalStatus);
 
     /** 验证原密码后修改当前用户密码 */
     void changePassword(Long id, String oldPassword, String newPassword);
