@@ -1,0 +1,93 @@
+.categories-page {
+  padding: 24px;
+  min-height: 100vh;
+  background: #fafaf9;
+}
+
+.page-header {
+  margin-bottom: 24px;
+}
+
+.page-title {
+  display: block;
+  font-size: 40px;
+  font-weight: 700;
+  color: #1c1917;
+  margin-bottom: 4px;
+}
+
+.page-subtitle {
+  display: block;
+  font-size: 24px;
+  color: #a8a29e;
+}
+
+.category-section {
+  margin-bottom: 32px;
+}
+
+.section-title {
+  display: block;
+  font-size: 30px;
+  font-weight: 700;
+  color: #1c1917;
+  margin-bottom: 16px;
+}
+
+.category-grid {
+  display: flex;
+  flex-direction: column;
+}
+
+.category-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.category-card {
+  width: 48.5%;
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.card-icon {
+  font-size: 48px;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.card-name {
+  display: block;
+  font-size: 28px;
+  font-weight: 600;
+  color: #1c1917;
+  margin-bottom: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-desc {
+  display: block;
+  font-size: 22px;
+  color: #a8a29e;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  min-height: 44px;
+}
+
+.loading-text,
+.empty-text {
+  display: block;
+  text-align: center;
+  padding: 80px 0;
+  font-size: 28px;
+  color: #a8a29e;
+}

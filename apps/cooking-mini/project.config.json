@@ -1,0 +1,18 @@
+{
+  "miniprogramRoot": "dist/",
+  "projectname": "cooking-mini",
+  "description": "叮叮厨是专为厨房小白打造的AI做饭助手，内置智能烹饪Agent，支持上千道家常菜的分步引导",
+  "appid": "wx27721a6ef29e7e76",
+  "setting": {
+    "urlCheck": true,
+    "es6": false,
+    "enhance": false,
+    "compileHotReLoad": false,
+    "postcss": false,
+    "minified": true,
+    "minifyWXSS": true,
+    "minifyWXML": true,
+    "bundle": false
+  },
+  "compileType": "miniprogram"
+}

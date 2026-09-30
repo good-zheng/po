@@ -1,0 +1,204 @@
+@use '../styles/theme.scss' as *;
+
+// 网格布局（微信不支持 flex-wrap：按行切分）
+
+.grid-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  gap: 10px;
+}
+
+.grid-cell {
+  flex: 1;
+}
+
+.grid-cell-empty {
+  width: 336px;
+}
+
+.grid-card {
+  background: $card-bg;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.grid-cover-wrap {
+  position: relative;
+  width: 100%;
+  height: 240px;
+}
+
+.grid-cover {
+  width: 100%;
+  height: 240px;
+}
+
+.grid-cover-placeholder {
+  width: 100%;
+  height: 240px;
+  background: $brand-50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.grid-cover-emoji {
+  font-size: 60px;
+}
+
+.grid-category-badge {
+  position: absolute;
+  left: 12px;
+  top: 12px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 999px;
+  padding: 4px 14px;
+}
+
+.grid-category-text {
+  font-size: 20px;
+  color: #fff;
+}
+
+.grid-info {
+  padding: 20px;
+}
+
+.grid-title {
+  font-size: 28px;
+  font-weight: 600;
+  color: $text-strong;
+  line-height: 38px;
+  @include ellipsis(2);
+  height: 76px;
+}
+
+.grid-meta-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+}
+
+.grid-meta {
+  font-size: 22px;
+  color: $text-muted;
+}
+
+.grid-like-group {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.grid-like-icon {
+  font-size: 24px;
+  color: $text-faint;
+  margin-right: 6px;
+}
+
+.grid-like-active {
+  color: $brand-600;
+}
+
+.grid-like-count {
+  font-size: 22px;
+  color: $text-muted;
+}
+
+.grid-fav-icon {
+  font-size: 24px;
+  color: $brand-600;
+}
+
+// 信息流卡片（收藏 / 历史）
+.feed-card {
+  background: $card-bg;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  margin-bottom: 28px;
+}
+
+.feed-cover {
+  width: 100%;
+  height: 320px;
+}
+
+.feed-cover-placeholder {
+  width: 100%;
+  height: 240px;
+  background: $brand-50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.feed-body {
+  padding: 28px;
+}
+
+.feed-title-row {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.feed-title {
+  flex: 1;
+  font-size: 34px;
+  font-weight: 700;
+  color: $text-strong;
+  @include ellipsis(1);
+}
+
+.feed-category {
+  margin-left: 16px;
+  font-size: 22px;
+  color: $brand-700;
+  background: $brand-50;
+  border-radius: 999px;
+  padding: 6px 18px;
+}
+
+.feed-desc {
+  margin-top: 12px;
+  font-size: 26px;
+  line-height: 38px;
+  color: $text-muted;
+  @include ellipsis(2);
+}
+
+.feed-meta-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 16px;
+}
+
+.feed-meta {
+  font-size: 24px;
+  color: $text-muted;
+  margin-right: 28px;
+}
+
+.feed-tags {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 16px;
+}
+
+.feed-tag {
+  font-size: 22px;
+  color: $text-secondary;
+  background: $chip-bg;
+  border-radius: 999px;
+  padding: 6px 18px;
+  margin-right: 12px;
+}

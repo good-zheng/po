@@ -1,0 +1,36 @@
+@use '../styles/theme.scss' as *;
+
+.status-badge {
+  display: flex;
+  flex-direction: column;
+}
+
+.status-pill {
+  align-self: flex-start;
+  font-size: 22px;
+  font-weight: 500;
+  padding: 6px 20px;
+  border-radius: 999px;
+}
+
+.badge-pending {
+  background: #fffbeb;
+  color: #b45309;
+}
+
+.badge-approved {
+  background: #ecfdf5;
+  color: #047857;
+}
+
+.badge-rejected {
+  background: $danger-bg;
+  color: $danger;
+}
+
+.status-reason {
+  margin-top: 8px;
+  font-size: 22px;
+  line-height: 32px;
+  color: #ef4444;
+}

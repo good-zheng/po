@@ -1,0 +1,10 @@
+/* 全局样式 */
+page, view, text, image, scroll-view, swiper, swiper-item, button, input, textarea, label, navigator {
+  box-sizing: border-box;
+}
+
+page {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    sans-serif;
+  background-color: #fafafa;
+}

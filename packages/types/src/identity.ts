@@ -18,6 +18,7 @@ export type UserItem = {
   phoneNumber?: string | null;
   role: string;
   status: string;
+  approvalStatus?: string;
   createTime?: string;
   updateTime?: string;
 };

@@ -1,0 +1,396 @@
+@use '../../styles/theme.scss' as *;
+
+.cook-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: $page-bg;
+}
+
+.cook-loading {
+  display: block;
+  text-align: center;
+  padding: 160px 0;
+  font-size: 28px;
+  color: $text-faint;
+}
+
+.cook-empty-back {
+  margin: 32px auto 0;
+  width: 300px;
+  padding: 24px 0;
+  border-radius: 999px;
+  background: $brand-600;
+  text-align: center;
+}
+
+.cook-empty-back-text {
+  font-size: 28px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.cook-header {
+  padding: 20px 24px 16px;
+  background: $card-bg;
+  border-bottom: 1px solid $border-soft;
+}
+
+.cook-header-row {
+  display: flex;
+  align-items: center;
+}
+
+.cook-exit {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: $chip-bg;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-right: 16px;
+}
+
+.cook-exit-icon {
+  font-size: 30px;
+  color: $text-strong;
+}
+
+.cook-header-info {
+  flex: 1;
+  overflow: hidden;
+}
+
+.cook-title {
+  display: block;
+  font-size: 32px;
+  font-weight: 700;
+  color: $text-strong;
+  @include ellipsis(1);
+}
+
+.cook-subtitle {
+  display: block;
+  font-size: 22px;
+  color: $text-faint;
+  margin-top: 6px;
+}
+
+.tts-toggle {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: $chip-bg;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-left: 16px;
+}
+
+.tts-toggle-icon {
+  font-size: 30px;
+}
+
+.tts-toggle-active {
+  color: $brand-600;
+}
+
+.progress-bar {
+  height: 8px;
+  background: $border;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 16px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: $brand-600;
+  border-radius: 4px;
+}
+
+.cook-body {
+  flex: 1;
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.step-badge-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.step-badge {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: $brand-600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.step-badge-text {
+  color: #fff;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.step-count-text {
+  font-size: 24px;
+  color: $text-muted;
+  margin-left: 20px;
+}
+
+.step-content-text {
+  display: block;
+  font-size: 40px;
+  font-weight: 600;
+  color: $text-strong;
+  line-height: 60px;
+  margin-bottom: 24px;
+}
+
+.step-image {
+  width: 100%;
+  height: 360px;
+  border-radius: 16px;
+}
+
+.timer-card {
+  background: $card-bg;
+  border-radius: 24px;
+  padding: 28px;
+  margin-top: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.timer-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.timer-label {
+  font-size: 26px;
+  color: $text-muted;
+  font-weight: 500;
+}
+
+.timer-display {
+  font-size: 48px;
+  font-weight: 700;
+  color: $brand-600;
+}
+
+.timer-progress {
+  height: 8px;
+  background: $chip-bg;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 20px;
+}
+
+.timer-progress-fill {
+  height: 100%;
+  background: $brand-600;
+  border-radius: 4px;
+}
+
+.timer-actions {
+  display: flex;
+  flex-direction: row;
+  margin-top: 24px;
+}
+
+.timer-btn {
+  flex: 1;
+  padding: 16px 0;
+  border-radius: 999px;
+  border: 1px solid $border;
+  background: $card-bg;
+  text-align: center;
+  margin-right: 16px;
+}
+
+.timer-btn:last-child {
+  margin-right: 0;
+}
+
+.timer-btn-text {
+  font-size: 26px;
+  color: $text-secondary;
+  font-weight: 600;
+}
+
+.timer-reopen {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin-top: 24px;
+  padding: 24px 0;
+  border-radius: 999px;
+  background: $card-bg;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.timer-reopen-text {
+  font-size: 28px;
+  font-weight: 600;
+  color: $brand-700;
+}
+
+.time-up-banner {
+  background: $brand-50;
+  border-radius: 24px;
+  padding: 28px;
+  margin-top: 20px;
+  border: 1px solid $brand-100;
+}
+
+.time-up-head {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.time-up-title {
+  flex: 1;
+  font-size: 28px;
+  font-weight: 700;
+  color: $brand-700;
+}
+
+.ring-stop-chip {
+  border: 1px solid $brand-100;
+  border-radius: 999px;
+  padding: 8px 20px;
+  margin-left: 16px;
+}
+
+.ring-stop-text {
+  font-size: 22px;
+  font-weight: 600;
+  color: $brand-700;
+}
+
+.time-up-next {
+  display: block;
+  font-size: 26px;
+  color: $text-secondary;
+  line-height: 40px;
+  margin-top: 16px;
+}
+
+.time-up-btn {
+  margin-top: 24px;
+  padding: 22px 0;
+  border-radius: 999px;
+  background: $brand-600;
+  text-align: center;
+}
+
+.time-up-btn-text {
+  font-size: 28px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.cook-footer {
+  display: flex;
+  flex-direction: row;
+  padding: 16px 24px;
+  background: $card-bg;
+  border-top: 1px solid $border-soft;
+}
+
+.nav-btn {
+  flex: 1;
+  height: 88px;
+  border-radius: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid $border;
+  background: $card-bg;
+  margin-right: 16px;
+}
+
+.nav-btn:last-child {
+  margin-right: 0;
+}
+
+.nav-btn-disabled {
+  opacity: 0.4;
+}
+
+.nav-btn-primary {
+  background: $brand-600;
+  border-color: $brand-600;
+}
+
+.nav-btn-text {
+  font-size: 30px;
+  font-weight: 600;
+  color: $text-secondary;
+}
+
+.nav-btn-text-disabled {
+  color: $text-faint;
+}
+
+.nav-btn-text-primary {
+  color: #fff;
+}
+
+.finish-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+}
+
+.finish-emoji {
+  font-size: 120px;
+  line-height: 140px;
+}
+
+.finish-title {
+  margin-top: 16px;
+  font-size: 44px;
+  font-weight: 700;
+  color: $brand-700;
+}
+
+.finish-text {
+  margin-top: 20px;
+  font-size: 28px;
+  line-height: 44px;
+  text-align: center;
+  color: $text-secondary;
+}
+
+.finish-btn {
+  margin-top: 48px;
+  padding: 24px 72px;
+  border-radius: 999px;
+  background: $brand-600;
+  text-align: center;
+}
+
+.finish-btn-text {
+  font-size: 30px;
+  font-weight: 600;
+  color: #fff;
+}

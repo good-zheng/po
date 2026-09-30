@@ -1,0 +1,46 @@
+.guest-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  background: #fff;
+  padding-top: 200px;
+  box-sizing: border-box;
+}
+
+.guest-icon {
+  font-size: 80px;
+  margin-bottom: 24px;
+}
+
+.guest-title {
+  font-size: 36px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 16px;
+}
+
+.guest-hint {
+  font-size: 26px;
+  color: #9ca3af;
+  margin-bottom: 48px;
+  padding-left: 60px;
+  padding-right: 60px;
+  text-align: center;
+}
+
+.guest-login-btn {
+  width: 480px;
+  background: #ea580c;
+  color: #fff;
+  font-size: 30px;
+  border-radius: 999px;
+  border: none;
+  line-height: 2.4;
+}
+
+.guest-footnote {
+  font-size: 22px;
+  color: #c4c8cf;
+  margin-top: 24px;
+}

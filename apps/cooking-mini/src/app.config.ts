@@ -1,0 +1,56 @@
+export default defineAppConfig({
+  lazyCodeLoading: 'requiredComponents',
+  pages: [
+    'pages/index/index',
+    'pages/categories/index',
+    'pages/category/detail',
+    'pages/recipe/detail',
+    'pages/recipe/form',
+    'pages/cook/index',
+    'pages/ai/chat',
+    'pages/profile/index',
+    'pages/profile/favorites',
+    'pages/profile/history',
+    'pages/profile/recipes',
+    'pages/profile/edit',
+    'pages/login/index',
+  ],
+  window: {
+    backgroundTextStyle: 'light',
+    navigationBarBackgroundColor: '#fff',
+    navigationBarTitleText: '做菜助手',
+    navigationBarTextStyle: 'black',
+  },
+  tabBar: {
+    color: '#999',
+    selectedColor: '#ea580c',
+    backgroundColor: '#fafafa',
+    borderStyle: 'black',
+    list: [
+      {
+        pagePath: 'pages/index/index',
+        text: '首页',
+        iconPath: 'assets/icons/tab-home.png',
+        selectedIconPath: 'assets/icons/tab-home-active.png',
+      },
+      {
+        pagePath: 'pages/categories/index',
+        text: '分类',
+        iconPath: 'assets/icons/tab-category.png',
+        selectedIconPath: 'assets/icons/tab-category-active.png',
+      },
+      {
+        pagePath: 'pages/ai/chat',
+        text: 'AI 助手',
+        iconPath: 'assets/icons/tab-ai.png',
+        selectedIconPath: 'assets/icons/tab-ai-active.png',
+      },
+      {
+        pagePath: 'pages/profile/index',
+        text: '我的',
+        iconPath: 'assets/icons/tab-profile.png',
+        selectedIconPath: 'assets/icons/tab-profile-active.png',
+      },
+    ],
+  },
+});
