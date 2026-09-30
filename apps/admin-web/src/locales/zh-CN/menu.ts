@@ -8,14 +8,13 @@ export default {
   'menu.recipes.categories': '分类管理',
 
   'menu.users': '用户管理',
+  'menu.users.list': '用户列表',
+  'menu.users.approval': '注册审批',
 
-  'menu.welcome': '欢迎',
   'menu.login': '登录',
   'menu.register': '注册',
   'menu.register-result': '注册结果',
-  'menu.exception.403': '403',
   'menu.exception.404': '404',
-  'menu.exception.500': '500',
   'menu.settings': '个人设置',
   'menu.chatbot': 'AI 助手',
 };

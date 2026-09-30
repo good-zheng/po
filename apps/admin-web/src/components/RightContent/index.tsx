@@ -16,7 +16,7 @@ export const DocLink: React.FC = () => {
         icon={<BookOutlined />}
         aria-label="使用文档"
         onClick={() => {
-          history.push('/welcome');
+          history.push('/recipes/list');
         }}
       />
     </Tooltip>

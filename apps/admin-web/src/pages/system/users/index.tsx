@@ -21,7 +21,7 @@ const roleRender = (role: string) => {
 const statusRender = (status: string) => {
   const map: Record<
     string,
-    { label: string; badge: 'success' | 'error' | 'default' }
+    { label: string; badge: 'success' | 'error' | 'default' | 'processing' }
   > = {
     active: { label: '启用', badge: 'success' },
     suspended: { label: '禁用', badge: 'error' },
@@ -30,6 +30,20 @@ const statusRender = (status: string) => {
   };
   const item = map[status];
   if (!item) return status;
+  return <Badge status={item.badge} text={item.label} />;
+};
+
+const approvalRender = (status: string) => {
+  const map: Record<
+    string,
+    { label: string; badge: 'success' | 'error' | 'processing' | 'default' }
+  > = {
+    approved: { label: '已通过', badge: 'success' },
+    pending: { label: '待审批', badge: 'processing' },
+    rejected: { label: '已拒绝', badge: 'error' },
+  };
+  const item = map[status];
+  if (!item) return status || '-';
   return <Badge status={item.badge} text={item.label} />;
 };
 
@@ -117,6 +131,14 @@ const UserManagement: React.FC = () => {
       width: 100,
       search: false,
       render: (_, record) => statusRender(record.status),
+    },
+    {
+      title: '审批',
+      dataIndex: 'approvalStatus',
+      width: 100,
+      search: false,
+      render: (_, record) =>
+        approvalRender(record.approvalStatus || 'approved'),
     },
     {
       title: '创建时间',

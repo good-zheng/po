@@ -24,24 +24,8 @@ export default {
   'pages.login.submit': 'Login',
   'pages.login.loginWith': 'Login with :',
   'pages.login.registerAccount': 'Register Account',
-  'pages.welcome.link': 'Welcome',
-  'pages.welcome.celebrationTitle': 'Welcome to Ant Design Pro {v6}',
-  'pages.welcome.alertMessage':
-    'Faster and stronger heavy-duty components have been released.',
-  'pages.welcome.infoCard.umi.title': 'Learn umi',
-  'pages.welcome.infoCard.umi.desc':
-    'umi is an extensible enterprise-level frontend framework based on routing, supporting both config-based and convention-based routes.',
-  'pages.welcome.infoCard.antd.title': 'Learn Ant Design',
-  'pages.welcome.infoCard.antd.desc':
-    'antd is a React UI component library based on the Ant Design system, mainly for enterprise-level mid-end products.',
-  'pages.welcome.infoCard.procomponents.title': 'Learn Pro Components',
-  'pages.welcome.infoCard.procomponents.desc':
-    'ProComponents provides higher-abstraction template components on top of Ant Design, with one-component-one-page philosophy.',
   'pages.404.subTitle': 'Sorry, the page you visited does not exist.',
   'pages.404.buttonText': 'Back Home',
-  'pages.admin.subPage.title': 'This page can only be viewed by Admin',
-  'pages.admin.subPage.alertMessage':
-    'Umi ui is now released, welcome to use npm run ui to start the experience.',
   'pages.searchTable.createForm.newRule': 'New Rule',
   'pages.searchTable.updateForm.ruleConfig': 'Rule configuration',
   'pages.searchTable.updateForm.basicConfig': 'Basic Information',

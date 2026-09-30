@@ -148,3 +148,25 @@ export async function batchUpdateUserStatus(
     ...(options || {}),
   });
 }
+
+/** 获取待审批用户列表 */
+export async function getPendingUsers(options?: Record<string, unknown>) {
+  return request<Result<UserItem[]>>('/api/users/pending', {
+    method: 'GET',
+    ...(options || {}),
+  });
+}
+
+/** 审批用户（approved / rejected） */
+export async function approveUser(
+  id: number,
+  action: 'approved' | 'rejected',
+  options?: Record<string, unknown>,
+) {
+  return request<Result<UserItem>>(`/api/users/${id}/approval`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    data: { action },
+    ...(options || {}),
+  });
+}

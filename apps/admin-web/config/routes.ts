@@ -43,13 +43,6 @@ export default [
       },
     ],
   },
-  // {
-  //   path: '/welcome',
-  //   name: 'welcome',
-  //   icon: 'home',
-  //   access: 'canAdmin',
-  //   component: './Welcome',
-  // },
   {
     path: '/recipes',
     name: 'recipes',
@@ -94,29 +87,6 @@ export default [
       },
     ],
   },
-  // {
-  //   name: "account",
-  //   icon: "user",
-  //   path: "/account",
-  //   routes: [
-  //     {
-  //       path: "/account",
-  //       redirect: "/account/settings",
-  //     },
-  //     {
-  //       name: "settings",
-  //       icon: "setting",
-  //       path: "/account/settings",
-  //       component: "./account/settings",
-  //     },
-  //     {
-  //       name: 'center',
-  //       icon: 'user',
-  //       path: '/account/center',
-  //       component: './account/center',
-  //     },
-  //   ],
-  // },
   {
     path: '/chatbot',
     name: 'chatbot',
@@ -129,7 +99,22 @@ export default [
     name: 'users',
     icon: 'team',
     access: 'canAdmin',
-    component: './system/users',
+    routes: [
+      {
+        path: '/users',
+        redirect: '/users/list',
+      },
+      {
+        path: '/users/list',
+        name: 'list',
+        component: './system/users',
+      },
+      {
+        path: '/users/approval',
+        name: 'approval',
+        component: './system/users/approval',
+      },
+    ],
   },
   {
     name: 'settings',
@@ -138,35 +123,6 @@ export default [
     access: 'canAdmin',
     component: './account/settings',
   },
-  // {
-  //   name: 'exception',
-  //   icon: 'warning',
-  //   path: '/exception',
-  //   routes: [
-  //     {
-  //       path: '/exception',
-  //       redirect: '/exception/403',
-  //     },
-  //     {
-  //       name: '403',
-  //       icon: 'stop',
-  //       path: '/exception/403',
-  //       component: './exception/403',
-  //     },
-  //     {
-  //       name: '404',
-  //       icon: 'warning',
-  //       path: '/exception/404',
-  //       component: './exception/404',
-  //     },
-  //     {
-  //       name: '500',
-  //       icon: 'bug',
-  //       path: '/exception/500',
-  //       component: './exception/500',
-  //     },
-  //   ],
-  // },
   {
     path: '/',
     redirect: '/recipes/list',

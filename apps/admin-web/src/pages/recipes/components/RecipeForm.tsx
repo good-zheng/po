@@ -15,6 +15,7 @@ import {
   type Recipe,
   type RecipeRequest,
 } from '@/services/recipe';
+import { ImageField } from './ImageField';
 
 type RecipeFormProps = {
   initialValues: Partial<RecipeRequest>;
@@ -182,11 +183,9 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
         label="口味"
         placeholder="如：香辣、清淡、酸甜"
       />
-      <ProFormText
-        name="coverImageUrl"
-        label="封面图 URL"
-        placeholder="图片链接"
-      />
+      <Form.Item name="coverImageUrl" label="封面图">
+        <ImageField dir="dishes" />
+      </Form.Item>
 
       {/* ── 营养信息 ────────────────────────────────────── */}
       <Divider plain titlePlacement="left">
