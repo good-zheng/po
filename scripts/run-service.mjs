@@ -87,6 +87,10 @@ if (service === 'api') {
     ? resolve(chatDir, '.venv', 'Scripts', 'python.exe')
     : resolve(chatDir, '.venv', 'bin', 'python');
   if (!existsSync(command)) {
+    // 首次上手引导：自动用系统 Python 创建 venv，避免 install/start 鸡生蛋断链
+    createVenv(chatDir);
+  }
+  if (!existsSync(command)) {
     throw new Error(
       `Python venv not found: ${command}. Create it first: cd services/chat && python -m venv .venv`,
     );
@@ -98,6 +102,21 @@ if (service === 'api') {
   }));
 } else {
   throw new Error(`Unsupported service: ${service}`);
+}
+
+// 用系统 Python 在指定目录创建 .venv（尽力而为；失败仅提示，由调用方再报错）
+function createVenv(dir) {
+  const attempts = isWindows
+    ? [['py', ['-3']], ['python', []]]
+    : [['python3', []], ['python', []]];
+  for (const [bin, flags] of attempts) {
+    const result = spawnSync(bin, [...flags, '-m', 'venv', '.venv'], {
+      cwd: dir,
+      stdio: 'inherit',
+    });
+    if (!result.error && result.status === 0) return;
+  }
+  console.error('自动创建 venv 失败：请手动执行 cd services/chat && python -m venv .venv');
 }
 
 function quoteShellArgument(value) {

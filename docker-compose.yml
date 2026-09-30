@@ -22,9 +22,18 @@ services:
     restart: unless-stopped
 
   redis:
-    image: redis:7-alpine
+    # 必须是 Redis Stack：langgraph 的 redis checkpointer 用 JSON.SET + FT.SEARCH（RedisJSON/RediSearch 模块），
+    # 普通 redis:7-alpine 上 setup() 会报 unknown command，chat 静默降级成 memory checkpointer。
+    # 镜像走国内加速前缀（Docker Hub 本地直连不通），与 services/chat/Dockerfile 的做法一致。
+    image: docker.m.daocloud.io/redis/redis-stack-server:latest
     # 与 application-local.yaml 的 spring.data.redis.password 保持一致
-    command: redis-server --requirepass ${REDIS_PASSWORD:-123456}
+    environment:
+      # healthcheck 在容器内展开 $$REDIS_PASSWORD，故必须把它也注入容器，
+      # 否则自定义密码时探针会退化成默认值而误报不健康
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-123456}
+      REDIS_ARGS: "--requirepass ${REDIS_PASSWORD:-123456} --appendonly yes"
+    volumes:
+      - redis_data:/data
     healthcheck:
       test: ["CMD-SHELL", "redis-cli -a $${REDIS_PASSWORD:-123456} ping"]
       interval: 5s
@@ -44,6 +53,18 @@ services:
       JWT_SECRET: ${JWT_SECRET:?请在 .env 中设置 JWT_SECRET（Base64，解码后至少 32 字节）}
       JWT_EXPIRATION: ${JWT_EXPIRATION:-86400000}
       APP_SEED_DEFAULT_ADMIN: ${APP_SEED_DEFAULT_ADMIN:-false}
+      # 讯飞 TTS：未配置时 /api/tts 返回可读错误，不影响服务启动
+      IFLYTEK_APP_ID: ${IFLYTEK_APP_ID:-}
+      IFLYTEK_API_KEY: ${IFLYTEK_API_KEY:-}
+      IFLYTEK_API_SECRET: ${IFLYTEK_API_SECRET:-}
+      IFLYTEK_TTS_VCN: ${IFLYTEK_TTS_VCN:-xiaoyan}
+      # 腾讯云 COS：头像/上传/TTS 音频落桶；密钥从 .env 注入，桶/地域有默认值
+      COS_SECRET_ID: ${COS_SECRET_ID:-}
+      COS_SECRET_KEY: ${COS_SECRET_KEY:-}
+      COS_REGION: ${COS_REGION:-ap-shanghai}
+      COS_BUCKET: ${COS_BUCKET:-7072-prod-d7g3zal0655a67232-1496875399}
+      COS_KEY_PREFIX: ${COS_KEY_PREFIX:-po}
+      COS_BASE_URL: ${COS_BASE_URL:-}
     volumes:
       - uploads_data:/app/uploads
     depends_on:
@@ -108,4 +129,5 @@ services:
 
 volumes:
   mysql_data:
+  redis_data:
   uploads_data:

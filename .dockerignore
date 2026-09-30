@@ -22,6 +22,9 @@ infra/
 .env
 .env.*
 !.env.example
+# 生产密钥备忘清单只用于填控制台，绝不打进镜像（chat 的构建上下文是仓库根，故在根清单里排除）
+services/api/application-prod.json
+services/chat/deploy-prod.json
 **/application-local.yaml
 *.log
 logs/

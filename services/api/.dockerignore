@@ -1,5 +1,13 @@
-# 防止本地凭据进入构建上下文与镜像（application-local.yaml 含本地数据库/Redis/JWT 密钥）
+# api 镜像构建上下文 = services/api（compose: build ./services/api）。
+# 根 .dockerignore 不作用于此上下文，故单独一份：
+# 任何环境密钥文件都不得进入镜像，生产一律用环境变量注入。
+target/
 **/application-local.yaml
-**/target/
-HELP.md
-.mvn/wrapper/maven-wrapper.jar
+**/application-prod.yaml
+application-prod.json
+*.log
+logs/
+uploads/
+.env
+.env.*
+!.env.example
