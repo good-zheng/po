@@ -1,0 +1,20 @@
+schema_version: 1
+module_path: ""
+title: PO 全栈项目根（pnpm monorepo + Docker Compose 编排）
+scope:
+    - README.md
+    - COOKING_APP_PLAN.md
+    - 技术方案.md
+    - docker-compose.yml
+    - .gitignore
+    - .npmrc
+    - pnpm-workspace.yaml
+    - package.json
+    - .commitlintrc.cjs
+    - .dockerignore
+    - .env.example
+    - .lintstagedrc
+    - pnpm-lock.yaml
+source_files: []
+depends_on: []
+related_to: []

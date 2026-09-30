@@ -1,34 +1,61 @@
 # 知识卡导出索引文件
 schema_version: 1
 locale: zh-CN
-branch: Q0DeR-MaG1C-BrAnCh-Fo2-NoN-GiT-Or-No-C0MmIt
+branch: main
 nodes_managed: true
-exported_at: "2026-08-31T03:51:36Z"
+exported_at: "2026-09-28T17:28:09Z"
 modules:
     "":
-        dir_name: 破（PO）菜谱与对话全栈应用
-        title: 破（PO）菜谱与对话全栈应用
-        scope: []
+        dir_name: PO 全栈项目根（pnpm monorepo + Docker Compose 编排）
+        title: PO 全栈项目根（pnpm monorepo + Docker Compose 编排）
+        scope:
+            - README.md
+            - COOKING_APP_PLAN.md
+            - 技术方案.md
+            - docker-compose.yml
+            - .gitignore
+            - .npmrc
+            - pnpm-workspace.yaml
+            - package.json
+            - .commitlintrc.cjs
+            - .dockerignore
+            - .env.example
+            - .lintstagedrc
+            - pnpm-lock.yaml
         source_files: []
         children:
-            - java_backend
-            - python_backend
+            - infra
+            - scripts
+            - tools
         depends_on: []
         related_to: []
-    java_backend:
-        dir_name: 菜谱与用户管理后端服务（Spring Boot）
-        title: 菜谱与用户管理后端服务（Spring Boot）
+    infra:
+        dir_name: 基础设施与持续集成配置
+        title: 基础设施与持续集成配置
         scope:
-            - java_server/
+            - infra/
+            - .github/workflows/ci.yml
+            - .husky/
         source_files: []
         children: []
         depends_on: []
-        related_to: []
-    python_backend:
-        dir_name: FastAPI 聊天服务后端
-        title: FastAPI 聊天服务后端
+        related_to:
+            - path: scripts
+    scripts:
+        dir_name: 构建、部署与本地开发运行脚本集
+        title: 构建、部署与本地开发运行脚本集
         scope:
-            - py_server/
+            - scripts/
+        source_files: []
+        children: []
+        depends_on: []
+        related_to:
+            - path: infra
+    tools:
+        dir_name: 菜谱种子数据与资源生成工具集
+        title: 菜谱种子数据与资源生成工具集
+        scope:
+            - tools/
         source_files: []
         children: []
         depends_on: []

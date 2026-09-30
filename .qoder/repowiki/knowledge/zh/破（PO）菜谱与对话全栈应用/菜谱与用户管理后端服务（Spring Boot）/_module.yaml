@@ -1,8 +1,0 @@
-schema_version: 1
-module_path: java_backend
-title: 菜谱与用户管理后端服务（Spring Boot）
-scope:
-    - java_server/
-source_files: []
-depends_on: []
-related_to: []

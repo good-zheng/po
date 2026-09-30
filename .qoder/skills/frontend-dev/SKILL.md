@@ -11,7 +11,7 @@ description: 为 po monorepo 的 React 前端任务选择本地约定和按需�
 | --- | --- | --- |
 | `apps/admin-web/` | Umi Max 4、React 19、Ant Design 6、Ant Design Pro 组件、React Query 5、Tailwind 4、Vitest、Biome | Ant Design 任务按需读取 antd skill |
 
-本 skill 仅覆盖管理端；`apps/cooking-app/` 由 `../mobile-dev/SKILL.md` 处理。管理端不得引入 shadcn/ui、TanStack Router 等第二套组件与路由体系；新页面优先复用 Pro 组件与现有页面模式。
+本 skill 仅覆盖管理端；`apps/cooking-app/` 与 `apps/cooking-mini/`（Taro 微信小程序）由 `../mobile-dev/SKILL.md` 处理。管理端不得引入 shadcn/ui、TanStack Router 等第二套组件与路由体系；新页面优先复用 Pro 组件与现有页面模式。
 
 ## 二级披露路由
 
@@ -28,6 +28,6 @@ description: 为 po monorepo 的 React 前端任务选择本地约定和按需�
 
 - Ant Design CLI 本地执行：在 `apps/admin-web/` 内运行 `pnpm exec antd ... --format json`（`@ant-design/cli` 已在 devDependencies）；不要全局安装。
 - 后端地址配置走 `apps/admin-web/.env`（`UMI_APP_API_BASE_URL` 指向 Spring Boot 8080、`UMI_APP_WS_BASE_URL` 指向 FastAPI 5090），由 `config/proxy.ts` 读取；Umi 只加载本目录 `.env`，不读 monorepo 根目录 `.env`（那份只属于 docker compose）。改 `.env` 必须重启 dev server 才生效。
-- 开发与构建走 workspace 脚本：仓库根 `pnpm admin:dev` / `pnpm admin:build`（均先执行 `pnpm types:build`）；类型契约在 `packages/types/`，前后端字段变更先改类型包。
+- 开发与构建走 workspace 脚本：仓库根 `pnpm admin:dev` / `pnpm admin:build`（均先执行 `pnpm types:build`），静态检查 `pnpm admin:typecheck` / `pnpm admin:lint` / `pnpm admin:test`；类型契约在 `packages/types/`，前后端字段变更先改类型包。
 - 同时修改中英文界面文案时，同步更新 `src/locales/zh-CN.ts` 与 `src/locales/en-US.ts`（Umi locale 插件的 TS 模块，不是 JSON 文件）。
 - 修改前读取目标模块的 `package.json` 和同类功能文件，用既有 Biome / Vitest 脚本验证。
