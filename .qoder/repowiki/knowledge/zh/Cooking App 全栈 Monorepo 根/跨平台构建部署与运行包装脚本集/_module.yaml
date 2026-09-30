@@ -1,9 +1,10 @@
 schema_version: 1
 module_path: scripts
-title: 构建、部署与本地开发运行脚本集
+title: 跨平台构建部署与运行包装脚本集
 scope:
     - scripts/
 source_files: []
 depends_on: []
 related_to:
     - path: infra
+    - path: tools

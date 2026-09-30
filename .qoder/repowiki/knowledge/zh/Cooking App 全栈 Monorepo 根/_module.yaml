@@ -1,6 +1,6 @@
 schema_version: 1
 module_path: ""
-title: PO 全栈项目根（pnpm monorepo + Docker Compose 编排）
+title: Cooking App 全栈 Monorepo 根
 scope:
     - README.md
     - COOKING_APP_PLAN.md

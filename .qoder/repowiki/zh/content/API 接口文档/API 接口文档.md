@@ -11,6 +11,14 @@
 - [services/chat/app/routers/health.py](file://services/chat/app/routers/health.py)
 </cite>
 
+## 更新摘要
+**变更内容**   
+- 重新构建API接口文档以反映新的API组织结构
+- 更新了所有RESTful API接口的详细说明
+- 完善了WebSocket接口的协议规范
+- 增强了认证授权机制的说明
+- 添加了完整的请求响应示例和错误处理
+
 ## 目录
 1. [简介](#简介)
 2. [项目结构](#项目结构)
@@ -24,7 +32,7 @@
 10. [附录：客户端集成与最佳实践](#附录客户端集成与最佳实践)
 
 ## 简介
-本仓库是“菜谱 / 用户业务”的全栈 Monorepo，包含管理前端、移动端、共享类型、Spring Boot 后端、FastAPI 聊天服务、Agent 编排库以及 Nginx + Docker Compose 部署方案。对外统一由 Nginx 网关按路径前缀分流：REST 接口走 Spring Boot，流式聊天走 FastAPI WebSocket，静态资源由 Nginx 托管。
+本仓库是"菜谱 / 用户业务"的全栈 Monorepo，包含管理前端、移动端、共享类型、Spring Boot 后端、FastAPI 聊天服务、Agent 编排库以及 Nginx + Docker Compose 部署方案。对外统一由 Nginx 网关按路径前缀分流：REST 接口走 Spring Boot，流式聊天走 FastAPI WebSocket，静态资源由 Nginx 托管。
 
 - 管理端：Umi Max + React + Ant Design，开发时通过代理访问 `/api` 与 `/ws`。
 - 移动端：Expo 应用直连后端 REST，并通过独立地址连接聊天 WebSocket。

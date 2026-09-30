@@ -9,12 +9,21 @@
 - [apps/admin-web/src/global.tsx](file://apps/admin-web/src/global.tsx)
 - [apps/admin-web/src/requestErrorConfig.ts](file://apps/admin-web/src/requestErrorConfig.ts)
 - [apps/admin-web/config/defaultSettings.ts](file://apps/admin-web/config/defaultSettings.ts)
-- [apps/admin-web/src/services/ant-design-pro/api.ts](file://apps/admin-web/src/services/ant-design-pro/api.ts)
 - [apps/admin-web/src/components/index.ts](file://apps/admin-web/src/components/index.ts)
 - [apps/admin-web/src/locales/zh-CN.ts](file://apps/admin-web/src/locales/zh-CN.ts)
 - [apps/admin-web/config/proxy.ts](file://apps/admin-web/config/proxy.ts)
 - [apps/admin-web/vitest.config.ts](file://apps/admin-web/vitest.config.ts)
+- [apps/admin-web/src/pages/system/users/approval.tsx](file://apps/admin-web/src/pages/system/users/approval.tsx)
+- [apps/admin-web/src/pages/system/users/index.tsx](file://apps/admin-web/src/pages/system/users/index.tsx)
+- [apps/admin-web/src/services/user.ts](file://apps/admin-web/src/services/user.ts)
 </cite>
+
+## 更新摘要
+**变更内容**   
+- 移除了大量 Ant Design Pro 示例代码和组件，项目架构更加精简
+- 新增了完整的用户审批功能，包括待审批用户列表和审批操作界面
+- 简化了组件库，只保留必要的核心组件
+- 重构了用户管理系统，支持用户 CRUD 操作和权限控制
 
 ## 目录
 1. [简介](#简介)
@@ -22,20 +31,21 @@
 3. [核心组件与能力](#核心组件与能力)
 4. [架构总览](#架构总览)
 5. [详细组件分析](#详细组件分析)
-6. [依赖关系分析](#依赖关系分析)
-7. [性能与构建优化](#性能与构建优化)
-8. [故障排查指南](#故障排查指南)
-9. [结论](#结论)
-10. [附录：最佳实践清单](#附录最佳实践清单)
+6. [用户审批功能](#用户审批功能)
+7. [依赖关系分析](#依赖关系分析)
+8. [性能与构建优化](#性能与构建优化)
+9. [故障排查指南](#故障排查指南)
+10. [结论](#结论)
+11. [附录：最佳实践清单](#附录最佳实践清单)
 
 ## 简介
-本仓库中的管理端 Web 应用位于 apps/admin-web，基于 Umi Max 4、React 19 与 Ant Design 6 构建，提供后台管理所需的路由、权限、国际化、请求封装、错误处理、布局与设置抽屉等能力。该文档面向开发者与维护者，系统梳理项目架构、关键流程、配置项与扩展点，并给出可落地的最佳实践建议。
+本仓库中的管理端 Web 应用位于 apps/admin-web，基于 Umi Max 4、React 19 与 Ant Design 6 构建，提供后台管理所需的路由、权限、国际化、请求封装、错误处理、布局与设置抽屉等能力。经过精简重构后，项目移除了大量示例代码，专注于核心业务功能，并新增了完整的用户审批系统。该文档面向开发者与维护者，系统梳理项目架构、关键流程、配置项与扩展点，并给出可落地的最佳实践建议。
 
 ## 项目结构
-管理端采用 Umi Max 约定式目录组织，核心目录说明如下：
+管理端采用 Umi Max 约定式目录组织，经过精简后的核心目录说明如下：
 - config：Umi 运行时配置，包括路由、代理、默认主题等
-- src/pages：页面级模块，按业务域划分目录
-- src/components：通用与业务组件聚合导出
+- src/pages：页面级模块，按业务域划分目录（user、recipes、system、account、chatbot）
+- src/components：精简后的通用组件聚合导出
 - src/services：API 客户端封装，按领域拆分
 - src/locales：多语言资源
 - src/utils：工具函数
@@ -47,19 +57,19 @@
 graph TB
 A["apps/admin-web"] --> B["config<br/>routes.ts / proxy.ts / defaultSettings.ts"]
 A --> C["src<br/>app.tsx / access.ts / requestErrorConfig.ts / global.tsx"]
-A --> D["src/pages<br/>按业务域划分的页面"]
-A --> E["src/components<br/>通用与业务组件"]
+A --> D["src/pages<br/>user/recipes/system/account/chatbot"]
+A --> E["src/components<br/>精简后的核心组件"]
 A --> F["src/services<br/>API 客户端"]
 A --> G["src/locales<br/>多语言资源"]
 A --> H["tests<br/>Vitest 配置与用例"]
 ```
 
 **图表来源**
-- [apps/admin-web/config/routes.ts:1-194](file://apps/admin-web/config/routes.ts#L1-L194)
+- [apps/admin-web/config/routes.ts:1-135](file://apps/admin-web/config/routes.ts#L1-L135)
 - [apps/admin-web/src/app.tsx:1-220](file://apps/admin-web/src/app.tsx#L1-L220)
 
 **章节来源**
-- [apps/admin-web/config/routes.ts:1-194](file://apps/admin-web/config/routes.ts#L1-L194)
+- [apps/admin-web/config/routes.ts:1-135](file://apps/admin-web/config/routes.ts#L1-L135)
 - [apps/admin-web/src/app.tsx:1-220](file://apps/admin-web/src/app.tsx#L1-L220)
 
 ## 核心组件与能力
@@ -68,17 +78,17 @@ A --> H["tests<br/>Vitest 配置与用例"]
 - 国际化：通过 src/locales 下多语言文件聚合，配合 ProLayout 的语言切换
 - 请求与错误处理：基于 Umi Request，统一拦截器、错误分类提示、会话失效跳转
 - 布局与设置：ProLayout + SettingDrawer，支持主题色、布局模式、内容宽度等
-- 组件库规范：Ant Design 6 + Ant Design Pro Components，统一导出入口在 src/components/index.ts
+- 精简组件库：Ant Design 6 + 核心业务组件，统一管理导出入口在 src/components/index.ts
 - 状态管理：以 getInitialState 初始化用户信息，结合 React Query 与组件内状态
 - 开发体验：代理配置、Mock、OpenAPI 生成、Vitest 测试、Tailwind CSS 集成
 
 **章节来源**
-- [apps/admin-web/config/routes.ts:1-194](file://apps/admin-web/config/routes.ts#L1-L194)
+- [apps/admin-web/config/routes.ts:1-135](file://apps/admin-web/config/routes.ts#L1-L135)
 - [apps/admin-web/src/access.ts:1-22](file://apps/admin-web/src/access.ts#L1-L22)
 - [apps/admin-web/src/locales/zh-CN.ts:1-23](file://apps/admin-web/src/locales/zh-CN.ts#L1-L23)
 - [apps/admin-web/src/requestErrorConfig.ts:1-138](file://apps/admin-web/src/requestErrorConfig.ts#L1-L138)
 - [apps/admin-web/config/defaultSettings.ts:1-26](file://apps/admin-web/config/defaultSettings.ts#L1-L26)
-- [apps/admin-web/src/components/index.ts:1-23](file://apps/admin-web/src/components/index.ts#L1-L23)
+- [apps/admin-web/src/components/index.ts:1-19](file://apps/admin-web/src/components/index.ts#L1-L19)
 - [apps/admin-web/src/app.tsx:1-220](file://apps/admin-web/src/app.tsx#L1-L220)
 
 ## 架构总览
@@ -113,7 +123,6 @@ Umi->>Browser : 渲染页面或跳转登录
 **图表来源**
 - [apps/admin-web/src/app.tsx:43-87](file://apps/admin-web/src/app.tsx#L43-L87)
 - [apps/admin-web/src/access.ts:8-21](file://apps/admin-web/src/access.ts#L8-L21)
-- [apps/admin-web/src/services/ant-design-pro/api.ts:5-13](file://apps/admin-web/src/services/ant-design-pro/api.ts#L5-L13)
 - [apps/admin-web/config/proxy.ts:12-29](file://apps/admin-web/config/proxy.ts#L12-L29)
 
 ## 详细组件分析
@@ -139,10 +148,10 @@ SkipAuth --> Render
 **图表来源**
 - [apps/admin-web/src/app.tsx:43-87](file://apps/admin-web/src/app.tsx#L43-L87)
 - [apps/admin-web/src/access.ts:8-21](file://apps/admin-web/src/access.ts#L8-L21)
-- [apps/admin-web/config/routes.ts:13-194](file://apps/admin-web/config/routes.ts#L13-L194)
+- [apps/admin-web/config/routes.ts:13-135](file://apps/admin-web/config/routes.ts#L13-L135)
 
 **章节来源**
-- [apps/admin-web/config/routes.ts:13-194](file://apps/admin-web/config/routes.ts#L13-L194)
+- [apps/admin-web/config/routes.ts:13-135](file://apps/admin-web/config/routes.ts#L13-L135)
 - [apps/admin-web/src/access.ts:1-22](file://apps/admin-web/src/access.ts#L1-L22)
 - [apps/admin-web/src/app.tsx:43-87](file://apps/admin-web/src/app.tsx#L43-L87)
 
@@ -214,9 +223,9 @@ Layout --> SettingDrawer : "嵌入并联动"
 - [apps/admin-web/config/defaultSettings.ts:1-26](file://apps/admin-web/config/defaultSettings.ts#L1-L26)
 - [apps/admin-web/src/global.tsx:1-2](file://apps/admin-web/src/global.tsx#L1-L2)
 
-### 组件库与复用
+### 精简组件库
 - 组件导出：src/components/index.ts 统一管理对外导出的组件，便于按需引用与版本升级
-- 常用组件：包含 Footer、RightContent 子组件（DocLink/LangDropdown/VersionDropdown）、AvatarDropdown、ErrorBoundary、OfflineBanner、StandardFormRow、TagSelect 等
+- 精简组件：仅保留 Footer、RightContent 子组件（DocLink/LangDropdown/VersionDropdown）、AvatarDropdown、ErrorBoundary、OfflineBanner 等核心组件
 - 样式方案：Ant Design 6 + antd-style，同时启用 Tailwind CSS 用于原子化样式
 
 ```mermaid
@@ -229,15 +238,13 @@ RightContent --> VersionDropdown["VersionDropdown"]
 Index --> AvatarDropdown["AvatarDropdown"]
 Index --> ErrorBoundary["ErrorBoundary"]
 Index --> OfflineBanner["OfflineBanner"]
-Index --> StandardFormRow["StandardFormRow"]
-Index --> TagSelect["TagSelect"]
 ```
 
 **图表来源**
-- [apps/admin-web/src/components/index.ts:1-23](file://apps/admin-web/src/components/index.ts#L1-L23)
+- [apps/admin-web/src/components/index.ts:1-19](file://apps/admin-web/src/components/index.ts#L1-L19)
 
 **章节来源**
-- [apps/admin-web/src/components/index.ts:1-23](file://apps/admin-web/src/components/index.ts#L1-L23)
+- [apps/admin-web/src/components/index.ts:1-19](file://apps/admin-web/src/components/index.ts#L1-L19)
 
 ### 国际化
 - 语言包聚合：src/locales/zh-CN.ts 聚合 pages/globalHeader/menu/settingDrawer/settings/network/component 等模块
@@ -249,28 +256,92 @@ Index --> TagSelect["TagSelect"]
 - [apps/admin-web/src/app.tsx:106-116](file://apps/admin-web/src/app.tsx#L106-L116)
 - [apps/admin-web/src/requestErrorConfig.ts:103-110](file://apps/admin-web/src/requestErrorConfig.ts#L103-L110)
 
-### API 客户端封装
-- 统一入口：services/ant-design-pro/api.ts 基于 @umijs/max 的 request 封装业务接口
-- 典型接口：currentUser/outLogin/login/getNotices/rule/updateRule/addRule/removeRule
-- 类型约束：返回值使用 API.* 命名空间类型，便于 TS 类型推导
+## 用户审批功能
+
+### 功能概述
+新增的用户审批功能提供了完整的用户注册审批流程，包括待审批用户列表查看、批量审批操作和用户状态管理。该功能通过独立的审批页面实现，支持管理员对注册用户进行审核。
+
+### 审批页面架构
+用户审批功能主要由以下组件构成：
 
 ```mermaid
 flowchart TD
-Page["页面组件"] --> Service["services/ant-design-pro/api.ts"]
-Service --> Request["@umijs/max request"]
-Request --> Proxy["config/proxy.ts"]
-Proxy --> Backend["后端 API"]
-Backend --> Response["ResponseStructure"]
-Response --> Service
-Service --> Page
+ApprovalPage["approval.tsx<br/>用户审批页面"] --> PendingList["待审批用户列表"]
+ApprovalPage --> ApprovalActions["审批操作"]
+PendingList --> UserTable["ProTable 用户表格"]
+ApprovalActions --> ApproveBtn["通过按钮"]
+ApprovalActions --> RejectBtn["拒绝按钮"]
+ApproveBtn --> ConfirmModal["确认对话框"]
+RejectBtn --> ConfirmModal
+ConfirmModal --> Mutation["React Query Mutation"]
+Mutation --> API["approveUser API"]
 ```
 
 **图表来源**
-- [apps/admin-web/src/services/ant-design-pro/api.ts:5-95](file://apps/admin-web/src/services/ant-design-pro/api.ts#L5-L95)
-- [apps/admin-web/config/proxy.ts:12-29](file://apps/admin-web/config/proxy.ts#L12-L29)
+- [apps/admin-web/src/pages/system/users/approval.tsx:1-151](file://apps/admin-web/src/pages/system/users/approval.tsx#L1-L151)
+- [apps/admin-web/src/services/user.ts:152-172](file://apps/admin-web/src/services/user.ts#L152-L172)
+
+### 待审批用户列表
+待审批用户列表页面实现了以下核心功能：
+
+- **数据获取**：使用 React Query 的 useQuery 钩子获取待审批用户列表
+- **用户信息展示**：显示用户名、昵称、角色、审批状态、注册时间等信息
+- **角色标签渲染**：不同角色使用不同颜色的标签展示（超级管理员-金色、管理员-蓝色、普通用户-默认）
+- **审批状态标识**：所有待审批用户统一显示"待审批"状态徽章
 
 **章节来源**
-- [apps/admin-web/src/services/ant-design-pro/api.ts:1-95](file://apps/admin-web/src/services/ant-design-pro/api.ts#L1-L95)
+- [apps/admin-web/src/pages/system/users/approval.tsx:24-30](file://apps/admin-web/src/pages/system/users/approval.tsx#L24-L30)
+- [apps/admin-web/src/pages/system/users/approval.tsx:70-101](file://apps/admin-web/src/pages/system/users/approval.tsx#L70-L101)
+
+### 审批操作机制
+审批操作通过 React Query 的 useMutation 实现异步操作：
+
+- **通过审批**：点击"通过"按钮后弹出确认对话框，确认后调用 approveUser API
+- **拒绝审批**：点击"拒绝"按钮后弹出确认对话框，确认后调用 approveUser API
+- **状态刷新**：审批成功后自动刷新待审批用户列表
+- **用户反馈**：通过 message API 显示操作成功或失败的提示信息
+
+```mermaid
+sequenceDiagram
+participant User as "管理员"
+participant UI as "审批界面"
+participant Modal as "确认对话框"
+participant Mutation as "React Query Mutation"
+participant API as "approveUser API"
+User->>UI : 点击"通过"或"拒绝"
+UI->>Modal : 弹出确认对话框
+Modal->>Mutation : 确认操作
+Mutation->>API : 调用审批接口
+API-->>Mutation : 返回操作结果
+Mutation->>UI : 触发 onSuccess/onError
+UI->>User : 显示操作结果
+```
+
+**图表来源**
+- [apps/admin-web/src/pages/system/users/approval.tsx:32-68](file://apps/admin-web/src/pages/system/users/approval.tsx#L32-L68)
+
+**章节来源**
+- [apps/admin-web/src/pages/system/users/approval.tsx:32-68](file://apps/admin-web/src/pages/system/users/approval.tsx#L32-L68)
+
+### 用户管理增强
+用户管理页面增强了用户状态和审批状态的展示：
+
+- **审批状态列**：新增审批状态列，显示用户的审批状态（已通过、待审批、已拒绝）
+- **状态徽章**：不同审批状态使用不同颜色的徽章展示
+- **权限控制**：确保只有管理员及以上权限的用户可以访问用户管理功能
+
+**章节来源**
+- [apps/admin-web/src/pages/system/users/index.tsx:36-48](file://apps/admin-web/src/pages/system/users/index.tsx#L36-L48)
+- [apps/admin-web/src/pages/system/users/index.tsx:135-142](file://apps/admin-web/src/pages/system/users/index.tsx#L135-L142)
+
+### API 客户端扩展
+用户服务新增了审批相关的 API 方法：
+
+- **getPendingUsers**：获取待审批用户列表
+- **approveUser**：执行用户审批操作（approved/rejected）
+
+**章节来源**
+- [apps/admin-web/src/services/user.ts:152-172](file://apps/admin-web/src/services/user.ts#L152-L172)
 
 ## 依赖关系分析
 - 运行时依赖：react/react-dom 19，antd 6，@ant-design/pro-components，@tanstack/react-query，dayjs，highlight.js，d3 等
@@ -315,6 +386,7 @@ AdminWeb --> Tailwind["tailwindcss"]
 - 网络不可用：检查 navigator.onLine 分支与国际化文案；确认代理配置是否正确
 - 组件报错：使用 ErrorBoundary 捕获渲染错误；检查组件导入与依赖版本
 - 构建失败：运行 doctor 诊断；检查 Node 版本要求与 pnpm workspace 配置
+- 审批功能异常：检查待审批用户列表 API 是否正常；确认审批操作权限；查看 React Query 缓存状态
 
 **章节来源**
 - [apps/admin-web/src/requestErrorConfig.ts:23-38](file://apps/admin-web/src/requestErrorConfig.ts#L23-L38)
@@ -323,7 +395,7 @@ AdminWeb --> Tailwind["tailwindcss"]
 - [apps/admin-web/src/access.ts:8-21](file://apps/admin-web/src/access.ts#L8-L21)
 
 ## 结论
-该项目以 Umi Max 4 为核心，结合 React 19 与 Ant Design 6，构建了清晰的管理端架构。通过集中式路由、统一的权限模型、完善的请求与错误处理、丰富的布局与设置能力，以及规范的组件与国际化组织方式，提供了良好的可维护性与可扩展性。建议在后续迭代中持续完善单元测试覆盖率、细化 API 类型定义，并逐步将更多业务组件沉淀为可复用的设计系统资产。
+该项目以 Umi Max 4 为核心，结合 React 19 与 Ant Design 6，构建了清晰的管理端架构。经过精简重构后，项目移除了大量示例代码，专注于核心业务功能，并新增了完整的用户审批系统。通过集中式路由、统一的权限模型、完善的请求与错误处理、丰富的布局与设置能力，以及精简的组件组织方式，提供了良好的可维护性与可扩展性。建议在后续迭代中持续完善单元测试覆盖率、细化 API 类型定义，并逐步将更多业务组件沉淀为可复用的设计系统资产。
 
 ## 附录：最佳实践清单
 - 页面开发
@@ -346,3 +418,8 @@ AdminWeb --> Tailwind["tailwindcss"]
   - 开发环境使用 proxy.ts 代理后端接口与 WebSocket
   - 生产构建使用 max build，必要时开启 ANALYZE 分析依赖体积
   - 发布 gh-pages 可通过 deploy 脚本一键完成
+- 用户审批功能
+  - 使用 React Query 管理审批状态和数据缓存
+  - 审批操作前必须显示确认对话框，防止误操作
+  - 审批成功后自动刷新相关数据列表
+  - 为用户提供明确的操作反馈和错误提示
