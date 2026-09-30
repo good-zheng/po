@@ -105,3 +105,41 @@ export function unwrap<T>(response: AxiosResponse<Result<T>>): T {
 
   return result.data;
 }
+
+const MIME_BY_EXT: Record<string, string> = {
+  jpg: 'image/jpeg',
+  jpeg: 'image/jpeg',
+  png: 'image/png',
+  gif: 'image/gif',
+  webp: 'image/webp',
+};
+
+function guessMime(name: string): string {
+  const ext = name.split('.').pop()?.toLowerCase() ?? '';
+  return MIME_BY_EXT[ext] ?? 'image/jpeg';
+}
+
+/** 上传图片到后端 /files/upload（落腾讯云 COS），dir 为业务子目录白名单，返回公网 URL */
+export async function uploadImage(uri: string, dir: string): Promise<string> {
+  const name = uri.split('/').pop() || `upload-${Date.now()}.jpg`;
+  const form = new FormData();
+
+  if (Platform.OS === 'web') {
+    const blob = await (await fetch(uri)).blob();
+    form.append('file', blob, name);
+  } else {
+    form.append('file', {
+      uri,
+      name,
+      type: guessMime(name),
+    } as unknown as string);
+  }
+
+  const response = await apiClient.post<Result<string>>('/files/upload', form, {
+    params: { dir },
+    headers: { 'Content-Type': 'multipart/form-data' },
+    timeout: 30_000,
+  });
+
+  return unwrap<string>(response);
+}

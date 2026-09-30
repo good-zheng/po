@@ -43,9 +43,24 @@ ROUTABLE_TEXT = "番茄炒蛋要放多少盐"
 
 
 def offline_settings() -> AgentCoreSettings:
-    """无 Key / 内存 checkpointer 的隔离配置：不读 .env、不连 redis。"""
+    """无 Key / 内存 checkpointer 的隔离配置：不读 .env、不连 redis。
+
+    ``_env_file=None`` 只挡文件，挡不住宿主进程里残留的 ``AGENT_CORE_*``
+    环境变量；一旦 embedding 配置泄漏进来，路由会走混合模式且分数
+    达不到 1.0 阈值，用例就不再确定。所以影响路由取径的字段全部显式
+    钉死为空，强制走本地关键词兜底（原文命中给满分）。
+    """
     return AgentCoreSettings(
-        _env_file=None, checkpointer="memory", llm_api_key="", router_threshold=1.0
+        _env_file=None,
+        checkpointer="memory",
+        llm_provider="custom",
+        llm_model="",
+        llm_api_key="",
+        llm_base_url="",
+        embedding_model="",
+        embedding_api_key="",
+        embedding_base_url="",
+        router_threshold=1.0,
     )
 
 

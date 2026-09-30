@@ -74,6 +74,8 @@ async def test_memory_saver_supports_thread_resume() -> None:
 
 
 async def test_sqlite_strategy_lifecycle(tmp_path) -> None:
+    # sqlite checkpointer 是可选依赖（langgraph-checkpoint-sqlite），未安装时跳过而非报错
+    pytest.importorskip("langgraph.checkpoint.sqlite.aio", reason="未安装可选依赖 langgraph-checkpoint-sqlite")
     manager = sqlite_manager(tmp_path)
     assert manager.strategy == "sqlite"
 

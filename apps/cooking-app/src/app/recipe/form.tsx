@@ -1,10 +1,12 @@
 import { Ionicons } from '@expo/vector-icons';
 import type { Ingredient, RecipeRequest, Step } from '@po/types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import * as ImagePicker from 'expo-image-picker';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
   Alert,
+  Image,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -16,12 +18,13 @@ import {
 import { FormError, SubmitButton, TextField } from '@/components/form';
 import { ScreenHeader } from '@/components/screen-header';
 import { LoadingState } from '@/components/state-views';
-import { ApiError } from '@/lib/api/client';
+import { ApiError, resolveAssetUrl } from '@/lib/api/client';
 import {
   createRecipe,
   fetchRecipeCategories,
   fetchRecipeDetail,
   updateRecipe,
+  uploadRecipeCover,
 } from '@/lib/api/recipes';
 import { categoryKeys, recipeKeys } from '@/lib/query-keys';
 import { cn } from '@/lib/utils';
@@ -85,6 +88,7 @@ export default function RecipeFormScreen() {
   ]);
   const [steps, setSteps] = useState<StepDraft[]>([emptyStep()]);
   const [formError, setFormError] = useState<string | null>(null);
+  const [uploadingCover, setUploadingCover] = useState(false);
 
   const categoriesQuery = useQuery({
     queryFn: fetchRecipeCategories,
@@ -212,6 +216,39 @@ export default function RecipeFormScreen() {
     setSteps((prev) =>
       prev.map((item, i) => (i === index ? { ...item, ...patch } : item)),
     );
+  };
+
+  const pickCover = async () => {
+    if (uploadingCover) {
+      return;
+    }
+    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permission.granted) {
+      setFormError('需要相册权限才能选择封面图');
+      return;
+    }
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 0.8,
+    });
+    if (result.canceled) {
+      return;
+    }
+    const asset = result.assets[0];
+    if (!asset) {
+      return;
+    }
+    setUploadingCover(true);
+    setFormError(null);
+    try {
+      setCoverImageUrl(await uploadRecipeCover(asset.uri));
+    } catch {
+      setFormError('封面上传失败，请稍后再试。');
+    } finally {
+      setUploadingCover(false);
+    }
   };
 
   if (isEdit && detailQuery.isLoading) {
@@ -353,13 +390,53 @@ export default function RecipeFormScreen() {
           placeholder="用逗号分隔，例如：下饭菜,家常,快手"
           value={tags}
         />
-        <TextField
-          autoCapitalize="none"
-          label="封面图地址"
-          onChangeText={setCoverImageUrl}
-          placeholder="图片 URL（选填）"
-          value={coverImageUrl}
-        />
+        <View className="gap-1.5">
+          <Text className="text-sm font-medium text-stone-700 dark:text-stone-300">
+            封面图
+          </Text>
+          <View className="flex-row items-center gap-3">
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="上传封面图"
+              onPress={pickCover}
+              className="h-28 w-40 items-center justify-center overflow-hidden rounded-2xl border border-stone-200 bg-stone-50 dark:border-stone-700 dark:bg-stone-800"
+            >
+              {coverImageUrl.trim() ? (
+                <Image
+                  className="h-full w-full"
+                  source={{ uri: resolveAssetUrl(coverImageUrl) }}
+                  resizeMode="cover"
+                />
+              ) : (
+                <View className="items-center">
+                  <Ionicons color="#a8a29e" name="camera-outline" size={28} />
+                  <Text className="mt-1 text-xs text-stone-400">
+                    {uploadingCover ? '上传中…' : '点击上传'}
+                  </Text>
+                </View>
+              )}
+            </Pressable>
+            {coverImageUrl.trim() ? (
+              <Pressable
+                accessibilityRole="button"
+                onPress={() => setCoverImageUrl('')}
+                className="flex-row items-center gap-1 rounded-full border border-stone-200 px-3 py-1.5 dark:border-stone-700"
+              >
+                <Ionicons color="#78716c" name="close" size={16} />
+                <Text className="text-sm text-stone-500 dark:text-stone-400">
+                  移除
+                </Text>
+              </Pressable>
+            ) : null}
+          </View>
+          <TextField
+            autoCapitalize="none"
+            label="图片 URL（选填）"
+            onChangeText={setCoverImageUrl}
+            placeholder="或直接粘贴图片 URL"
+            value={coverImageUrl}
+          />
+        </View>
         <TextField
           label="小贴士"
           multiline

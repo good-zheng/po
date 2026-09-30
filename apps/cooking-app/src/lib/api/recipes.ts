@@ -7,7 +7,7 @@ import type {
   RecipeSort,
 } from '@po/types';
 
-import { apiClient, unwrap } from '@/lib/api/client';
+import { apiClient, unwrap, uploadImage } from '@/lib/api/client';
 
 export type FetchRecipesParams = {
   page: number;
@@ -106,6 +106,11 @@ export async function toggleLikeRecipe(id: number): Promise<RecipeLikeResult> {
   const response = await apiClient.post(`/recipes/${id}/like`);
 
   return unwrap<RecipeLikeResult>(response);
+}
+
+/** 上传菜谱封面图到 COS（files/dishes 目录），返回公网图片 URL */
+export async function uploadRecipeCover(uri: string): Promise<string> {
+  return uploadImage(uri, 'dishes');
 }
 
 /** 创建菜谱（App 用户创建后进入待审核） */

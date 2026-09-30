@@ -13,9 +13,6 @@
 消费方：``apps/admin-web/src/pages/chatbot/service.ts``（dev 下经前端代理）。
 """
 
-from collections.abc import AsyncIterator
-from contextlib import asynccontextmanager
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -24,9 +21,8 @@ from app.config import get_settings
 from app.routers import health, items, ws
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI) -> AsyncIterator[None]:
-    """启动时装配 Orchestrator，关闭时释放其持有的外部连接。
+class AppLifespan:
+    """应用生命周期：启动时装配 Orchestrator，关闭时释放其持有的外部连接。
 
     ``build_orchestrator`` 内部已含完整降级链（见 :mod:`app.agent`），因此这里
     不需要 try/except：即使 LLM Key 缺失或 checkpointer 不可达也会拿到一个
@@ -36,19 +32,27 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     调用方式（如未用作上下文管理器的 ``TestClient``、直接走 ASGI 传输）才会
     使用注入实例。
     """
-    app.state.orchestrator = await build_orchestrator()
-    yield
-    # 用 getattr 兜底：装配阶段若抛异常，这里不应再掩盖原始错误（关闭报错的
-    # 堆栈会掩盖启动失败的真实原因）。
-    orchestrator: Orchestrator | None = getattr(app.state, "orchestrator", None)
-    if orchestrator is not None:
-        await orchestrator.aclose()
+
+    def __init__(self, app: FastAPI) -> None:
+        self.app = app
+        self.orchestrator: Orchestrator | None = None
+
+    async def __aenter__(self) -> None:
+        self.app.state.orchestrator = await build_orchestrator()
+        self.orchestrator = self.app.state.orchestrator
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb) -> None:
+        # 用 getattr 兜底：装配阶段若抛异常，这里不应再掩盖原始错误（关闭报错的
+        # 堆栈会掩盖启动失败的真实原因）。
+        orchestrator: Orchestrator | None = getattr(self.app.state, "orchestrator", None)
+        if orchestrator is not None:
+            await orchestrator.aclose()
 
 
 def create_app(orchestrator: Orchestrator | None = None) -> FastAPI:
     """构建应用实例；``orchestrator`` 供测试注入替身，运行时留空由 lifespan 装配。"""
     settings = get_settings()
-    application = FastAPI(title="po-chat", lifespan=lifespan)
+    application = FastAPI(title="po-chat", lifespan=AppLifespan)
     if orchestrator is not None:
         # 注入的实例先落到 app.state：WS 路由只在连接建立时读取一次，
         # 因此测试可在不启动 lifespan 的前提下直接驱动编排。
