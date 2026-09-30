@@ -7,16 +7,43 @@ import sys
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
-SEED = 'D:/pro/po/services/api/recipe/src/main/resources/seed/'
-OUT = 'D:/pro/po/services/api/recipe/src/main/resources/'
-COVERS = 'D:/pro/po/services/api/api-bootstrap/src/main/resources/static/covers/'
+REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SEED = os.path.join(REPO, 'services/api/recipe/src/main/resources/seed') + '/'
+OUT = os.path.join(REPO, 'services/api/recipe/src/main/resources') + '/'
+COVERS = os.path.join(REPO, 'services/api/api-bootstrap/src/main/resources/static/covers') + '/'
+# 新菜系封面不落 jar 静态目录，由 tools/cos-upload.py 传腾讯云 COS，库里存公网绝对地址
+VIBE = os.path.join(REPO, 'vibe_images') + '/'
+COS_REGION = os.environ.get('COS_REGION', 'ap-shanghai')
+COS_BUCKET = os.environ.get('COS_BUCKET', '7072-prod-d7g3zal0655a67232-1496875399')
+COS_KEY_PREFIX = os.environ.get('COS_KEY_PREFIX', 'po')
+COS_COVERS = 'https://%s.cos.%s.myqcloud.com/%s/covers' % (COS_BUCKET, COS_REGION, COS_KEY_PREFIX)
 
+# (seed 文件名, 输出 sql, 封面来源: static = static/covers/, cos = COS 桶)
 FILES = [
-    ('recipes-xiang-a.json', 'data-xiang-a.sql'),
-    ('recipes-xiang-b.json', 'data-xiang-b.sql'),
-    ('recipes-chuan.json', 'data-chuan.sql'),
-    ('recipes-gan.json', 'data-gan.sql'),
+    ('recipes-xiang-a.json', 'data-xiang-a.sql', 'static'),
+    ('recipes-xiang-b.json', 'data-xiang-b.sql', 'static'),
+    ('recipes-chuan.json', 'data-chuan.sql', 'static'),
+    ('recipes-gan.json', 'data-gan.sql', 'static'),
+    ('recipes-yue.json', 'data-yue.sql', 'cos'),
+    ('recipes-lu.json', 'data-lu.sql', 'cos'),
+    ('recipes-min.json', 'data-min.sql', 'cos'),
+    ('recipes-su.json', 'data-su.sql', 'cos'),
+    ('recipes-zhe.json', 'data-zhe.sql', 'cos'),
+    ('recipes-hui.json', 'data-hui.sql', 'cos'),
 ]
+
+
+def cover_url(slug, source):
+    """返回入库用的封面地址。static 分支缺文件直接失败；cos 分支缺源图先落 NULL，
+    等 ImageGen 补齐后跑 tools/cos-upload.py 再导入 data-covers-backfill.sql 回填。"""
+    if source == 'static':
+        if not os.path.exists(COVERS + slug + '.jpg'):
+            raise SystemExit('missing cover: ' + COVERS + slug + '.jpg')
+        return '/api/covers/%s.jpg' % slug
+    if not os.path.isdir(VIBE) or not any(f.startswith(slug + '_') for f in os.listdir(VIBE)):
+        print('  ! 封面源图未生成，先写 NULL：' + slug)
+        return None
+    return '%s/%s.jpg' % (COS_COVERS, slug)
 
 
 def esc(v):
@@ -41,7 +68,8 @@ def num(v):
 def main():
     mapping = json.load(open(SEED + 'ingredient-images.json', encoding='utf-8'))
     total = 0
-    for src, dst in FILES:
+    backfill = []
+    for src, dst, source in FILES:
         data = json.load(open(SEED + src, encoding='utf-8'))
         region = data['region']
         lines = [
@@ -51,9 +79,11 @@ def main():
         ]
         for i, r in enumerate(data['recipes'], 1):
             slug = r['cover']['slug']
-            cover_path = COVERS + slug + '.jpg'
-            if not os.path.exists(cover_path):
-                raise SystemExit('missing cover: ' + cover_path)
+            cover = cover_url(slug, source)
+            if source == 'cos' and cover:
+                backfill.append(
+                    "UPDATE recipe SET cover_image_url = %s WHERE title = %s AND category = %s"
+                    " AND cover_image_url IS NULL;" % (esc(cover), esc(r['title']), esc(region)))
             lines.append('-- ========== %d. %s ==========' % (i, r['title']))
             lines.append(
                 'INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time,'
@@ -61,7 +91,7 @@ def main():
                 ' calories, protein, fat, carbs, tips, flavor_profile) VALUES ('
                 + ', '.join([
                     esc(r['title']), esc(r['description']),
-                    esc('/api/covers/%s.jpg' % slug),
+                    esc(cover),
                     num(r['prepTime']), num(r['cookTime']), num(r['totalTime']),
                     num(r['difficulty']), num(r['servings']),
                     esc(region), esc(r['tags']), '1', 'TRUE', str(likes(r['title'])),
@@ -91,6 +121,14 @@ def main():
             f.write('\n'.join(lines))
         print('%s -> %s (%d recipes)' % (src, dst, len(data['recipes'])))
     print('total recipes:', total)
+    with open(OUT + 'data-covers-backfill.sql', 'w', encoding='utf-8', newline='\n') as f:
+        f.write('\n'.join([
+            '-- 由 tools/seed-sql.py 生成，请勿手改；重新生成：py tools/seed-sql.py',
+            '-- COS 封面回填：只补 cover_image_url 仍为 NULL 的行，重复执行安全。',
+            '-- 补图流程：ImageGen 生成源图 -> py tools/cos-upload.py -> py tools/seed-sql.py -> 导入本文件',
+            '',
+        ] + backfill) + '\n')
+    print('covers backfill updates:', len(backfill))
 
 
 if __name__ == '__main__':

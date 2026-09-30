@@ -1,0 +1,499 @@
+{
+  "region": "苏菜",
+  "recipes": [
+    {
+      "title": "松鼠鳜鱼",
+      "description": "苏州帮菜的头牌功夫菜。鳜鱼贴骨片开、剞上菱形花刀，拍粉炸得蓬松竖立如松鼠翘尾，趁热浇滚热的番茄糖醋汁，吱作响，外脆里嫩。",
+      "difficulty": 3, "servings": 4, "prepTime": 25, "cookTime": 20, "totalTime": 45,
+      "tags": "经典,宴客,河鲜,苏菜名菜", "flavorProfile": "酸甜酥脆",
+      "calories": 380, "protein": 24.0, "fat": 24.0, "carbs": 20.0,
+      "tips": "花刀要剞到鱼皮而不切断，拍干粉后抖散才炸出松针；汁熬到滚热浓稠再浇，才有那一声吱吱。",
+      "cover": { "slug": "su-songshu-guibi", "visual": "deep-fried scored mandarin fish spread like a blooming squirrel coated with glossy sweet-sour tomato sauce and pine nuts, Suzhou squirrel fish, white oval platter" },
+      "ingredients": [
+        ["桂鱼", "1", "条(约700g)", true],
+        ["淀粉", "60", "g", true],
+        ["番茄酱", "80", "g", true],
+        ["白糖", "45", "g", true],
+        ["香醋", "15", "ml", true],
+        ["绍兴黄酒", "15", "ml", true],
+        ["鸡蛋", "1", "个", true],
+        ["松子仁", "15", "g", false],
+        ["盐", "3", "g", true],
+        ["食用油", "700", "ml", false]
+      ],
+      "steps": [
+        ["桂鱼去鳞治净，从鳃部贴脊骨片下两片连尾鱼肉，剁去脊骨与胸刺", 10],
+        ["肉面朝下斜刀剞0.5厘米菱形花刀，深至鱼皮不断，两面抹黄酒和盐", 8],
+        ["鱼身里外拍干淀粉，抖去余粉，使刀缝处也沾上粉", 5],
+        ["油烧至七成热，提着鱼尾先炸腹部定型，再整鱼下锅炸至硬挺金黄", 6],
+        ["油升至八成热复炸1分钟至外壳酥脆，捞出摆成昂首翘尾状", 3],
+        ["锅留底油炒香番茄酱，加白糖、香醋和50ml水煮稠，淋明油熬亮", 4],
+        ["滚汁对准鱼身浇下，撒松子仁，听其吱声即刻上桌", 2]
+      ]
+    },
+    {
+      "title": "清炖蟹粉狮子头",
+      "description": "扬州由隋代“葵花斩肉”传下的炖焖绝活。肥肉三成瘦肉七，粗斩细剁成拳头大的丸子，嵌进蟹粉入鸡清汤微火炖足两小时，汤清而肉化。",
+      "difficulty": 3, "servings": 4, "prepTime": 40, "cookTime": 200, "totalTime": 240,
+      "tags": "经典,宴客,汤羹,苏菜名菜", "flavorProfile": "清鲜酥烂",
+      "calories": 500, "protein": 25.0, "fat": 42.0, "carbs": 6.0,
+      "tips": "肉要切成石榴米丁再粗剁，粒粒有筋才酥而不散；丸子只微火“炖”不许滚，火大一沸就散汤就浑。",
+      "cover": { "slug": "su-qingdun-shizitou", "visual": "four large clear-braised pork meatballs topped with orange crab roe and green bok choy hearts in pale clear broth, Yangzhou lion head, earthenware pot" },
+      "ingredients": [
+        ["猪前腿肉馅", "400", "g", true],
+        ["五花肉", "200", "g", true],
+        ["青蟹", "2", "只(约600g)", true],
+        ["鸡蛋清", "2", "个", true],
+        ["淀粉", "20", "g", true],
+        ["鸡清汤", "1200", "ml", true],
+        ["小白菜心", "250", "g", true],
+        ["生姜", "15", "g", true],
+        ["绍兴黄酒", "15", "ml", true],
+        ["盐", "5", "g", true]
+      ],
+      "steps": [
+        ["腿肉与五花肉切成0.8厘米丁再粗剁成馅，加盐搅至发黏起筋", 15],
+        ["蛋清加干淀粉调成浆，与葱姜水一起分三次拌入肉馅，顺一个方向打上劲", 15],
+        ["青蟹上蒸锅大火蒸12分钟，拆出蟹肉与蟹黄蟹粉", 20],
+        ["肉馅分四份在两掌间摔打成光面大丸子，每只中心按入一勺蟹粉", 10],
+        ["砂锅下鸡清汤烧沸，丸子垫菜叶轻放入汤，微火加盖炖2小时", 125],
+        ["下小白菜心续炖10分钟至酥，调盐，连锅上桌撒剩下蟹粉", 12]
+      ]
+    },
+    {
+      "title": "南京盐水鸭",
+      "description": "南京人从六朝腌到今天的桂花鸭。花椒盐炒热擦身、老卤浸透，白水煮到骨边带一线猩红，皮白肉嫩骨绿，咸鲜里泛出秋桂的清香。",
+      "difficulty": 2, "servings": 6, "prepTime": 45, "cookTime": 60, "totalTime": 105,
+      "tags": "经典,卤味,时令,苏菜名菜", "flavorProfile": "咸鲜细嫩",
+      "calories": 320, "protein": 30.0, "fat": 20.0, "carbs": 0.0,
+      "tips": "煮鸭不能大火翻滚，微火虾眼水泡到骨边带红才嫩；捞起后回原汤晾凉，皮才不皱肉不发干。",
+      "cover": { "slug": "su-nanjing-yan-shuiya", "visual": "pale white boiled duck sliced into neat chunks with glistening skin and a thin red line near the bone, Nanjing salted duck, bamboo tray" },
+      "ingredients": [
+        ["嫩鸭", "半", "只(约1000g)", true],
+        ["盐", "40", "g", true],
+        ["花椒", "5", "g", true],
+        ["八角", "3", "g", true],
+        ["桂皮", "3", "g", true],
+        ["生姜", "20", "g", true],
+        ["大葱", "30", "g", true],
+        ["料酒", "30", "ml", true],
+        ["清水", "2000", "ml", true]
+      ],
+      "steps": [
+        ["干锅下盐、花椒、八角、桂皮，小火炒至微黄出香气", 5],
+        ["热盐加料酒擦遍鸭身内外，入缸压腌4小时以上", 250],
+        ["腌好的鸭入清水泡30分钟洗去浮盐，两翅别进腹腔", 35],
+        ["鸭入锅加姜葱和足量清水，大火烧沸撇净浮沫转微火焖煮40分钟", 45],
+        ["筷子插腿厚处无血水即熟，连汤浸凉，捞出切条装盘淋原汤", 20]
+      ]
+    },
+    {
+      "title": "无锡酱排骨",
+      "description": "无锡三凤酱肉坊传了百年的浓油赤酱。肋排焯水后与酱油、冰糖、黄酒同煨，收膏到酱红发亮，骨肉酥到能一口脱开，甜香压住咸鲜。",
+      "difficulty": 2, "servings": 4, "prepTime": 20, "cookTime": 110, "totalTime": 130,
+      "tags": "经典,下饭,卤味,苏菜名菜", "flavorProfile": "浓油赤酱",
+      "calories": 460, "protein": 24.0, "fat": 34.0, "carbs": 18.0,
+      "tips": "冰糖要炒到枣红色再下排骨，上色才亮；焖足一个半小时后大火收膏，酱汁挂得住骨头才算无锡味。",
+      "cover": { "slug": "su-wuxi-gang-paigu", "visual": "glossy deep red braised pork ribs glazed with soy sauce and rock sugar, Wuxi soy-braised ribs, dark ceramic dish" },
+      "ingredients": [
+        ["猪肋排", "800", "g", true],
+        ["冰糖", "50", "g", true],
+        ["生抽", "30", "ml", true],
+        ["老抽", "25", "ml", true],
+        ["绍兴黄酒", "50", "ml", true],
+        ["桂皮", "3", "g", true],
+        ["八角", "3", "g", true],
+        ["生姜", "20", "g", true],
+        ["大葱", "25", "g", true],
+        ["香醋", "5", "ml", false],
+        ["食用油", "20", "ml", true]
+      ],
+      "steps": [
+        ["肋排斩成6厘米长段，冷水下锅加黄酒焯透，捞出冲净血沫", 15],
+        ["锅下油放冰糖，小火炒至枣红冒小泡", 5],
+        ["下排骨翻裹糖色，加黄酒、生抽、老抽、桂皮八角和姜葱炒匀", 6],
+        ["加清水没过排骨，大火烧开转小火加盖焖80分钟", 85],
+        ["捡去香料，大火收汁至酱膏裹肉发亮，淋香醋翻匀出锅", 10]
+      ]
+    },
+    {
+      "title": "大煮干丝",
+      "description": "扬州早茶的头一道功夫。一方豆腐干先批成薄可透光的二十片，再切成火柴棍细丝，入鸡清汤与火腿笋丝同煮，干丝绵软汤头鲜醇。",
+      "difficulty": 3, "servings": 4, "prepTime": 30, "cookTime": 25, "totalTime": 55,
+      "tags": "经典,宴客,汤羹,苏菜名菜", "flavorProfile": "鲜醇绵软",
+      "calories": 300, "protein": 25.0, "fat": 12.0, "carbs": 20.0,
+      "tips": "方干要片到二十片不断才敢切丝；干丝先沸水烫两遍去豆腥，煮靠鸡汤吊味，火大了丝就碎。",
+      "cover": { "slug": "su-yangzhou-dazhu-gansi", "visual": "fine tofu threads simmered in clear chicken broth with shredded ham mushroom and pea shoots, Yangzhou boiled tofu threads, deep white bowl" },
+      "ingredients": [
+        ["香干", "6", "块(约450g)", true],
+        ["鸡清汤", "900", "ml", true],
+        ["火腿", "40", "g", true],
+        ["鸡胸肉", "80", "g", true],
+        ["河虾仁", "60", "g", true],
+        ["冬笋", "60", "g", true],
+        ["豌豆尖", "80", "g", true],
+        ["生姜", "10", "g", true],
+        ["大葱", "15", "g", true],
+        ["盐", "3", "g", true],
+        ["香油", "5", "ml", false]
+      ],
+      "steps": [
+        ["每块方干先批片成20片薄皮，叠起切成0.2厘米火柴丝", 18],
+        ["干丝入沸水烫2分钟捞起，换沸水再烫一遍去豆腥", 8],
+        ["火腿、鸡脯肉、冬笋全切成同样粗细的丝，姜葱切片", 8],
+        ["鸡清汤烧沸，下干丝与火腿笋丝鸡丝，加姜葱中火煮10分钟", 12],
+        ["捞起干丝配料堆入大碗，汤回锅下虾仁豌豆尖烫熟，浇汤淋香油", 6]
+      ]
+    },
+    {
+      "title": "软兜长鱼",
+      "description": "淮安鳝鱼席上的头名，又叫开洋软兜。黄鳝烫到血刚凝便划出脊背肉，只用猪油旺火十几秒爆匀，蒜香胡椒冲鼻，筷子夹起两头下垂如兜。",
+      "difficulty": 3, "servings": 3, "prepTime": 25, "cookTime": 10, "totalTime": 35,
+      "tags": "经典,宴客,河鲜,苏菜名菜", "flavorProfile": "鲜嫩蒜香",
+      "calories": 240, "protein": 24.0, "fat": 13.0, "carbs": 4.0,
+      "tips": "鳝段要冷水下锅烫到血刚凝就捞，老了骨划不下；猪油七成热下锅，全程大火十几秒出锅才兜得住。",
+      "cover": { "slug": "su-ruandou-changyu", "visual": "stir-fried eel back threads glossy with lard draped soft at both ends from chopsticks, with minced garlic white pepper and scallions, Huai'an soft-eel, black plate" },
+      "ingredients": [
+        ["鳝鱼片", "500", "g", true],
+        ["猪油", "40", "g", true],
+        ["大蒜", "25", "g", true],
+        ["生姜", "15", "g", true],
+        ["白胡椒粉", "2", "g", true],
+        ["香醋", "10", "ml", true],
+        ["生抽", "15", "ml", true],
+        ["绍兴黄酒", "15", "ml", true],
+        ["水淀粉", "40", "ml", true],
+        ["小葱", "20", "g", true],
+        ["香油", "5", "ml", false]
+      ],
+      "steps": [
+        ["鳝鱼片冷水下锅，加姜葱和黄酒，烧沸后煮3分钟至肉紧", 10],
+        ["捞出划去脊骨与腹刺只留背肉，切6厘米段，蒜姜切末丝、葱切段", 12],
+        ["猪油烧至七成热，下鳝段快速划散", 2],
+        ["下蒜末姜丝爆香，烹黄酒、生抽、香醋，撒白胡椒粉", 2],
+        ["水淀粉勾薄芡翻匀，淋香油装盘，鳝段软垂两头下垂即成", 3]
+      ]
+    },
+    {
+      "title": "响油鳝糊",
+      "description": "本帮年菜的看家鳝菜。鳝丝配酱油冰糖焖到酥软，堆成小山，当中窝心埋葱姜蒜末与胡椒粉，一勺冒烟的滚油浇下哔剥作响，故名响油。",
+      "difficulty": 2, "servings": 3, "prepTime": 20, "cookTime": 15, "totalTime": 35,
+      "tags": "经典,宴客,河鲜,苏菜名菜", "flavorProfile": "酱香软嫩",
+      "calories": 270, "protein": 26.0, "fat": 15.0, "carbs": 6.0,
+      "tips": "蒜末姜丝胡椒粉要埋进鳝糊窝心，油烧到冒烟一次浇透；浇完趁热拌散，放凉了鳝糊要返腥。",
+      "cover": { "slug": "su-xiangyou-shanhu", "visual": "braised eel threads mounded in a plate with a well of minced garlic ginger scallion and sesame, hot oil sizzling over, Shanghai sizzling eel paste" },
+      "ingredients": [
+        ["鳝鱼片", "450", "g", true],
+        ["猪油", "35", "g", true],
+        ["生抽", "25", "ml", true],
+        ["老抽", "10", "ml", true],
+        ["白糖", "15", "g", true],
+        ["绍兴黄酒", "20", "ml", true],
+        ["大蒜", "25", "g", true],
+        ["生姜", "15", "g", true],
+        ["白胡椒粉", "2", "g", true],
+        ["熟芝麻", "5", "g", false],
+        ["清水", "60", "ml", true],
+        ["食用油", "25", "ml", true]
+      ],
+      "steps": [
+        ["鳝鱼片入沸水煮3分钟，捞出切成5厘米长的鳝丝", 10],
+        ["锅下猪油，姜片葱末炝锅，下鳝丝大火炒2分钟", 3],
+        ["加黄酒、生抽、老抽、白糖和清水，中火加盖焖烧6分钟", 7],
+        ["开盖大火收汁至浓，装盘堆成小山，当中按出一个窝", 4],
+        ["窝中放蒜末、姜丝、白胡椒粉、芝麻，余油烧至冒烟对准窝心浇下", 2]
+      ]
+    },
+    {
+      "title": "腌笃鲜",
+      "description": "江南立春后的头一锅鲜。“腌”是咸肉，“鲜”是鲜肉，“笃”是小火微沸慢焖，加春笋滚刀块同炖，汤白汁浓，一箸笋尖比肉还抢手。",
+      "difficulty": 1, "servings": 4, "prepTime": 25, "cookTime": 120, "totalTime": 145,
+      "tags": "经典,时令,汤羹,苏菜名菜", "flavorProfile": "咸鲜醇厚",
+      "calories": 400, "protein": 26.0, "fat": 30.0, "carbs": 6.0,
+      "tips": "咸肉先用温水泡去浮盐，全程一滴油不加；小火“笃”到汤色奶白，盐最后尝味再补，宁淡不咸。",
+      "cover": { "slug": "su-landuxian", "visual": "clay pot soup of salt-cured pork fresh ribs and bamboo shoot chunks with tofu skin knots, milky white broth, Jiangnan spring stew" },
+      "ingredients": [
+        ["腊肉", "200", "g", true],
+        ["猪排骨", "400", "g", true],
+        ["春笋", "400", "g", true],
+        ["百叶结", "100", "g", true],
+        ["生姜", "20", "g", true],
+        ["大葱", "20", "g", true],
+        ["绍兴黄酒", "20", "ml", true],
+        ["盐", "2", "g", false],
+        ["白胡椒粉", "1", "g", false],
+        ["清水", "1800", "ml", true]
+      ],
+      "steps": [
+        ["腊肉切4厘米大片，温水泡10分钟去浮盐；排骨冷水焯透洗净", 18],
+        ["春笋切滚刀块，沸水焯2分钟去掉涩麻味", 8],
+        ["砂锅下排骨、腊肉、姜葱，一次加足清水，大火烧沸撇净浮沫", 10],
+        ["转小火笃1小时，下笋块续炖30分钟至汤色乳白", 95],
+        ["下百叶结煮5分钟，撒白胡椒粉，尝味后再决定补不补盐", 8]
+      ]
+    },
+    {
+      "title": "桂花糯米藕",
+      "description": "苏南水乡秋天的甜零食。七孔粉藕的孔洞里一粒粒灌满糯米，配冰糖红糖慢煨到酥，切片时拉出糖丝，浇上桂花蜜，糯香桂花香缠绕。",
+      "difficulty": 2, "servings": 6, "prepTime": 30, "cookTime": 150, "totalTime": 180,
+      "tags": "甜品,时令,小吃,苏菜名菜", "flavorProfile": "软糯甜香",
+      "calories": 260, "protein": 3.0, "fat": 1.0, "carbs": 56.0,
+      "tips": "选七孔粉藕才糯，糯米泡足两小时只灌九分满；煮好必须在原汤里泡到凉透，热切就散粒。",
+      "cover": { "slug": "su-guihua-nuomiou", "visual": "sliced lotus root stuffed with glutinous rice glazed with dark sugar syrup and osmanthus petals, Jiangsu sweet osmanthus lotus root, white plate" },
+      "ingredients": [
+        ["藕", "2", "节(约700g)", true],
+        ["糯米", "100", "g", true],
+        ["冰糖", "60", "g", true],
+        ["红糖", "40", "g", true],
+        ["糖桂花", "15", "g", true],
+        ["红枣", "6", "颗", false],
+        ["清水", "1500", "ml", true]
+      ],
+      "steps": [
+        ["糯米淘净用清水泡2小时，捞出沥干", 120],
+        ["藕削去外皮，一端切下3厘米作盖，孔洞刷洗干净控干", 10],
+        ["用细筷把糯米一点点灌满每个藕孔，盖回原位以竹签别牢", 15],
+        ["藕入锅加清水、冰糖、红糖和红枣，大火烧沸转小火煮2小时至筷子能扎透", 130],
+        ["连汤浸凉，改刀成0.5厘米厚片码盘，糖汁收浓淋在藕片上", 20]
+      ]
+    },
+    {
+      "title": "碧螺虾仁",
+      "description": "苏州以洞庭碧螺春入馔的清鲜名菜。太湖河虾仁上浆过油，只在虾仁玉白将熟时下茶叶快翻两下，茶香裹着鲜甜，一压就弹牙。",
+      "difficulty": 2, "servings": 3, "prepTime": 25, "cookTime": 8, "totalTime": 33,
+      "tags": "经典,时令,河鲜,苏菜名菜", "flavorProfile": "茶香清鲜",
+      "calories": 210, "protein": 24.0, "fat": 10.0, "carbs": 4.0,
+      "tips": "虾仁上浆后要四成油温滑到刚变色就起；茶叶最后十几秒连茶汤下锅，久炒茶汤发苦叶转黄。",
+      "cover": { "slug": "su-biluo-xiaren", "visual": "pearly white river shrimp stir-fried with green biluochun tea leaves and shoots, Suzhou tea-fragrant shrimp, pale celadon plate" },
+      "ingredients": [
+        ["河虾仁", "300", "g", true],
+        ["绿茶", "4", "g", true],
+        ["鸡蛋清", "1", "个", true],
+        ["淀粉", "15", "g", true],
+        ["绍兴黄酒", "10", "ml", true],
+        ["盐", "3", "g", true],
+        ["白胡椒粉", "1", "g", false],
+        ["猪油", "30", "g", true],
+        ["清水", "100", "ml", true]
+      ],
+      "steps": [
+        ["河虾仁加盐抓出黏性，漂洗两次沥干，与蛋清、干淀粉拌匀腌15分钟", 20],
+        ["绿茶用80度左右的100ml水泡开，滗出茶汤30ml留茶叶分开放", 6],
+        ["锅下猪油烧至四成热，虾仁下锅滑散至刚变色捞出", 3],
+        ["锅留底油，虾仁回锅，烹黄酒、撒盐，倒入茶汤快速翻匀", 2],
+        ["最后撒茶叶颠两下装盘，虾仁玉白茶叶翠绿", 2]
+      ]
+    },
+    {
+      "title": "常熟叫花鸡",
+      "description": "常熟虞山传了数百年的叫化子菜。三黄鸡腹中酿进香菇笋丁五花肉，两层荷叶裹紧、外封厚面皮入炉烤透，敲开硬壳荷香四溅，酥烂脱骨。",
+      "difficulty": 3, "servings": 6, "prepTime": 60, "cookTime": 100, "totalTime": 160,
+      "tags": "经典,宴客,鸡肉,苏菜名菜", "flavorProfile": "荷香酥烂",
+      "calories": 400, "protein": 32.0, "fat": 26.0, "carbs": 8.0,
+      "tips": "面皮要裹严实不许漏气，全凭内部蒸汽把鸡焖熟；烤足80分钟，敲开硬壳时鸡腿能轻松脱骨。",
+      "cover": { "slug": "su-jiaohuaji", "visual": "cracked baked flour shell opened to reveal lotus-leaf wrapped roast chicken with glossy brown skin and mushroom stuffing, Changshu beggar's chicken, wooden board" },
+      "ingredients": [
+        ["三黄鸡", "1", "只(约1200g)", true],
+        ["干荷叶", "2", "张", true],
+        ["中筋面粉", "500", "g", true],
+        ["五花肉", "120", "g", true],
+        ["干香菇", "30", "g", true],
+        ["冬笋", "80", "g", true],
+        ["生抽", "40", "ml", true],
+        ["绍兴黄酒", "30", "ml", true],
+        ["冰糖", "20", "g", true],
+        ["生姜", "20", "g", true],
+        ["大葱", "25", "g", true],
+        ["盐", "4", "g", true]
+      ],
+      "steps": [
+        ["三黄鸡去爪与翅尖，抽去翅骨，用生抽、黄酒、盐抹匀内外腌1小时", 70],
+        ["干香菇泡发切丁，冬笋、五花肉切丁，下锅炒香加冰糖和生抽成馅", 18],
+        ["馅料全部塞进鸡腹，刀口用竹签别紧封口", 8],
+        ["荷叶烫软，两层包裹扎紧，面皮擀开裹成封严的枕头状", 15],
+        ["入烤箱200度烤80分钟至外壳龟裂，敲开面壳揭荷叶斩块装盘", 80]
+      ]
+    },
+    {
+      "title": "扬州炒饭",
+      "description": "淮扬厨子的试刀菜。隔夜粳米饭抓散到粒粒分明，配火腿丁鸡丁虾仁青豆，猪油热锅大火炒成“金裹银”，饭粒在锅里跳动不结块。",
+      "difficulty": 2, "servings": 3, "prepTime": 20, "cookTime": 12, "totalTime": 32,
+      "tags": "经典,主食,小吃,苏菜名菜", "flavorProfile": "鲜香粒爽",
+      "calories": 560, "protein": 16.0, "fat": 18.0, "carbs": 85.0,
+      "tips": "饭要用隔夜的冷粳米饭，下锅前先抓散；猪油热锅大火把蛋液裹成金衣，炒到粒粒在锅里跳才起。",
+      "cover": { "slug": "su-yangzhou-chaofan", "visual": "golden fried rice grains coated with egg studded with diced ham shrimp chicken green peas and scallions, Yangzhou fried rice, round porcelain plate" },
+      "ingredients": [
+        ["大米", "250", "g", true],
+        ["鸡蛋", "3", "个", true],
+        ["火腿", "60", "g", true],
+        ["鸡胸肉", "80", "g", true],
+        ["河虾仁", "80", "g", true],
+        ["青豆", "50", "g", true],
+        ["干香菇", "20", "g", false],
+        ["大葱", "20", "g", true],
+        ["猪油", "40", "g", true],
+        ["盐", "4", "g", true],
+        ["白胡椒粉", "1", "g", false]
+      ],
+      "steps": [
+        ["大米蒸成稍硬的饭摊凉隔夜；火腿、鸡胸肉、泡发的香菇切1厘米丁，葱切末", 12],
+        ["鸡丁与虾仁加盐、蛋清、干淀粉抓匀上浆腌10分钟", 12],
+        ["锅下猪油烧至六成热，蛋液下锅炒至刚凝，倒入米饭大火炒散", 4],
+        ["下鸡丁、虾仁、火腿丁、青豆、香菇丁，不断颠炒至粒粒挂油", 5],
+        ["撒盐与葱花，炒到饭粒在锅里跳动作响、颗颗分明出锅", 3]
+      ]
+    },
+    {
+      "title": "梁溪脆鳝",
+      "description": "无锡惠山泉边的百年老菜，又叫脆鳝。鳝丝两次热油炸到干酥挺硬，投入酱油冰糖浓汁里离火翻裹，根根油亮撒芝麻，甜咸里透着姜辣。",
+      "difficulty": 3, "servings": 3, "prepTime": 20, "cookTime": 20, "totalTime": 40,
+      "tags": "经典,小吃,河鲜,苏菜名菜", "flavorProfile": "甜咸酥韧",
+      "calories": 440, "protein": 27.0, "fat": 25.0, "carbs": 25.0,
+      "tips": "复炸要八成热、下手快，鳝丝炸酥才吸得住汁；浓汁熬好后离火再拌鳝丝，回锅一煮就软而不脆。",
+      "cover": { "slug": "su-liangxi-cuishan", "visual": "twice deep-fried crisp eel threads glazed in dark soy and sugar syrup with shredded ginger and sesame seeds, Wuxi crispy eel, bamboo tray" },
+      "ingredients": [
+        ["鳝鱼片", "400", "g", true],
+        ["生抽", "30", "ml", true],
+        ["白糖", "35", "g", true],
+        ["绍兴黄酒", "15", "ml", true],
+        ["生姜", "15", "g", true],
+        ["八角粉", "1", "g", false],
+        ["熟芝麻", "5", "g", false],
+        ["香油", "8", "ml", true],
+        ["盐", "2", "g", true],
+        ["清水", "20", "ml", true],
+        ["食用油", "800", "ml", false]
+      ],
+      "steps": [
+        ["鳝鱼片入沸水煮2分钟捞出，切成6厘米鳝丝，加黄酒、盐腌10分钟", 18],
+        ["生姜切细丝，沥干鳝丝表面水分", 5],
+        ["六成油温下鳝丝炸2分钟至变硬，捞起用手捡散", 4],
+        ["油升八成热复炸30秒至干酥，立即捞入漏勺沥油", 2],
+        ["锅留底油，下姜丝、生抽、白糖和20ml水，小火熬至浓稠起小泡", 4],
+        ["倒回鳝丝离火翻裹挂汁，淋香油撒芝麻，摊凉装盘", 3]
+      ]
+    },
+    {
+      "title": "文思豆腐",
+      "description": "扬州文思院的百年清羹，淮扬刀工的巅峰。嫩豆腐先片成二十余片薄皮，再切成细如发丝的豆腐丝，入鸡清汤烫开，碗中散成一团云雾。",
+      "difficulty": 3, "servings": 4, "prepTime": 40, "cookTime": 15, "totalTime": 55,
+      "tags": "经典,宴客,汤羹,苏菜名菜", "flavorProfile": "清鲜柔滑",
+      "calories": 130, "protein": 10.0, "fat": 6.0, "carbs": 6.0,
+      "tips": "刀薄手稳，片到二十片不断才敢下切丝；豆腐丝只烫不煮，入沸汤十几秒就起，滚久了就成糊。",
+      "cover": { "slug": "su-wensi-doufu", "visual": "hair-fine tofu threads floating like mist in crystal clear chicken broth with shredded ham bamboo shoot and pea tips, Yangzhou Wensi tofu soup, white deep bowl" },
+      "ingredients": [
+        ["嫩豆腐", "1", "盒(约400g)", true],
+        ["鸡清汤", "1000", "ml", true],
+        ["火腿", "30", "g", true],
+        ["冬笋", "50", "g", true],
+        ["鸡胸肉", "60", "g", true],
+        ["豌豆尖", "60", "g", true],
+        ["盐", "4", "g", true],
+        ["白胡椒粉", "1", "g", false],
+        ["香油", "5", "ml", false],
+        ["生姜", "10", "g", false]
+      ],
+      "steps": [
+        ["嫩豆腐切去老皮，先片成0.1厘米薄片，叠起切成细如发丝的豆腐丝", 25],
+        ["豆腐丝入清水中养着，用细漏勺淘去断渣与碎末", 8],
+        ["火腿、鸡脯肉、冬笋全部切成与豆腐丝同粗的细丝", 10],
+        ["鸡清汤烧沸，下笋丝鸡丝火腿丝煮3分钟，加盐和白胡椒粉调底味", 6],
+        ["豆腐丝连水倒入汤中，微火烫1分钟即散开如云雾", 3],
+        ["盛入大汤碗放豌豆尖，淋香油上桌，汤清而丝匀", 3]
+      ]
+    },
+    {
+      "title": "镇江肴肉",
+      "description": "镇江“肴肉不当菜”的三怪之一。猪前肘以花椒盐腌透，加葱姜白煮酥烂，趁热拆骨压平、原汤回灌，冷凝切片水晶透亮，蘸姜丝香醋。",
+      "difficulty": 3, "servings": 8, "prepTime": 50, "cookTime": 150, "totalTime": 200,
+      "tags": "地方名菜,卤味,凉菜,苏菜名菜", "flavorProfile": "咸鲜酥弹",
+      "calories": 250, "protein": 25.0, "fat": 15.0, "carbs": 1.0,
+      "tips": "腌足一天再煮，咸味才进到肉心；趁热拆骨、压平、回灌原汤慢冷，冻得越透切片越亮越不散。",
+      "cover": { "slug": "su-zhenjiang-yaorou", "visual": "translucent pressed pork knuckle slices with amber jelly and white fat layers, served with shredded ginger and black vinegar, Zhenjiang aspic pork, blue-rim plate" },
+      "ingredients": [
+        ["猪前肘", "1", "只(约1500g)", true],
+        ["盐", "35", "g", true],
+        ["花椒", "5", "g", true],
+        ["八角", "4", "g", true],
+        ["桂皮", "5", "g", true],
+        ["香叶", "2", "g", false],
+        ["生姜", "25", "g", true],
+        ["大葱", "40", "g", true],
+        ["料酒", "40", "ml", true],
+        ["清水", "2500", "ml", true],
+        ["香醋", "30", "ml", false]
+      ],
+      "steps": [
+        ["猪前肘刮洗干净，剔去大骨，皮面划几刀方便入味", 12],
+        ["盐与花椒干锅小火炒香，晾凉后擦匀肘子内外，压腌24小时", 250],
+        ["肘子入清水泡30分钟洗去浮盐，冷水下锅加姜葱料酒，烧沸撇沫", 20],
+        ["加桂皮八角香叶和足量水，微火焖煮2小时至肉酥筷插即透", 125],
+        ["趁热拆净碎骨，皮朝下码入方盘压平，滤入原汤冷藏凝冻4小时", 30],
+        ["改刀成3毫米薄片码盘，配姜丝香醋蘸食", 10]
+      ]
+    },
+    {
+      "title": "拆烩鲢鱼头",
+      "description": "常州镇江一带的冬日宴席大菜。鳙鱼头煮到骨肉将离后拆尽细刺仍留全形，配火腿笋片香菇入鸡汤烩透，鱼肉嫩滑，汤浓白似乳汁。",
+      "difficulty": 3, "servings": 4, "prepTime": 35, "cookTime": 45, "totalTime": 80,
+      "tags": "经典,宴客,河鲜,苏菜名菜", "flavorProfile": "鲜嫩醇厚",
+      "calories": 340, "protein": 32.0, "fat": 20.0, "carbs": 6.0,
+      "tips": "鱼头煮到筷子能插透就捞，趁热拆骨最省力，凉了刺碎肉散；拆好的肉只㸆不翻动，勾芡才不碎。",
+      "cover": { "slug": "su-chaihuizhianyutou", "visual": "boneless bighead carp head pieces braised in milky broth with ham bamboo shoot and mushroom slices thickened with starch, Changzhou fish head, clay casserole" },
+      "ingredients": [
+        ["鳙鱼头", "1", "个(约1500g)", true],
+        ["鸡清汤", "800", "ml", true],
+        ["火腿", "40", "g", true],
+        ["干香菇", "6", "朵", true],
+        ["冬笋", "80", "g", true],
+        ["河虾仁", "60", "g", false],
+        ["生姜", "20", "g", true],
+        ["大葱", "30", "g", true],
+        ["料酒", "20", "ml", true],
+        ["白胡椒粉", "2", "g", true],
+        ["猪油", "40", "g", true],
+        ["水淀粉", "50", "ml", true]
+      ],
+      "steps": [
+        ["鱼头去鳃黑膜洗净，沸水下锅加姜葱料酒煮12分钟至筷子能插透", 15],
+        ["捞出浸入温水，趁热用手指拆尽脊骨与细刺，保持鱼形完整", 18],
+        ["火腿、冬笋、泡发的香菇切成薄片，虾仁用蛋清淀粉上浆", 10],
+        ["锅下猪油，笋片火腿香菇片炒出香，冲入鸡清汤烧沸", 5],
+        ["放入拆好的鱼肉，加盐和白胡椒粉，微火㸆10分钟入味", 10],
+        ["下虾仁烫熟，水淀粉勾薄芡，淋香油推入大汤碗上桌", 5]
+      ]
+    },
+    {
+      "title": "扬州三丁包",
+      "description": "扬州富春茶社早茶的台柱。鸡丁、肉丁、笋丁切得一般大小，加酱油冰糖收浓成馅，发面包出鱼尾状褶，蒸好卤汁渗进面皮，咸甜带酱香。",
+      "difficulty": 3, "servings": 8, "prepTime": 120, "cookTime": 15, "totalTime": 135,
+      "tags": "经典,主食,小吃,苏菜名菜", "flavorProfile": "酱香咸甜",
+      "calories": 340, "protein": 12.0, "fat": 12.0, "carbs": 45.0,
+      "tips": "三丁馅必须彻底晾凉再包，热馅会把面皮烫塌捏不出褶；包好醒足20分钟，上汽后大火蒸12分钟。",
+      "cover": { "slug": "su-yangzhou-sandingbao", "visual": "fluffy steamed buns with neat pleats holding a glossy sauce-braised filling of chicken pork and bamboo shoot cubes, Yangzhou three-dice bun, bamboo steamer" },
+      "ingredients": [
+        ["中筋面粉", "300", "g", true],
+        ["温水", "150", "ml", true],
+        ["酵母", "4", "g", true],
+        ["鸡腿肉", "150", "g", true],
+        ["猪瘦肉", "150", "g", true],
+        ["冬笋", "100", "g", true],
+        ["生抽", "30", "ml", true],
+        ["老抽", "10", "ml", true],
+        ["白糖", "25", "g", true],
+        ["淀粉", "15", "g", true],
+        ["猪油", "25", "g", true],
+        ["生姜", "10", "g", true]
+      ],
+      "steps": [
+        ["温水化开酵母，倒入面粉揉成光面面团，加盖发酵1.5小时至两倍大", 95],
+        ["鸡腿肉、猪瘦肉、冬笋全部切成1厘米见方的丁，姜切末", 10],
+        ["锅下猪油，肉丁先炒至吐油，加姜末、生抽、老抽、白糖翻匀", 6],
+        ["下鸡丁笋丁翻炒，加50ml水焖5分钟，水淀粉勾浓汁，盛出晾冷", 10],
+        ["面团揉搓排气搓条，下45克剂子，擀成中间厚边缘薄的皮", 15],
+        ["每只包入30克馅，右手捏出15道以上鱼尾褶，收口朝上码入垫布笼屉", 15],
+        ["醒20分钟后上旺火蒸12分钟，揭盖趁热吃", 32]
+      ]
+    }
+  ]
+}

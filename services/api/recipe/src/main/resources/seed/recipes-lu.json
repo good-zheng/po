@@ -1,0 +1,497 @@
+{
+  "region": "鲁菜",
+  "recipes": [
+    {
+      "title": "糖醋鲤鱼",
+      "description": "鲁菜头牌，老济南堂食必点，取黄河鲤鱼改牡丹花刀，炸成跃龙门之姿，趁热浇上糖醋芡汁，吱啦作响，外脆里嫩，酸甜冲鼻。",
+      "difficulty": 3, "servings": 4, "prepTime": 20, "cookTime": 25, "totalTime": 45,
+      "tags": "经典,宴客,河鲜,鲁菜名菜", "flavorProfile": "酸甜咸鲜",
+      "calories": 500, "protein": 32.0, "fat": 25.0, "carbs": 35.0,
+      "tips": "剞刀要深至骨但不破皮，油温七成热时提着鱼尾下锅定型，芡汁要滚热，浇上去听那声吱啦才算成。",
+      "cover": { "slug": "lu-tangculiyu", "visual": "whole golden fried carp scored in peony pattern topped with glossy red sweet-sour sauce with ginger and scallion, Jinan tangcu liyu, white oval platter" },
+      "ingredients": [
+        ["鲤鱼", "1", "条(约750g)", true],
+        ["面粉", "60", "g", true],
+        ["淀粉", "40", "g", true],
+        ["白糖", "60", "g", true],
+        ["香醋", "50", "ml", true],
+        ["生抽", "15", "ml", true],
+        ["料酒", "20", "ml", true],
+        ["生姜", "15", "g", true],
+        ["大葱", "20", "g", true],
+        ["大蒜", "10", "g", false],
+        ["清水", "150", "ml", true],
+        ["食用油", "60", "ml", true]
+      ],
+      "steps": [
+        ["鲤鱼去鳞去鳃去内脏，两面剞牡丹花刀深至鱼骨", 8],
+        ["里外抹料酒腌10分钟去腥，面粉淀粉加水调成厚糊挂匀鱼身", 10],
+        ["油烧七成热，提鱼尾入锅，勺淋热油定型，中火炸至外壳金黄发硬", 8],
+        ["升油温至八成热复炸1分钟，捞出摆盘", 2],
+        ["锅留底油，下姜葱蒜末，加白糖、香醋、生抽、清水烧开", 3],
+        ["水淀粉勾浓芡，趁滚热浇在鱼身上，吱声上桌", 2]
+      ]
+    },
+    {
+      "title": "油焖大虾",
+      "description": "胶东待客头道海鲜菜。大虾以虾脑炼出红油，葱段姜丝焖入咸甜滋味，壳亮肉嫩，吮指连虾油都不放过。",
+      "difficulty": 2, "servings": 3, "prepTime": 15, "cookTime": 12, "totalTime": 27,
+      "tags": "经典,宴客,海鲜,鲁菜名菜", "flavorProfile": "咸鲜微甜",
+      "calories": 280, "protein": 30.0, "fat": 15.0, "carbs": 5.0,
+      "tips": "虾须虾枪剪净，背部开刀挑去沙线；按压虾头逼出虾油，汤汁才红亮焖香。",
+      "cover": { "slug": "lu-youmendaxia", "visual": "bright red shrimp braised in glossy shrimp-oil sauce with scallion segments and ginger, Jiaodong youmen daxia, shallow blue-rimmed plate" },
+      "ingredients": [
+        ["大虾", "8", "只(约500g)", true],
+        ["大葱", "30", "g", true],
+        ["生姜", "15", "g", true],
+        ["猪油", "30", "g", true],
+        ["料酒", "20", "ml", true],
+        ["生抽", "15", "ml", true],
+        ["白糖", "10", "g", true],
+        ["香醋", "3", "ml", false],
+        ["清水", "80", "ml", true]
+      ],
+      "steps": [
+        ["剪去虾须虾枪虾脚，背部片开挑去沙线，姜切片葱切段", 8],
+        ["热锅下猪油，大虾平铺，中火煎至一面变红", 3],
+        ["翻转大虾，锅铲按压虾头逼出虾油，炒至油色红亮", 2],
+        ["下姜片葱段炒香，烹料酒生抽，加清水白糖烧开", 2],
+        ["加盖小火焖5分钟，开盖转中火收至汁浓裹身，点香醋出锅", 5]
+      ]
+    },
+    {
+      "title": "爆炒腰花",
+      "description": "鲁菜火功考题，爆字当先。猪腰剞麦穗花刀，旺火热油里十余秒成花卷，脆嫩无臊气，配木耳笋片，讲究一个快字。",
+      "difficulty": 3, "servings": 3, "prepTime": 20, "cookTime": 4, "totalTime": 24,
+      "tags": "经典,快手,下饭,鲁菜名菜", "flavorProfile": "咸鲜脆嫩",
+      "calories": 180, "protein": 18.0, "fat": 9.0, "carbs": 8.0,
+      "tips": "臊筋片净是去腥根本，麦穗刀深而不透；全程大火一气呵成，腰花打卷即刻出锅。",
+      "cover": { "slug": "lu-baochaoyaohua", "visual": "wheat-scarf scored pork kidney blossoms flash-fried with wood ear and bamboo shoots in glossy sauce, Shandong baochao yaohua, round black plate" },
+      "ingredients": [
+        ["猪腰", "2", "个(约400g)", true],
+        ["水发木耳", "80", "g", true],
+        ["冬笋", "60", "g", true],
+        ["大葱", "15", "g", true],
+        ["生姜", "10", "g", true],
+        ["大蒜", "10", "g", true],
+        ["料酒", "25", "ml", true],
+        ["生抽", "12", "ml", true],
+        ["淀粉", "10", "g", true],
+        ["清水", "30", "ml", true],
+        ["食用油", "25", "ml", true],
+        ["盐", "2", "g", true]
+      ],
+      "steps": [
+        ["猪腰对半片开，片净白色臊筋，内侧剞十字花刀深而不透，切成麦穗块", 8],
+        ["腰块加料酒浸泡10分钟去臊，捞出拍薄淀粉", 10],
+        ["碗内放生抽、盐、淀粉和清水30ml兑成碗汁", 1],
+        ["沸水快焯10余秒，腰花打卷即捞，沥干", 1],
+        ["锅烧至冒烟下油，投腰花、木耳、笋片大火爆炒20秒", 1],
+        ["泼入碗汁再爆10秒翻匀，下葱段装盘", 1]
+      ]
+    },
+    {
+      "title": "九转大肠",
+      "description": "济南堂菜魁首，俗传因九道工序、五味兼备得名。肥肠套叠煮透，炸红再煨，咸甜酸香辣层层盘绕，软嫩中带着韧。",
+      "difficulty": 3, "servings": 4, "prepTime": 60, "cookTime": 60, "totalTime": 120,
+      "tags": "经典,宴客,鲁菜名菜", "flavorProfile": "五味兼备",
+      "calories": 500, "protein": 22.0, "fat": 40.0, "carbs": 10.0,
+      "tips": "套肠要层层塞实不留空，煮透才能定型；收汁时香醋沿锅边分两次下，五味方有先后层次。",
+      "cover": { "slug": "lu-jiuzhuandachang", "visual": "glossy amber-brown braised sausage tubes in dark red reduced sauce dusted with white pepper, Jinan jiuzhuan daxchang, small deep dish" },
+      "ingredients": [
+        ["猪肥肠", "750", "g", true],
+        ["面粉", "50", "g", true],
+        ["盐", "8", "g", true],
+        ["料酒", "30", "ml", true],
+        ["生姜", "20", "g", true],
+        ["大葱", "30", "g", true],
+        ["白糖", "35", "g", true],
+        ["香醋", "30", "ml", true],
+        ["生抽", "25", "ml", true],
+        ["清水", "120", "ml", true],
+        ["白胡椒粉", "2", "g", true],
+        ["食用油", "40", "ml", true]
+      ],
+      "steps": [
+        ["肥肠加盐、面粉反复揉搓，翻面冲净黏液，重复三遍至无异味", 15],
+        ["肠头沿肠身内翻塞入套叠成多层，沸水加葱姜料酒煮40分钟捞出", 45],
+        ["切成五厘米长段，入六成热油炸至表皮红硬，捞出控油", 5],
+        ["锅留底油，下姜葱，放大肠段，加生抽、清水、白糖，小火煨20分钟", 20],
+        ["转大火收浓，沿锅边分两次下香醋，撒白胡椒粉翻匀", 3],
+        ["大肠码入盘中，浇尽余汁，带姜丝上桌", 2]
+      ]
+    },
+    {
+      "title": "四喜丸子",
+      "description": "鲁菜宴席四大名件，取福禄寿喜之意。四个拳头大的丸子先炸后煨，酱红油亮，筷子一夹即散，肉香浑厚，老人孩子都夹得动。",
+      "difficulty": 2, "servings": 4, "prepTime": 30, "cookTime": 45, "totalTime": 75,
+      "tags": "经典,宴客,鲁菜名菜", "flavorProfile": "咸鲜浓香",
+      "calories": 320, "protein": 18.0, "fat": 25.0, "carbs": 6.0,
+      "tips": "肉馅三分肥七分瘦，搅打上劲才不散；高汤煨够半小时，丸子吸饱汤汁才绵软。",
+      "cover": { "slug": "lu-sixiwanzi", "visual": "four large glossy soy-braised meatballs draped with thick brown starch-thickened sauce and scallion, Shandong sixi wanzi, red banquet plate" },
+      "ingredients": [
+        ["猪前腿肉馅", "600", "g", true],
+        ["鸡蛋", "1", "个", true],
+        ["淀粉", "40", "g", true],
+        ["大葱", "40", "g", true],
+        ["生姜", "20", "g", true],
+        ["生抽", "30", "ml", true],
+        ["老抽", "10", "ml", true],
+        ["冰糖", "10", "g", true],
+        ["高汤", "300", "ml", true],
+        ["料酒", "15", "ml", true],
+        ["食用油", "40", "ml", true],
+        ["盐", "4", "g", true]
+      ],
+      "steps": [
+        ["肉馅加盐、鸡蛋、料酒朝一个方向搅打上劲，下淀粉和葱姜末拌匀", 10],
+        ["手蘸水把肉馅团成四个拳头大的丸子，表面抹老抽上色", 8],
+        ["油烧七成热，下丸子中火炸至表皮红硬，捞出控油", 8],
+        ["砂锅底垫姜片，码入丸子，加高汤、生抽、冰糖，烧开转微火煨30分钟", 35],
+        ["取出丸子摆盘，原汁大火烧开，水淀粉勾浓芡浇在丸子上", 4]
+      ]
+    },
+    {
+      "title": "德州扒鸡",
+      "description": "德州名吃，相传曾是御用贡品。整鸡别翅盘腿入香料老汤，微火慢焖，热中一抖骨肉分离，五香透骨，烂而不散。",
+      "difficulty": 3, "servings": 4, "prepTime": 30, "cookTime": 120, "totalTime": 150,
+      "tags": "经典,卤味,宴客,鲁菜名菜", "flavorProfile": "五香咸鲜",
+      "calories": 300, "protein": 30.0, "fat": 18.0, "carbs": 3.0,
+      "tips": "焖鸡全程只用微火，汤面似开非开；出锅前连汤浸焖半小时，皮不破而味入骨。",
+      "cover": { "slug": "lu-dezhoubaji", "visual": "whole amber-brown braised chicken with wings tucked through the neck opening in spiced soy broth, Dezhou bazhai chicken, iron wok lid plate" },
+      "ingredients": [
+        ["三黄鸡", "1", "只(约1000g)", true],
+        ["生抽", "60", "ml", true],
+        ["老抽", "20", "ml", true],
+        ["白糖", "20", "g", true],
+        ["料酒", "30", "ml", true],
+        ["生姜", "25", "g", true],
+        ["大葱", "40", "g", true],
+        ["八角", "5", "g", true],
+        ["桂皮", "3", "g", true],
+        ["花椒", "2", "g", true],
+        ["丁香", "3", "粒", false],
+        ["清水", "800", "ml", true]
+      ],
+      "steps": [
+        ["鸡从颈部开口，两翅从口中别出，两腿交叉盘进腹腔定型", 10],
+        ["表皮抹生抽和白糖腌20分钟，风干", 20],
+        ["油烧七成热，手提鸡头淋炸至通体金红，捞出", 5],
+        ["砂锅底铺姜葱与八角桂皮花椒，放鸡，倒入生抽老抽料酒清水烧开，转微火加盖焖110分钟", 115],
+        ["连汤晾30分钟浸味，装盘浇原汁，拆食不掉骨肉", 30]
+      ]
+    },
+    {
+      "title": "把子肉",
+      "description": "济南人下饭的硬菜，俗传与桃园结义有关。厚切五花肉用酱油甜面酱腌透，砂锅慢炖到肥肉颤而不散，咸甜酱香渗进肉纹。",
+      "difficulty": 2, "servings": 4, "prepTime": 75, "cookTime": 70, "totalTime": 145,
+      "tags": "经典,下饭,卤味,鲁菜名菜", "flavorProfile": "酱香咸甜",
+      "calories": 410, "protein": 18.0, "fat": 35.0, "carbs": 5.0,
+      "tips": "肉要切一指厚、巴掌宽才配称把子；炖足一小时再原汤泡半小时，肥油逼净、酱香入骨。",
+      "cover": { "slug": "lu-bazirou", "visual": "thick glossy dark-soy pork belly slabs simmered in clay pot with star anise and scallion, Jinan bazirou, ladled over steamed rice" },
+      "ingredients": [
+        ["带皮五花肉", "800", "g", true],
+        ["甜面酱", "40", "g", true],
+        ["生抽", "40", "ml", true],
+        ["老抽", "15", "ml", true],
+        ["白糖", "20", "g", true],
+        ["料酒", "20", "ml", true],
+        ["生姜", "20", "g", true],
+        ["大葱", "30", "g", true],
+        ["八角", "4", "g", true],
+        ["清水", "300", "ml", true],
+        ["盐", "2", "g", false]
+      ],
+      "steps": [
+        ["五花肉切成巴掌宽、一指厚的大片", 8],
+        ["加生抽、甜面酱、料酒、白糖抓匀，腌1小时", 60],
+        ["油烧四成热下肉片，中火煎至两面金黄、肥肉出油", 6],
+        ["砂锅底铺姜片葱段八角，码入肉片，倒腌汁加清水烧开，转微火炖60分钟", 62],
+        ["加盐调味，加盖再焖10分钟，连锅端上桌", 10]
+      ]
+    },
+    {
+      "title": "锅塌豆腐",
+      "description": "济南传统锅塌菜，塌字写尽做法。豆腐拖蛋挂粉两面煎塌，再入高汤收塌入味，蛋香豆香相融，嫩到筷尖发颤。",
+      "difficulty": 1, "servings": 3, "prepTime": 15, "cookTime": 20, "totalTime": 35,
+      "tags": "家常,经典,鲁菜名菜", "flavorProfile": "咸鲜蛋香",
+      "calories": 310, "protein": 20.0, "fat": 18.0, "carbs": 15.0,
+      "tips": "豆腐片好必须拍干粉再拖蛋，蛋液才挂得住；焖时用中火收到见锅底，汤味全进豆腐里。",
+      "cover": { "slug": "lu-guotadoufu", "visual": "egg-coated pan-fried tofu slices braised in savory golden broth with scallion and ginger, Jinan guota doufu, flat iron skillet" },
+      "ingredients": [
+        ["豆腐", "400", "g", true],
+        ["鸡蛋", "2", "个", true],
+        ["面粉", "30", "g", true],
+        ["高汤", "150", "ml", true],
+        ["生抽", "15", "ml", true],
+        ["料酒", "10", "ml", true],
+        ["大葱", "15", "g", true],
+        ["生姜", "10", "g", true],
+        ["白糖", "3", "g", true],
+        ["盐", "2", "g", true],
+        ["食用油", "30", "ml", true]
+      ],
+      "steps": [
+        ["豆腐切五毫米厚大片机干，鸡蛋加1g盐打散", 8],
+        ["豆腐拍一层面粉，拖匀蛋液", 5],
+        ["平底锅下油，中小火煎至两面金黄发塌，盛出", 8],
+        ["锅留底油，下葱姜末炒香，豆腐回锅，加高汤、生抽、料酒、白糖，中火焖5分钟", 6],
+        ["收到汤汁浓稠裹住豆腐，撒葱花出锅", 3]
+      ]
+    },
+    {
+      "title": "拔丝地瓜",
+      "description": "鲁菜拔丝绝活，宴席上的压轴甜菜。红薯炸到外壳酥、内瓤沙，水炒糖浆熬成香油色，筷子一提金丝万缕，趁热蘸凉水吃。",
+      "difficulty": 3, "servings": 4, "prepTime": 10, "cookTime": 20, "totalTime": 30,
+      "tags": "经典,甜品,宴客,鲁菜名菜", "flavorProfile": "香甜脆硬",
+      "calories": 360, "protein": 1.5, "fat": 12.0, "carbs": 60.0,
+      "tips": "糖浆熬到大泡转小泡、色如香油，筷子蘸糖滴入凉水即刻变硬拉丝，才是下地瓜的时机。",
+      "cover": { "slug": "lu-basidigua", "visual": "golden fried sweet potato chunks coated in glassy pulled-sugar threads on oiled plate, Shandong basi digua, bowl of cold water beside" },
+      "ingredients": [
+        ["红薯", "500", "g", true],
+        ["白糖", "150", "g", true],
+        ["清水", "60", "ml", true],
+        ["食用油", "500", "ml", true],
+        ["香油", "5", "ml", false]
+      ],
+      "steps": [
+        ["红薯去皮切成滚刀块，拍去表面水分", 6],
+        ["油烧五成热下红薯，中火炸6分钟至筷子能透，捞出", 6],
+        ["升油温至八成热复炸1分钟，外壳硬挺金黄，捞出", 2],
+        ["净锅下白糖和清水，小火慢熬至大泡转小泡、色如香油", 4],
+        ["立刻倒红薯翻勺挂匀糖浆，盘抹薄香油，端凉开水一碗同上桌", 2]
+      ]
+    },
+    {
+      "title": "坛子肉",
+      "description": "济南老馆子的密封绝活。五花肉块炸后入小坛，加酱油香料封坛慢煨两小时，开坛香气冲屋，肉烂若凝脂，酱浓挂勺。",
+      "difficulty": 3, "servings": 4, "prepTime": 30, "cookTime": 130, "totalTime": 160,
+      "tags": "经典,宴客,卤味,鲁菜名菜", "flavorProfile": "浓酱酥烂",
+      "calories": 430, "protein": 16.0, "fat": 38.0, "carbs": 4.0,
+      "tips": "坛口一定要封严，中途揭盖气走一半；微火养足两小时，肉才酥烂而块形不散。",
+      "cover": { "slug": "lu-tanzirou", "visual": "mahjong-tile pork belly chunks braised to dark glossy red with ginger and star anise inside a sealed small clay jar, Jinan tanzirou" },
+      "ingredients": [
+        ["带皮五花肉", "700", "g", true],
+        ["酱油", "50", "ml", true],
+        ["老抽", "10", "ml", true],
+        ["冰糖", "15", "g", true],
+        ["料酒", "25", "ml", true],
+        ["生姜", "25", "g", true],
+        ["大葱", "30", "g", true],
+        ["八角", "3", "g", true],
+        ["清水", "100", "ml", true],
+        ["盐", "2", "g", false],
+        ["食用油", "40", "ml", true]
+      ],
+      "steps": [
+        ["五花肉切成麻将块大小，沸水焯5分钟去血沫，捞出控干", 8],
+        ["抹老抽晾干，入六成热油炸至外壳红硬，捞出", 6],
+        ["小坛底垫姜块、葱段、八角，码入肉块，倒酱油、料酒、冰糖、清水", 8],
+        ["保鲜膜封严坛口加盖，微火煨120分钟", 120],
+        ["开坛尝味补盐，整坛上桌，趁热分食", 3]
+      ]
+    },
+    {
+      "title": "单县羊肉汤",
+      "description": "菏泽单县头道汤，名唱到京津。羊骨羊肉大火冲煮两小时，汤白如奶不见渣，碗底只撒盐葱，肉香一口醇到眉毛。",
+      "difficulty": 2, "servings": 6, "prepTime": 75, "cookTime": 130, "totalTime": 205,
+      "tags": "经典,汤羹,冬令,鲁菜名菜", "flavorProfile": "咸鲜醇厚",
+      "calories": 160, "protein": 14.0, "fat": 10.0, "carbs": 2.0,
+      "tips": "汤要白全靠火：全程大火滚冲，中途不添冷水；羊肉回锅前不腌不酱，原汁才正。",
+      "cover": { "slug": "lu-shanxianyangeroutang", "visual": "milky white lamb soup with sliced lamb and scallion and cilantro in coarse ceramic bowl beside flatbread, Shanxian lamb soup" },
+      "ingredients": [
+        ["羊肉", "500", "g", true],
+        ["羊骨", "500", "g", true],
+        ["生姜", "30", "g", true],
+        ["大葱", "40", "g", true],
+        ["花椒", "5", "g", true],
+        ["白萝卜", "300", "g", false],
+        ["盐", "6", "g", true],
+        ["白胡椒粉", "2", "g", true],
+        ["香菜", "15", "g", true],
+        ["小葱", "15", "g", true],
+        ["清水", "3000", "ml", true]
+      ],
+      "steps": [
+        ["羊骨砸断，羊肉切大块，一同冷水浸泡1小时去血", 60],
+        ["沸水煮10分钟撇尽浮沫，捞出冲净", 10],
+        ["桶内加清水，下肉骨、姜葱，花椒装料包投入，大火滚煮2小时，汤色乳白如奶，期间不断撇沫", 120],
+        ["捞出羊肉晾凉切薄片，萝卜片下汤锅煮熟", 10],
+        ["碗底放盐、胡椒粉、葱花香菜，铺肉片，冲入滚汤即成", 3]
+      ]
+    },
+    {
+      "title": "木须肉",
+      "description": "北方人最熟的脸，鲁菜小炒经典。木须是鸡蛋的雅称，肉片鸡蛋黑木耳顶黄瓜同炒，鲜香脆嫩，一碗米饭不够。",
+      "difficulty": 1, "servings": 3, "prepTime": 15, "cookTime": 10, "totalTime": 25,
+      "tags": "家常,快手,下饭", "flavorProfile": "咸鲜清爽",
+      "calories": 230, "protein": 16.0, "fat": 15.0, "carbs": 7.0,
+      "tips": "鸡蛋半凝固就盛出，黄瓜最后下锅；全程大火快炒，出锅前再淋香油。",
+      "cover": { "slug": "lu-muxurou", "visual": "stir-fried pork slices with fluffy scrambled eggs cucumber slices and wood ear in light glossy sauce, Shandong muxu rou, home-style round plate" },
+      "ingredients": [
+        ["猪里脊", "150", "g", true],
+        ["鸡蛋", "3", "个", true],
+        ["水发木耳", "60", "g", true],
+        ["黄瓜", "1", "根", true],
+        ["大葱", "10", "g", true],
+        ["大蒜", "10", "g", true],
+        ["生姜", "5", "g", true],
+        ["生抽", "12", "ml", true],
+        ["料酒", "8", "ml", true],
+        ["淀粉", "5", "g", true],
+        ["盐", "3", "g", true],
+        ["香油", "5", "ml", false]
+      ],
+      "steps": [
+        ["里脊切薄片，用料酒、淀粉、1g盐抓腌10分钟", 10],
+        ["鸡蛋加1g盐打散，热油炒至半凝固盛出", 2],
+        ["补油15ml，大火滑炒肉片至变色盛出", 2],
+        ["下葱姜蒜爆香，先放木耳黄瓜片炒30秒断生", 1],
+        ["肉片鸡蛋回锅，加生抽和余盐大火翻匀，淋香油出锅", 2]
+      ]
+    },
+    {
+      "title": "葱烧海参",
+      "description": "胶东葱烧菜的扛鼎者，海参本无味，全靠葱油喂。大葱炸到焦香，海参入鸡汤煨透，浓芡亮汁裹身，葱香压过海腥。",
+      "difficulty": 3, "servings": 2, "prepTime": 30, "cookTime": 20, "totalTime": 50,
+      "tags": "经典,宴客,海鲜,鲁菜名菜", "flavorProfile": "葱香咸鲜",
+      "calories": 150, "protein": 12.0, "fat": 8.0, "carbs": 6.0,
+      "tips": "葱段必须炸到焦黄发干才有葱油魂；海参先煨入味再勾芡，芡要分两次挂才亮。",
+      "cover": { "slug": "lu-congshaoshen", "visual": "dark glossy sea cucumber pieces with golden fried scallion segments in thick shiny sauce, Jiaodong conghao shen, white deep plate" },
+      "ingredients": [
+        ["海参", "500", "g", true],
+        ["大葱", "80", "g", true],
+        ["生姜", "10", "g", true],
+        ["鸡清汤", "200", "ml", true],
+        ["生抽", "15", "ml", true],
+        ["老抽", "5", "ml", true],
+        ["白糖", "3", "g", true],
+        ["料酒", "15", "ml", true],
+        ["淀粉", "10", "g", true],
+        ["猪油", "30", "g", true],
+        ["香油", "5", "ml", false]
+      ],
+      "steps": [
+        ["水发海参切大条，沸水加姜葱料酒焯2分钟去腥，捞起沥干", 8],
+        ["葱白切五厘米段拍松，三成热猪油慢炸至两面焦黄，盛出", 8],
+        ["下海参略炒，倒鸡清汤、生抽、老抽、白糖，放葱段小火煨5分钟", 6],
+        ["水淀粉分两次勾芡，汤汁浓亮紧裹海参，淋香油装盘", 3]
+      ]
+    },
+    {
+      "title": "糟溜鱼片",
+      "description": "孔府传出的鲁菜雅味，糟香清雅。桂鱼片浆滑油至刚断生，入香糟卤调的白汁里一溜，嫩若豆腐，糟香绕舌三日。",
+      "difficulty": 3, "servings": 3, "prepTime": 25, "cookTime": 10, "totalTime": 35,
+      "tags": "经典,河鲜,宴客,鲁菜名菜", "flavorProfile": "糟香咸鲜",
+      "calories": 180, "protein": 20.0, "fat": 7.0, "carbs": 8.0,
+      "tips": "滑油只能三四成热，鱼片白而刚卷就捞；糟卤下锅微开即勾芡，久沸糟香尽散。",
+      "cover": { "slug": "lu-zaoliuyupian", "visual": "silky white fish fillets with bamboo shoot and wood ear in clear pale amber wine-lees sauce, Shandong zaoliu yupian, shallow soup plate" },
+      "ingredients": [
+        ["桂鱼", "1", "条(约600g)", true],
+        ["糟卤", "60", "ml", true],
+        ["冬笋", "60", "g", true],
+        ["水发木耳", "30", "g", false],
+        ["鸡蛋清", "1", "个", true],
+        ["淀粉", "20", "g", true],
+        ["高汤", "200", "ml", true],
+        ["白糖", "6", "g", true],
+        ["盐", "3", "g", true],
+        ["料酒", "10", "ml", true],
+        ["食用油", "30", "ml", true]
+      ],
+      "steps": [
+        ["桂鱼去骨起两片肉，斜刀切厚片，漂净血水", 8],
+        ["鱼片用1g盐、料酒抓至发黏，下蛋清和淀粉上浆", 8],
+        ["三四成热油下滑开鱼片，肉色转白即捞，冬笋切薄片焯水", 3],
+        ["锅下高汤、糟卤、白糖和余盐烧开，放笋片木耳", 2],
+        ["鱼片回锅微开，水淀粉溜勾薄芡，淋明油出锅", 2]
+      ]
+    },
+    {
+      "title": "扒原壳鲍鱼",
+      "description": "孔府扒菜看家手艺。鲜活鲍鱼煮熟取肉切片，回填原壳，鸡清汤小火慢扒勾芡，壳在原味也在鲜，一粒一味清醇。",
+      "difficulty": 3, "servings": 2, "prepTime": 30, "cookTime": 15, "totalTime": 45,
+      "tags": "经典,宴客,海鲜,鲁菜名菜", "flavorProfile": "咸鲜清醇",
+      "calories": 130, "protein": 17.0, "fat": 3.0, "carbs": 6.0,
+      "tips": "鲍鱼煮过头就嚼不动，沸汤三分钟即捞；扒菜要锅体倾斜推芡，汁明芡亮方能成扒。",
+      "cover": { "slug": "lu-payuankebaoyu", "visual": "sliced abalone arranged back into dark clean shells draped with clear glossy thickened chicken broth sauce and ham bits, Kongfu abalone in original shell" },
+      "ingredients": [
+        ["鲜活鲍鱼", "6", "只", true],
+        ["鸡清汤", "200", "ml", true],
+        ["火腿", "20", "g", false],
+        ["生姜", "10", "g", true],
+        ["大葱", "15", "g", true],
+        ["料酒", "15", "ml", true],
+        ["生抽", "8", "ml", true],
+        ["盐", "2", "g", true],
+        ["白糖", "2", "g", false],
+        ["淀粉", "12", "g", true],
+        ["香油", "5", "ml", false]
+      ],
+      "steps": [
+        ["鲍鱼刷净外壳，沸水加姜葱煮3分钟，取肉去内脏和边黑", 10],
+        ["壳留用排入盘中，鲍鱼肉切薄片覆回壳内", 6],
+        ["锅下鸡清汤、生抽、料酒、盐、白糖烧开，撇净浮沫", 3],
+        ["倾锅推入水淀粉扒勾亮芡，淋在鲍鱼上，撒火腿末", 3]
+      ]
+    },
+    {
+      "title": "博山炸肉",
+      "description": "淄博博山的年节硬菜，也是济青高速服务区的一绝。里脊切条腌足，裹红薯粉糊炸到外壳酥脆内里咸香，趁热撒椒盐。",
+      "difficulty": 2, "servings": 4, "prepTime": 25, "cookTime": 15, "totalTime": 40,
+      "tags": "经典,小吃,鲁菜名菜", "flavorProfile": "咸香酥脆",
+      "calories": 300, "protein": 20.0, "fat": 18.0, "carbs": 12.0,
+      "tips": "面糊调到手提成线不断；肉条必须复炸一次，外壳才咬得脆响、里面还留着汁。",
+      "cover": { "slug": "lu-boshanzharou", "visual": "crispy golden fried pork strips dusted with ground pepper and salt in heaped bamboo tray with lemon wedge, Boshan fried pork, rustic table" },
+      "ingredients": [
+        ["猪里脊", "400", "g", true],
+        ["红薯淀粉", "80", "g", true],
+        ["鸡蛋", "1", "个", true],
+        ["酱油", "15", "ml", true],
+        ["料酒", "10", "ml", true],
+        ["花椒", "3", "g", true],
+        ["生姜", "10", "g", true],
+        ["大葱", "15", "g", true],
+        ["盐", "3", "g", true],
+        ["白胡椒粉", "2", "g", false],
+        ["食用油", "500", "ml", true]
+      ],
+      "steps": [
+        ["里脊切一指粗肉条，加酱油、料酒、盐、姜葱末腌20分钟", 20],
+        ["挑去姜葱，下鸡蛋和红薯淀粉，加清水60ml抓成糊，肉条挂匀", 6],
+        ["油烧六成热，逐条下锅炸至浮起定型、外壳微黄，捞出", 5],
+        ["油温升至八成热复炸至金黄酥脆，捞出控油", 2],
+        ["花椒与盐2g干锅小火炒香，碾成椒盐，撒肉条上桌", 3]
+      ]
+    },
+    {
+      "title": "辣炒蛤蜊",
+      "description": "胶东海边的灵魂下酒菜。蛤蜊吐净沙，旺火下干辣椒姜蒜爆炒，啤酒一烹盖子一焖，壳开口肉带卤汁，一盘鲜辣半天闲话。",
+      "difficulty": 1, "servings": 3, "prepTime": 125, "cookTime": 8, "totalTime": 133,
+      "tags": "家常,海鲜,下饭,胶东名菜", "flavorProfile": "香辣咸鲜",
+      "calories": 105, "protein": 11.0, "fat": 4.0, "carbs": 6.0,
+      "tips": "吐沙必须用没过蛤蜊的淡盐水养足两小时；炒到刚开口就收火，开口后再焖肉就老缩了。",
+      "cover": { "slug": "lu-lachaogeli", "visual": "clams with opened shells stir-fried with dried red chilies garlic and ginger in shallow savory liquor, Jiaodong spicy clams, heaped white plate" },
+      "ingredients": [
+        ["蛤蜊", "700", "g", true],
+        ["干红辣椒", "8", "g", true],
+        ["花椒", "2", "g", true],
+        ["生姜", "15", "g", true],
+        ["大蒜", "20", "g", true],
+        ["大葱", "20", "g", true],
+        ["啤酒", "100", "ml", true],
+        ["生抽", "10", "ml", true],
+        ["盐", "2", "g", false],
+        ["食用油", "25", "ml", true],
+        ["香菜", "10", "g", false]
+      ],
+      "steps": [
+        ["蛤蜊入没过身面的淡盐水养2小时吐净沙，刷洗外壳沥干", 120],
+        ["干辣椒切段，姜蒜切片，葱切段", 5],
+        ["热油下花椒、干辣椒、姜蒜，大火爆出香辣味", 1],
+        ["倒蛤蜊烹啤酒，加盖大火焖2分钟至壳全开", 2],
+        ["下葱段淋生抽翻匀，撒香菜出锅", 1]
+      ]
+    }
+  ]
+}

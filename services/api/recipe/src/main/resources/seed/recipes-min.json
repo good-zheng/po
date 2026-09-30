@@ -1,0 +1,500 @@
+{
+  "region": "闽菜",
+  "recipes": [
+    {
+      "title": "佛跳墙",
+      "description": "闽菜头牌，相传坛启荤香飘四邻，佛闻弃禅跳墙来。家常版以老母鸡、排骨吊汤，海参鲍鱼分层入坛，文火慢煨至汤色金浓。",
+      "difficulty": 3, "servings": 6, "prepTime": 60, "cookTime": 180, "totalTime": 240,
+      "tags": "经典,宴客,海鲜,闽菜名菜", "flavorProfile": "咸鲜醇厚",
+      "calories": 350, "protein": 28.0, "fat": 20.0, "carbs": 6.0,
+      "tips": "各路料分别焯水、泡发到位再分层码入坛，高汤滤净才注入，全程微火煨，急火则汤浊失味。",
+      "cover": { "slug": "min-foitiaoqiang", "visual": "layered seafood and chicken stew in golden rich broth with sea cucumber, abalone and shiitake sealed in a clay jar, Fujian buddha jumps over the wall, earthenware pot" },
+      "ingredients": [
+        ["老母鸡", "半", "只(约500g)", true],
+        ["排骨", "300", "g", true],
+        ["鲜活鲍鱼", "6", "只", true],
+        ["海参", "3", "只", true],
+        ["干香菇", "8", "朵", true],
+        ["冬笋", "150", "g", false],
+        ["高汤", "1500", "ml", true],
+        ["生姜", "30", "g", true],
+        ["干荷叶", "1", "张", false],
+        ["料酒", "30", "ml", true],
+        ["生抽", "15", "ml", true],
+        ["盐", "3", "g", true]
+      ],
+      "steps": [
+        ["老母鸡、排骨冷水下锅焯去血沫，捞出洗净", 15],
+        ["干香菇、冬笋温水泡发，海参泡软切段焯水", 120],
+        ["鲍鱼去壳刷净，与鸡块、排骨分层码入陶坛", 10],
+        ["高汤加姜、料酒、生抽烧开，滤净注入坛中", 8],
+        ["坛口盖荷叶封严，微火煨至汤色浓稠", 120]
+      ]
+    },
+    {
+      "title": "荔枝肉",
+      "description": "福州宴席老菜，猪瘦肉剞十字花刀后炸成荔枝卷，外裹糖醋汁红亮酸甜，缀以荸荠，形似荔珠而得名。",
+      "difficulty": 2, "servings": 4, "prepTime": 25, "cookTime": 12, "totalTime": 37,
+      "tags": "经典,酸甜,猪肉,福州名菜", "flavorProfile": "酸甜爽口",
+      "calories": 420, "protein": 26.0, "fat": 26.0, "carbs": 20.0,
+      "tips": "剞花刀要切透而不切断，炸时肉片自然卷成荔球；糖醋汁先调好再下锅，二次裹汁才亮。",
+      "cover": { "slug": "min-lizhirou", "visual": "crispy pork blossoms glazed in sweet-sour red sauce shaped like litchi with water chestnut, Fuzhou litchi pork, white plate" },
+      "ingredients": [
+        ["猪瘦肉", "400", "g", true],
+        ["荸荠", "100", "g", false],
+        ["红薯淀粉", "80", "g", true],
+        ["白糖", "40", "g", true],
+        ["香醋", "30", "ml", true],
+        ["生抽", "15", "ml", true],
+        ["番茄酱", "30", "g", false],
+        ["生姜", "10", "g", true],
+        ["小葱", "2", "根", true],
+        ["食用油", "500", "ml", true]
+      ],
+      "steps": [
+        ["猪瘦肉切厚片，两面剞十字花刀再改方块", 10],
+        ["加清水、生抽、姜汁抓腌10分钟，裹匀淀粉", 10],
+        ["调糖醋汁：白糖、香醋、番茄酱、生抽搅匀", 3],
+        ["油烧七成热下肉块，大火炸至卷起金黄捞出", 4],
+        ["升温复炸至外壳酥脆，捞出沥油", 2],
+        ["锅留底油下糖醋汁烧沸，倒肉块荸荠翻匀裹汁", 4]
+      ]
+    },
+    {
+      "title": "醉排骨",
+      "description": "福州老巷名味，猪肋排先炸后拌，以黄酒、蒜末、糖醋调成醉汁，趁热裹匀冷后入味，酒香酸甜而肉质外酥内嫩。",
+      "difficulty": 2, "servings": 4, "prepTime": 30, "cookTime": 10, "totalTime": 40,
+      "tags": "经典,宴客,排骨,福州名菜", "flavorProfile": "酸甜酒香",
+      "calories": 450, "protein": 24.0, "fat": 34.0, "carbs": 12.0,
+      "tips": "醉汁要趁排骨刚出锅滚烫时拌，热才吸得进去；黄酒要用福建老酒，香气足而不发苦。",
+      "cover": { "slug": "min-zuopaigu", "visual": "deep-fried pork rib chunks glossy with sweet-sour wine and minced garlic sauce, Fuzhou drunken spare ribs, rustic bowl" },
+      "ingredients": [
+        ["猪肋排", "500", "g", true],
+        ["黄酒", "40", "ml", true],
+        ["大蒜", "20", "g", true],
+        ["白糖", "25", "g", true],
+        ["香醋", "15", "ml", true],
+        ["生抽", "15", "ml", true],
+        ["鸡蛋", "1", "个", true],
+        ["红薯淀粉", "40", "g", true],
+        ["生姜", "10", "g", true],
+        ["小葱", "2", "根", false],
+        ["食用油", "500", "ml", true]
+      ],
+      "steps": [
+        ["排骨斩小块，加生抽、黄酒、姜片腌30分钟", 30],
+        ["腌好的排骨裹蛋液和红薯淀粉", 6],
+        ["油烧六成热下排骨，中火炸至表面定型", 4],
+        ["升温七成热，大火复炸至金黄酥脆沥油", 3],
+        ["蒜末加白糖、香醋、生抽与黄酒调成醉汁", 3],
+        ["热排骨倒入醉汁盆，趁热翻拌裹匀晾凉", 3]
+      ]
+    },
+    {
+      "title": "姜母鸭",
+      "description": "闽南冬令进补名菜，老姜剁米用麻油炒香，与土鸭同焖，鸭肉酥烂汤汁带姜辣酒香，一锅热气驱寒。",
+      "difficulty": 2, "servings": 4, "prepTime": 20, "cookTime": 50, "totalTime": 70,
+      "tags": "经典,时令,鸭肉,闽菜名菜", "flavorProfile": "姜香咸鲜",
+      "calories": 400, "protein": 30.0, "fat": 26.0, "carbs": 6.0,
+      "tips": "老姜要剁碎炒至干香再下鸭，麻油全程不能糊；加黄酒焖要小火，火大姜苦而出不了香。",
+      "cover": { "slug": "min-jiangmuya", "visual": "braised duck pieces with dark sesame oil and abundant minced ginger sizzling in a clay pot, Minnan ginger mother duck, cast iron pot" },
+      "ingredients": [
+        ["土鸭", "半", "只(约900g)", true],
+        ["老姜", "150", "g", true],
+        ["芝麻香油", "50", "ml", true],
+        ["黄酒", "80", "ml", true],
+        ["生抽", "20", "ml", true],
+        ["老抽", "10", "ml", false],
+        ["冰糖", "15", "g", true],
+        ["大蒜", "30", "g", true],
+        ["高汤", "500", "ml", true],
+        ["盐", "2", "g", true],
+        ["小葱", "2", "根", false]
+      ],
+      "steps": [
+        ["土鸭斩块焯去血沫，老姜去皮剁成姜米", 15],
+        ["麻油下锅小火，入姜米炒至干香金黄", 5],
+        ["下鸭块转中火煸至皮面收紧出油", 6],
+        ["烹黄酒、生抽、老抽，加冰糖与高汤烧开", 5],
+        ["转小火加盖焖至鸭肉酥烂", 40],
+        ["开盖大火收至汤汁浓，撒葱花装盘", 4]
+      ]
+    },
+    {
+      "title": "海蛎煎",
+      "description": "闽南街头灵魂小吃，海蛎拌入番薯粉浆，蛋液裹边煎至焦香，蘸甜辣酱外酥内糯，厦门泉州夜宵摊必点。",
+      "difficulty": 1, "servings": 2, "prepTime": 15, "cookTime": 10, "totalTime": 25,
+      "tags": "家常,小吃,海鲜,闽南名吃", "flavorProfile": "咸鲜软糯",
+      "calories": 320, "protein": 15.0, "fat": 18.0, "carbs": 25.0,
+      "tips": "粉浆要调得稀，下锅前才拌入海蛎和蒜苗；火要大煎才起泡边脆，翻面一次定形别乱铲。",
+      "cover": { "slug": "min-houlizhen", "visual": "crispy oyster and sweet potato starch pancake edged with egg topped with garlic sprouts, served with sweet chili sauce, Xiamen oyster omelette, skillet" },
+      "ingredients": [
+        ["海蛎", "200", "g", true],
+        ["红薯淀粉", "60", "g", true],
+        ["鸡蛋", "2", "个", true],
+        ["青蒜苗", "30", "g", true],
+        ["清水", "80", "ml", true],
+        ["食用油", "30", "ml", true],
+        ["生抽", "8", "ml", false],
+        ["盐", "1", "g", true],
+        ["辣椒油", "20", "ml", false]
+      ],
+      "steps": [
+        ["海蛎冲洗沥干，青蒜苗切段", 8],
+        ["红薯淀粉加清水调稀浆，拌入海蛎蒜苗盐", 4],
+        ["平底锅下油烧热，倒入浆料摊平", 2],
+        ["淋蛋液铺面，中火煎至边缘起脆泡", 3],
+        ["翻面再煎半分钟至两面金黄，配蘸汁上桌", 2]
+      ]
+    },
+    {
+      "title": "厦门沙茶面",
+      "description": "厦门华侨带回的南洋味，沙茶酱调出橙红汤头，配碱面与虾、贝、豆腐，汤浓带花生微辣，是厦门人的早午餐魂。",
+      "difficulty": 2, "servings": 2, "prepTime": 20, "cookTime": 25, "totalTime": 45,
+      "tags": "经典,小吃,面食,厦门名吃", "flavorProfile": "咸鲜微辣",
+      "calories": 480, "protein": 20.0, "fat": 20.0, "carbs": 55.0,
+      "tips": "沙茶酱先用油炒散再冲汤，炒过香气才化得开；汤要滚着下面，面断生即起否则糊汤。",
+      "cover": { "slug": "min-shachamian", "visual": "wheat noodles in orange satay peanut broth with shrimp, clams and tofu cubes, Xiamen satay noodle soup, ceramic bowl" },
+      "ingredients": [
+        ["碱水面", "300", "g", true],
+        ["沙茶酱", "50", "g", true],
+        ["河虾仁", "100", "g", false],
+        ["蛤蜊", "200", "g", false],
+        ["嫩豆腐", "150", "g", false],
+        ["高汤", "800", "ml", true],
+        ["花生米", "30", "g", false],
+        ["大蒜", "10", "g", true],
+        ["生姜", "10", "g", true],
+        ["生抽", "10", "ml", true],
+        ["小葱", "2", "根", true],
+        ["食用油", "15", "ml", true]
+      ],
+      "steps": [
+        ["虾仁开背，蛤蜊吐沙洗净，豆腐切块焯水", 20],
+        ["锅下油，中火炒香姜蒜末与沙茶酱", 3],
+        ["冲入高汤大火烧开，转小火熬出沙茶汤头", 12],
+        ["另锅水沸下碱面，大火煮至断生捞入碗中", 3],
+        ["汤中下虾仁蛤蜊煮至开口，连豆腐倒入面碗", 4],
+        ["撒花生碎与葱花即成", 2]
+      ]
+    },
+    {
+      "title": "福州鱼丸",
+      "description": "福州没有鱼丸不成席，海鳗剔肉打浆做皮，包入猪肉馅，挤丸入温水定型，咬开爆汁皮弹馅香，是闽江边的手艺。",
+      "difficulty": 3, "servings": 4, "prepTime": 45, "cookTime": 20, "totalTime": 65,
+      "tags": "经典,海鲜,小吃,福州名菜", "flavorProfile": "咸鲜弹嫩",
+      "calories": 260, "protein": 18.0, "fat": 12.0, "carbs": 18.0,
+      "tips": "鱼肉要加盐水顺一个方向搅上劲才起胶做皮，水温八十度下丸养熟，沸水滚会冲破丸皮。",
+      "cover": { "slug": "min-fuzhouyuwan", "visual": "springy white fish balls stuffed with pork floating in clear broth with scallion, Fuzhou fish balls, blue-and-white bowl" },
+      "ingredients": [
+        ["海鳗", "400", "g", true],
+        ["猪后腿肉馅", "150", "g", true],
+        ["清水", "200", "ml", true],
+        ["盐", "5", "g", true],
+        ["鸡蛋清", "1", "个", false],
+        ["红薯淀粉", "30", "g", true],
+        ["生姜", "15", "g", true],
+        ["小葱", "2", "根", true],
+        ["高汤", "600", "ml", true],
+        ["香油", "5", "ml", false],
+        ["白胡椒粉", "2", "g", false]
+      ],
+      "steps": [
+        ["海鳗去皮剔骨取净肉，绞成鱼肉泥", 15],
+        ["鱼肉加盐水顺一个方向搅打至上劲成胶", 15],
+        ["肉馅加生抽、姜末、葱花搅匀，团成小丸", 10],
+        ["虎口挤鱼胶包肉馅成丸，入温水定型", 10],
+        ["高汤烧开下鱼丸，小火养熟至浮起", 12],
+        ["撒葱花淋香油，连汤盛入碗中", 2]
+      ]
+    },
+    {
+      "title": "太平燕",
+      "description": "福州婚寿宴席必备的太平燕，番薯粉与猪瘦肉千锤打成薄燕皮，裹肉馅成燕，配鸭蛋入汤，取平安团圆之意。",
+      "difficulty": 3, "servings": 4, "prepTime": 50, "cookTime": 20, "totalTime": 70,
+      "tags": "宴客,汤羹,小吃,福州名菜", "flavorProfile": "清鲜醇厚",
+      "calories": 300, "protein": 20.0, "fat": 14.0, "carbs": 24.0,
+      "tips": "燕皮要用木槌把瘦肉和番薯粉锤成纸才弹韧，包馅留一指宽边捏出燕尾；汤必须清澈见底。",
+      "cover": { "slug": "min-taipingshui", "visual": "delicate pork wonton skins folded into swallow shapes with halved duck egg in clear broth, Fuzhou taiping swallow soup, porcelain bowl" },
+      "ingredients": [
+        ["猪瘦肉", "250", "g", true],
+        ["红薯淀粉", "150", "g", true],
+        ["猪后腿肉馅", "150", "g", true],
+        ["鸭蛋", "3", "个", true],
+        ["高汤", "800", "ml", true],
+        ["生姜", "10", "g", true],
+        ["小葱", "2", "根", true],
+        ["生抽", "10", "ml", true],
+        ["盐", "3", "g", true],
+        ["香油", "5", "ml", false]
+      ],
+      "steps": [
+        ["猪瘦肉切薄片，与红薯淀粉铺案用木槌反复锤打", 20],
+        ["锤成薄如纸的燕皮，切成方片", 15],
+        ["肉馅加生抽、姜末搅上劲，包入燕皮捏成燕尾", 12],
+        ["鸭蛋煮熟去壳，高汤烧沸下燕丸", 10],
+        ["燕丸浮起煮2分钟，放入对半鸭蛋", 4],
+        ["撒葱花淋香油即成", 2]
+      ]
+    },
+    {
+      "title": "闽南卤面",
+      "description": "漳州泉州年节必备，碱面入锅与卤汤同煮，勾出稠亮芡汁，配虾、蛋、卤肉与豆芽，浇上蒜蓉醋，一碗浓滑热香。",
+      "difficulty": 2, "servings": 4, "prepTime": 25, "cookTime": 20, "totalTime": 45,
+      "tags": "家常,宴客,汤面,闽南名吃", "flavorProfile": "咸鲜浓滑",
+      "calories": 460, "protein": 22.0, "fat": 16.0, "carbs": 58.0,
+      "tips": "面要另锅煮散再入卤，边推边勾薄芡成琉璃芡才不糊底；起锅后淋蒜醋打蛋花提香。",
+      "cover": { "slug": "min-minnanlujian", "visual": "silky braised noodles in thick glossy pork and seafood gravy with bean sprouts and egg ribbons, Minnan lujian noodle soup, wide bowl" },
+      "ingredients": [
+        ["碱水面", "400", "g", true],
+        ["五花肉", "150", "g", true],
+        ["河虾仁", "80", "g", false],
+        ["黄豆芽", "100", "g", false],
+        ["鸡蛋", "2", "个", true],
+        ["高汤", "900", "ml", true],
+        ["水淀粉", "60", "ml", true],
+        ["干香菇", "6", "朵", true],
+        ["生抽", "15", "ml", true],
+        ["大蒜", "20", "g", true],
+        ["香醋", "10", "ml", false],
+        ["盐", "2", "g", true]
+      ],
+      "steps": [
+        ["五花肉切丝，干香菇泡发切丝，豆芽洗净", 15],
+        ["锅下肉丝小火煸出油，下香菇丝蒜末炒香", 5],
+        ["冲入高汤大火烧开，加盐与生抽调味", 6],
+        ["另锅沸水煮碱面至八成熟，捞出沥干", 6],
+        ["面入卤汤转小火推散，勾水淀粉成浓亮芡", 5],
+        ["淋蛋花撒豆芽，浇蒜醋汁翻匀出锅", 3]
+      ]
+    },
+    {
+      "title": "建瓯板鸭",
+      "description": "建瓯板鸭已有千余年，冬季把麻鸭剖开压扁风干成板，吃时蒸透斩件，皮脆肉紧咸香带腊味，佐酒最宜。",
+      "difficulty": 2, "servings": 6, "prepTime": 30, "cookTime": 60, "totalTime": 90,
+      "tags": "经典,宴客,腊味,闽北名菜", "flavorProfile": "咸香腊味",
+      "calories": 380, "protein": 30.0, "fat": 28.0, "carbs": 2.0,
+      "tips": "板鸭先用温水泡半小时退咸，加姜片黄酒上锅蒸透才回软，斩件要顺肉纹横切而不散。",
+      "cover": { "slug": "min-jianoubanya", "visual": "steamed pressed cured duck with glossy taut skin sliced into flat pieces, amber cured meat, Jianou board duck, bamboo platter" },
+      "ingredients": [
+        ["板鸭", "半", "只(约600g)", true],
+        ["生姜", "30", "g", true],
+        ["黄酒", "30", "ml", true],
+        ["冰糖", "10", "g", false],
+        ["小葱", "3", "根", true],
+        ["清水", "1000", "ml", true],
+        ["辣椒油", "15", "ml", false]
+      ],
+      "steps": [
+        ["板鸭温水浸泡退咸，刷净沥干", 30],
+        ["姜切片，与葱结、黄酒、冰糖码入盘中", 8],
+        ["上锅大火隔水蒸至鸭肉回软", 60],
+        ["取出晾凉，顺纹横切成板状件", 8],
+        ["摆盘淋原汁，配辣椒油蘸食", 3]
+      ]
+    },
+    {
+      "title": "淡糟香螺片",
+      "description": "闽菜刀工代表作，香螺肉剞上十字花刀汆成螺卷，以红糟、虾油、姜丝爆炒，脆嫩爽口、糟香清郁，极考火候。",
+      "difficulty": 3, "servings": 4, "prepTime": 30, "cookTime": 10, "totalTime": 40,
+      "tags": "经典,刀工,河鲜,闽菜名菜", "flavorProfile": "糟香脆嫩",
+      "calories": 180, "protein": 16.0, "fat": 6.0, "carbs": 10.0,
+      "tips": "螺片入沸水即捞、汆十秒便卷，久煮则老韧；红糟先用油炒出香再下锅，急火快炒才挂得住。",
+      "cover": { "slug": "min-tanzaoxuangluopian", "visual": "curled scored conch slices coated in pink fermented red rice lees sauce with ginger shreds, Fujian light-lees conch, wok-tossed plate" },
+      "ingredients": [
+        ["香螺肉", "400", "g", true],
+        ["红糟", "30", "g", true],
+        ["虾油", "10", "ml", true],
+        ["生姜", "20", "g", true],
+        ["大葱", "20", "g", true],
+        ["大蒜", "10", "g", true],
+        ["料酒", "15", "ml", true],
+        ["白糖", "5", "g", false],
+        ["水淀粉", "30", "ml", true],
+        ["食用油", "20", "ml", true],
+        ["盐", "1", "g", false]
+      ],
+      "steps": [
+        ["香螺肉去杂洗净，两面剞十字花刀后切薄片", 15],
+        ["螺片入沸水大火汆十秒卷起即捞", 1],
+        ["红糟加料酒、白糖、虾油调成糟汁", 4],
+        ["锅下油，中火爆香姜蒜与葱段", 2],
+        ["下糟汁炒出红香，倒入螺片大火翻匀", 2],
+        ["勾水淀粉亮汁即出锅", 1]
+      ]
+    },
+    {
+      "title": "鸡汤汆海蚌",
+      "description": "闽侯一带的闽菜极品，以鸡清汤冲汆新鲜海蚌，蚌肉脆嫩汤清见底，全靠一手滚汤激熟的手上功夫。",
+      "difficulty": 3, "servings": 2, "prepTime": 20, "cookTime": 20, "totalTime": 40,
+      "tags": "经典,汤羹,河鲜,闽菜名菜", "flavorProfile": "清鲜原味",
+      "calories": 150, "protein": 16.0, "fat": 5.0, "carbs": 6.0,
+      "tips": "海蚌要片得薄，滚汤冲入即加盖焖十几秒；汤不够沸则蚌肉带腥而不脆。",
+      "cover": { "slug": "min-jitangcuanhaibang", "visual": "thin sea clam slices in crystal-clear golden chicken broth with scallion, Fujian scalded sea clam soup, covered porcelain soup bowl" },
+      "ingredients": [
+        ["海蚌肉", "300", "g", true],
+        ["鸡清汤", "600", "ml", true],
+        ["老母鸡", "200", "g", true],
+        ["清水", "800", "ml", true],
+        ["生姜", "15", "g", true],
+        ["料酒", "10", "ml", false],
+        ["盐", "2", "g", true],
+        ["白胡椒粉", "1", "g", false],
+        ["小葱", "2", "根", true]
+      ],
+      "steps": [
+        ["老母鸡焯水，加清水姜片小火吊出鸡清汤", 60],
+        ["海蚌去壳取肉，片成薄片入冷水漂洗沥干", 15],
+        ["蚌片入沸水大火汆五秒卷起，捞出装碗", 1],
+        ["鸡清汤大火烧至沸滚，加盐调底味", 5],
+        ["滚汤冲入蚌片碗，加盖焖十秒激熟", 1],
+        ["撒葱花即可，汤面清亮不见渣", 1]
+      ]
+    },
+    {
+      "title": "红糟鳗鱼",
+      "description": "福州人家年节味，海鳗切段用红糟、黄酒腌透，裹粉炸至外酥里嫩，红亮糟香带酸甜，冷吃热吃皆宜。",
+      "difficulty": 2, "servings": 4, "prepTime": 30, "cookTime": 15, "totalTime": 45,
+      "tags": "经典,河鲜,宴客,福州名菜", "flavorProfile": "糟香咸甜",
+      "calories": 380, "protein": 26.0, "fat": 26.0, "carbs": 12.0,
+      "tips": "鳗段一定要用红糟加黄酒腌透两小时去腥上色；炸时先六成热定型，再升温逼油才酥。",
+      "cover": { "slug": "min-hongzaomanyu", "visual": "crisp fried eel segments glazed in deep red fermented rice lees with ginger, Fujian red-lees eel, oval platter" },
+      "ingredients": [
+        ["海鳗", "600", "g", true],
+        ["红糟", "50", "g", true],
+        ["黄酒", "30", "ml", true],
+        ["生姜", "20", "g", true],
+        ["大蒜", "15", "g", true],
+        ["白糖", "10", "g", true],
+        ["生抽", "15", "ml", true],
+        ["香醋", "8", "ml", false],
+        ["红薯淀粉", "40", "g", true],
+        ["食用油", "500", "ml", true]
+      ],
+      "steps": [
+        ["海鳗宰杀去内脏，切成四厘米长的鳗段", 10],
+        ["红糟加黄酒、姜蒜末、白糖、生抽调成糟浆", 8],
+        ["鳗段入糟浆腌两小时入味上色", 120],
+        ["腌好取出拍干，裹一层红薯淀粉", 8],
+        ["油烧六成热，中火炸至定型浮起", 4],
+        ["升七成热大火复炸至外壳酥脆，沥油装盘", 3]
+      ]
+    },
+    {
+      "title": "花生汤",
+      "description": "闽南古早味甜汤，花生仁加小苏打慢炖至酥而不散，汤色乳白甜润，配油条是厦门人天亮前的早餐。",
+      "difficulty": 1, "servings": 4, "prepTime": 20, "cookTime": 150, "totalTime": 170,
+      "tags": "家常,甜品,早餐,闽南名吃", "flavorProfile": "甜润清香",
+      "calories": 220, "protein": 9.0, "fat": 15.0, "carbs": 14.0,
+      "tips": "花生要泡透去皮，炖时只放小苏打不放糖，煮到酥烂才下冰糖，过早加糖怎么煮都不烂。",
+      "cover": { "slug": "min-huashengtang", "visual": "creamy pale sweet peanut soup with soft whole peanuts, Xiamen peanut dessert soup, ceramic bowl" },
+      "ingredients": [
+        ["花生", "200", "g", true],
+        ["冰糖", "50", "g", true],
+        ["小苏打", "2", "g", true],
+        ["清水", "1200", "ml", true],
+        ["鸡蛋", "2", "个", false],
+        ["米酒", "10", "ml", false],
+        ["盐", "1", "g", false]
+      ],
+      "steps": [
+        ["花生温水泡两小时，搓去红衣沥干", 120],
+        ["花生入锅加清水和小苏打，大火烧开", 5],
+        ["转微火加盖炖至花生酥烂", 150],
+        ["下冰糖煮化，尝味至甜润", 6],
+        ["可选窝入鸡蛋，盛碗撒几粒熟花生", 4]
+      ]
+    },
+    {
+      "title": "土笋冻",
+      "description": "闽南独有奇味，晋江沿海的沙虫熬煮出天然胶质，连虫带汤倒碗冷凝成冻，切块蘸芥末酱油，晶莹弹滑清鲜。",
+      "difficulty": 2, "servings": 6, "prepTime": 30, "cookTime": 40, "totalTime": 70,
+      "tags": "传统,小吃,海鲜,闽南名吃", "flavorProfile": "清鲜弹滑",
+      "calories": 130, "protein": 12.0, "fat": 3.0, "carbs": 8.0,
+      "tips": "沙虫靠反复揉搓挤净泥沙，长时间熬煮才释出胶质，趁热连虫带汤入碗，凉透自然凝成冻。",
+      "cover": { "slug": "min-tusunbing", "visual": "translucent savory aspic jelly made from sand worms with embedded worms, cut into cubes, served with mustard and soy sauce, Xiamen tusun jelly, small dishes" },
+      "ingredients": [
+        ["沙虫", "300", "g", true],
+        ["清水", "1200", "ml", true],
+        ["生姜", "15", "g", true],
+        ["酱油", "20", "ml", true],
+        ["香醋", "10", "ml", false],
+        ["芥末酱", "3", "g", false],
+        ["大蒜", "10", "g", false],
+        ["香菜", "10", "g", false],
+        ["辣椒油", "5", "ml", false],
+        ["盐", "1", "g", true]
+      ],
+      "steps": [
+        ["沙虫加水浸泡，逐条揉压挤去内脏泥沙漂净", 20],
+        ["洗净沙虫入锅，加清水与姜片大火煮开", 10],
+        ["转小火熬至汤起胶质、虫体软烂", 40],
+        ["连虫带汤舀入小碗，加盐调底味", 5],
+        ["放凉后冷藏至自然凝成冻", 240],
+        ["取出切块，蘸芥末酱油食用", 4]
+      ]
+    },
+    {
+      "title": "沙县扁肉",
+      "description": "沙县小吃的灵魂，猪后腿肉用木槌敲成脆馅，薄皮裹成菱形小馄饨，滚水烫熟配清汤，皮薄馅脆带弹牙。",
+      "difficulty": 2, "servings": 4, "prepTime": 40, "cookTime": 15, "totalTime": 55,
+      "tags": "家常,小吃,面食,沙县名吃", "flavorProfile": "咸鲜爽滑",
+      "calories": 280, "protein": 16.0, "fat": 12.0, "carbs": 26.0,
+      "tips": "肉馅要捶不要剁，加冰水摔打出胶质才脆弹；包时只捏两角留边，才成扁肉的菱形。",
+      "cover": { "slug": "min-shaxianbianrou", "visual": "thin translucent pork wontons folded into diamond shapes floating in clear broth with scallion, Shaxian wonton soup, porcelain bowl" },
+      "ingredients": [
+        ["猪后腿肉馅", "300", "g", true],
+        ["抄手皮", "1", "包(约200g)", true],
+        ["清水", "30", "ml", true],
+        ["鸡蛋清", "1", "个", true],
+        ["高汤", "600", "ml", true],
+        ["小苏打", "1", "g", false],
+        ["生姜", "10", "g", true],
+        ["小葱", "3", "根", true],
+        ["生抽", "10", "ml", true],
+        ["香油", "5", "ml", false],
+        ["白胡椒粉", "1", "g", false],
+        ["盐", "2", "g", true]
+      ],
+      "steps": [
+        ["猪后腿肉用木槌反复敲打成胶状肉馅", 15],
+        ["肉馅加清水、盐、蛋清、小苏打摔打上劲", 10],
+        ["抄手皮抹馅，对折捏成菱形小扁肉", 20],
+        ["沸水大火下扁肉，煮至皮透馅浮", 3],
+        ["碗内加高汤、生抽、胡椒粉调汤底", 2],
+        ["扁肉捞入汤碗，撒葱花淋香油", 2]
+      ]
+    },
+    {
+      "title": "泉州烧肉粽",
+      "description": "泉州端午的烧肉粽，糯米先炒酱油上色，包入五香猪肉、香菇、虾米与咸蛋黄，粽叶扎紧煮透，油润咸香弹糯。",
+      "difficulty": 2, "servings": 6, "prepTime": 40, "cookTime": 120, "totalTime": 160,
+      "tags": "时令,小吃,糯米,泉州名吃", "flavorProfile": "咸香油润",
+      "calories": 430, "protein": 18.0, "fat": 22.0, "carbs": 42.0,
+      "tips": "糯米要泡足沥干，用葱酥和酱油先炒至均匀上色再包；煮时大火压足两小时才黏糯不透心。",
+      "cover": { "slug": "min-quanzhoushourouzong", "visual": "pyramid sticky rice dumpling opened to reveal pork belly, shiitake, dried shrimp and salted egg yolk, Quanzhou braised pork zongzi, banana leaf wrap" },
+      "ingredients": [
+        ["糯米", "600", "g", true],
+        ["五花肉", "300", "g", true],
+        ["干香菇", "8", "朵", true],
+        ["咸蛋黄", "6", "个", true],
+        ["虾米", "50", "g", true],
+        ["板栗", "100", "g", false],
+        ["粽叶", "20", "张", true],
+        ["小葱", "3", "根", true],
+        ["生抽", "20", "ml", true],
+        ["老抽", "10", "ml", true],
+        ["五香粉", "3", "g", true],
+        ["食用油", "20", "ml", true]
+      ],
+      "steps": [
+        ["糯米清水泡三小时至透，捞出沥干", 180],
+        ["五花肉切块，加生抽、老抽、五香粉腌一小时", 60],
+        ["干香菇泡发，虾米、板栗、咸蛋黄分别备好", 15],
+        ["锅下油炒香葱花，倒入糯米加酱油炒至上色", 8],
+        ["粽叶折漏斗，铺米码肉与蛋黄香菇，盖米扎紧", 15],
+        ["入锅大火水煮至粽叶香透、糯米黏糯", 120]
+      ]
+    }
+  ]
+}
