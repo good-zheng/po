@@ -11,7 +11,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -56,11 +55,9 @@ public class AuthController {
     }
 
     @PostMapping("/openid-login")
-    public Result<LoginResponse> openIdLogin(
-            @Valid @RequestBody OpenIdLoginRequest request,
-            @RequestHeader(value = "X-Wx-Openid", required = false) String wxOpenid) {
+    public Result<LoginResponse> openIdLogin(@Valid @RequestBody OpenIdLoginRequest request) {
         try {
-            LoginResponse response = authService.openIdLogin(request, wxOpenid);
+            LoginResponse response = authService.openIdLogin(request);
             return Result.success(response);
         } catch (RuntimeException e) {
             return Result.error(401, e.getMessage());

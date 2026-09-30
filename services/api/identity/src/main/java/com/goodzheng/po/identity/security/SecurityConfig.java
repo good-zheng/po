@@ -73,8 +73,9 @@ public class SecurityConfig {
                         // 通用文件上传：任何已登录用户；上传产物 /files/** 公开可读
                         .requestMatchers(HttpMethod.POST, "/files/upload").authenticated()
                         .requestMatchers(HttpMethod.GET, "/files/**").permitAll()
-                        // TTS 语音合成与音频文件：公开（音频播放器不带 Authorization 头）
-                        .requestMatchers("/tts", "/tts/**").permitAll()
+                        // TTS 合成/预热消耗讯飞额度，交由末尾 anyRequest().authenticated() 收口：音频产物是 COS
+                        // 公网 URL，播放器不经过本服务，所以不必为播放器公开。/auth/openid-login 只认 loginCode，
+                        // 不再接受请求头里的 openid（普通域名可伪造）。
                         // 审核队列与审核操作：仅管理端管理员（须在 GET /recipes/* 与 PUT /recipes/* 规则之前）
                         .requestMatchers("/recipes/review").access(ADMIN_CLIENT)
                         .requestMatchers(HttpMethod.PUT, "/recipes/*/audit").access(ADMIN_CLIENT)
@@ -86,7 +87,9 @@ public class SecurityConfig {
                                 "/recipes", "/recipes/*",
                                 "/recipe-categories", "/recipe-categories/*",
                                 "/avatars/**", "/covers/**", "/ingredients/**", "/sounds/**").permitAll()
-                        .requestMatchers("/actuator/**").permitAll()
+                        // 探活端点公开（云托管滚动发布要读它）；metrics/prometheus/info 只给管理端
+                        .requestMatchers("/actuator/health", "/actuator/health/**").permitAll()
+                        .requestMatchers("/actuator/**").access(ADMIN_CLIENT)
                         // 用户管理：仅管理端管理员
                         .requestMatchers("/users/**").access(ADMIN_CLIENT)
                         // 内容写操作：仅管理端管理员（App 普通用户不能创建/修改/删除内容）

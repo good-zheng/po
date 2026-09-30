@@ -29,14 +29,6 @@ public class AuthServiceImpl implements AuthService {
     private final WeChatService weChatService;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    // 微信云托管会在请求头注入 X-Wx-Openid（免服务端调 jscode2session）；本地/Expo 无此头时回退用 code 换 openid
-    private String resolveOpenId(String wxOpenid, String loginCode) {
-        if (wxOpenid != null && !wxOpenid.isBlank()) {
-            return wxOpenid;
-        }
-        return weChatService.getOpenIdByCode(loginCode);
-    }
-
     @Override
     public String register(String username, String password, String email) {
         if (userMapper.existsByUsername(username)) {
@@ -106,8 +98,8 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public LoginResponse openIdLogin(OpenIdLoginRequest request, String wxOpenid) {
-        String openId = resolveOpenId(wxOpenid, request.getLoginCode());
+    public LoginResponse openIdLogin(OpenIdLoginRequest request) {
+        String openId = weChatService.getOpenIdByCode(request.getLoginCode());
 
         Optional<User> existing = userMapper.findByWechatOpenid(openId);
         User user;

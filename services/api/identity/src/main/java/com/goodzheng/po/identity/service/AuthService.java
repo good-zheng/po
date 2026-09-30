@@ -14,7 +14,7 @@ public interface AuthService {
 
     LoginResponse login(LoginRequest request);
 
-    LoginResponse openIdLogin(OpenIdLoginRequest request, String wxOpenid);
+    LoginResponse openIdLogin(OpenIdLoginRequest request);
 
     LoginResponse wechatLogin(WeChatLoginRequest request);
 }
