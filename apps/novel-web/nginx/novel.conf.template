@@ -1,0 +1,72 @@
+# 言外书斋线上站点：SPA 静态资源 + /api 同源反代。
+#
+# 这是 .template，不是最终配置：官方 nginx 镜像的 docker-entrypoint.sh 会用 envsubst
+# 把它渲染成 /etc/nginx/conf.d/novel.conf。
+#
+# 上游主机名【不能】直接写进 proxy_pass：那样 nginx 在加载配置时就做 DNS，解析不到即
+# `[emerg] host not found in upstream` + 容器退出，云托管表现为「创建版本失败」，而静态页本来
+# 根本不依赖后端。所以这里走「变量 + resolver」：目标由 16-novel-api.envsh 注入，解析推迟到
+# 每个请求上，上游没配或写错只让 /api 变成 502，改后端域名依旧是「改环境变量 + 重启」级别的事。
+#
+# 键名刻意带 NOVEL_ 前缀：envsubst 只替换「当前已存在的环境变量名」，用 API_UPSTREAM、
+# HOST、PORT 这类短名会和平台注入的变量撞车，把 nginx 自己的运行时变量一起换掉。
+# 未设置时由 16-novel-api.envsh 填一个永不解析的名字（见上），镜像里不再有 api:8080 这种
+# 只在 docker compose 网络里才解析得到的默认值。
+
+server {
+    listen 8080;
+    server_name _;
+
+    root /usr/share/nginx/html;
+    index index.html;
+
+    # 云托管的公网出口按流量计费，文本资源压一下最划算
+    gzip on;
+    gzip_min_length 1k;
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml image/svg+xml;
+
+    # 健康检查探针：路径固定、不查上游，api 挂了也不影响本站可用（阅读三页游客可读）
+    location = /healthz {
+        access_log off;
+        default_type text/plain;
+        return 200 'ok';
+    }
+
+    # ^~ 是为了让 /api/** 下带扩展名的路径不被下面那条静态资源正则截胡。
+    location ^~ /api/ {
+        # 目标含变量 ⇒ nginx 不在启动时解析，改由这里的 resolver 逐次解析（10s 缓存，
+        # 云托管的 pod IP 会变，缓存太久反而更糟）。ipv6=off 避开容器网络里没有 AAAA 的解析噪声。
+        resolver $NOVEL_API_RESOLVERS valid=10s ipv6=off;
+        set $novel_api_upstream "$NOVEL_API_UPSTREAM";
+
+        # 带变量的 proxy_pass 不做 location 前缀替换，URI 必须自己拼回去。
+        # Spring Boot 的 server.servlet.context-path=/api 已含这个前缀，所以原样透传、不 rewrite，
+        # 用 $request_uri 连查询串一起带上。
+        proxy_pass http://$novel_api_upstream$request_uri;
+
+        # Host 发上游自己的 host:port，与浏览器地址无关：直连这个上游的 HTTP 客户端本来就是这么发的，
+        # 不把站点的宿主名转给内网入口，路由行为就不用赌平台的实现。真实来源走 X-Forwarded-* 带上。
+        proxy_set_header Host $novel_api_upstream;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # Umi hash: true 的文件名自带 contenthash，可以长缓存；=404 而不是回退 index.html，
+    # 否则缺文件会变成「200 返回一份 HTML」，前端报的错会难查到离谱。
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff2?)$ {
+        expires 30d;
+        add_header Cache-Control "public, immutable";
+        try_files $uri =404;
+    }
+
+    # 入口 HTML 必须不缓存：发版后旧 index.html 引用的 hash 文件已被删掉，缓存住就是白屏。
+    location = /index.html {
+        add_header Cache-Control "no-cache";
+    }
+
+    # 阅读分享链接 /book/1 /read/1/2 是 history 路由，服务端没有对应文件，全部回落到入口
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}

@@ -1,0 +1,36 @@
+{
+  "name": "@po/novel-web",
+  "version": "0.1.0",
+  "private": true,
+  "description": "小说 web 端：移动优先的阅读三页 + 复用现有账密登录",
+  "scripts": {
+    "build": "max build",
+    "dev": "cross-env UMI_ENV=dev MOCK=none max dev",
+    "dev:mock": "cross-env UMI_ENV=dev max dev",
+    "lint": "biome check",
+    "preview": "max preview --port 8001",
+    "tsc": "tsc --noEmit"
+  },
+  "browserslist": [
+    "defaults"
+  ],
+  "dependencies": {
+    "@po/types": "workspace:*",
+    "antd": "^6.6.0",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.3",
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.2.0",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@umijs/max": "^4.7.3",
+    "cross-env": "^10.1.0",
+    "typescript": "^7.0.2"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}

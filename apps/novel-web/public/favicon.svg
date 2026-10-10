@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="言外书斋">
+  <rect width="64" height="64" rx="14" fill="#a83e2b" />
+  <path
+    d="M14 18h14c2.8 0 4 1.6 4 4v26c0-2.2-1.2-3.4-4-3.4H14zM50 18H36c-2.8 0-4 1.6-4 4v26c0-2.2 1.2-3.4 4-3.4h14z"
+    fill="#ffffff"
+  />
+</svg>

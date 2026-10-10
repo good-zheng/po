@@ -1,0 +1,40 @@
+#!/bin/sh
+# vim:sw=4:ts=4:sts=4:et
+# 由官方 nginx 镜像的 /docker-entrypoint.sh 在 20-envsubst-on-templates.sh 之前 source
+# （文件名必须以 1x 开头排在 20 之前，且 .envsh 后缀才会被 source 而不是子 shell 执行）。
+# 这里只负责把两个键准备成 envsubst 看得见的环境变量：
+#   NOVEL_API_UPSTREAM   —— /api 反代的目标 host:port（已归一化）
+#   NOVEL_API_RESOLVERS  —— 容器自己的 DNS，喂给模板里的 resolver 指令
+#
+# 两条铁律：
+# 1. 这是被 source 的脚本，跑在和 entrypoint 同一个子 shell 里——export 出的变量才可能被后面的
+#    envsubst 看到；反过来，在这里 `exit` 会直接终止容器启动，所以任何分支都只能往下走。
+# 2. 本步骤失败也不该拖死静态页。阅读端三屏游客可读，后端配错只是 /api 不可用。
+
+# ---- 上游地址归一：控制台里粘成 http://host:8080/ 也当它是对的 ----
+novel_api_upstream="${NOVEL_API_UPSTREAM:-}"
+novel_api_upstream=$(printf '%s' "$novel_api_upstream" \
+  | sed -e 's#^[a-zA-Z][a-zA-Z0-9+._-]*://##' -e 's#/*$##') || novel_api_upstream=''
+
+if [ -z "$novel_api_upstream" ]; then
+  # 生产产物默认把 api 绝对域名烘进了 JS（apps/novel-web/.env 的 UMI_APP_API_BASE_URL），
+  # 同源 /api 反代只是「置空那个值」时才走的可选项，所以没配上游是正常状态，不是致命状态。
+  # 给一个永不解析的名字，让失败落在单个请求上（502，error.log 里这个 host 名一眼可辨），
+  # 而不是落在启动上——落在启动上就是云托管那次「创建版本失败」。
+  novel_api_upstream=novel-api-upstream-not-configured.invalid
+  echo "16-novel-api.envsh: WARN 未设置 NOVEL_API_UPSTREAM，/api 将回 502（静态页与登录前的阅读不受影响）"
+fi
+export NOVEL_API_UPSTREAM="$novel_api_upstream"
+
+# ---- 取容器自己的 DNS：变量式 proxy_pass 是运行时解析，必须有 resolver ----
+novel_api_resolvers=$(awk '$1 == "nameserver" { if ($2 ~ ":") printf "[%s] ", $2; else printf "%s ", $2 }' \
+  /etc/resolv.conf 2>/dev/null) || novel_api_resolvers=''
+novel_api_resolvers=${novel_api_resolvers% }
+
+if [ -z "$novel_api_resolvers" ]; then
+  novel_api_resolvers=127.0.0.1
+  echo "16-novel-api.envsh: WARN /etc/resolv.conf 里读不到 nameserver，resolver 退成 127.0.0.1（/api 会 502）"
+fi
+export NOVEL_API_RESOLVERS="$novel_api_resolvers"
+
+echo "16-novel-api.envsh: /api 上游 = $NOVEL_API_UPSTREAM，resolver = $NOVEL_API_RESOLVERS"
