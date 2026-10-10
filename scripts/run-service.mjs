@@ -33,8 +33,14 @@ if (service === 'api') {
       env: { ...process.env, JAVA_HOME: resolveJdkHome() },
     },
   ];
-} else if (service === 'chat' || service === 'agentcore' || service === 'agentcooking') {
-  // agent-core / agent-cooking 都是库包，无独立 venv，复用 chat 的 .venv 跑测试
+} else if (
+  service === 'chat' ||
+  service === 'agentcore' ||
+  service === 'agentcooking' ||
+  service === 'agenttalk' ||
+  service === 'agentnovel'
+) {
+  // agent-core / agent-cooking / agent-talk / agent-novel 都是库包，无独立 venv，复用 chat 的 .venv 跑测试
   const chatDir = resolve(repositoryRoot, 'services', 'chat');
   const serviceLayout = {
     chat: {
@@ -44,6 +50,8 @@ if (service === 'api') {
         install: [
           ['-m', 'pip', 'install', '-e', '../agent-core[dev]'],
           ['-m', 'pip', 'install', '-e', '../agent-cooking[dev]'],
+          ['-m', 'pip', 'install', '-e', '../agent-talk[dev]'],
+          ['-m', 'pip', 'install', '-e', '../agent-novel[dev]'],
           ['-m', 'pip', 'install', '-e', '.[dev]'],
         ],
         start: [
@@ -51,18 +59,26 @@ if (service === 'api') {
             '-m',
             'uvicorn',
             'app.main:app',
+            // 默认只绑 127.0.0.1，小程序真机走局域网 IP 必然连不上（握手拿不到 101），
+            // 所以显式绑 0.0.0.0。/ws/chat 无鉴权，暴露在同网段内，只在受信任的开发网络下使用
+            '--host',
+            '0.0.0.0',
             '--port',
             '5090',
             '--reload',
             // --reload 默认只盯 CWD（services/chat），而 agent-core / agent-cooking
             // 是 editable 安装的本地库包，改它们的 src 不重启就一直跑旧代码；
-            // 指定 --reload-dir 后 CWD 不再自动纳入，所以三个目录都要列全
+            // 指定 --reload-dir 后 CWD 不再自动纳入，所以四个目录都要列全
             '--reload-dir',
             '.',
             '--reload-dir',
             '../agent-core/src',
             '--reload-dir',
             '../agent-cooking/src',
+            '--reload-dir',
+            '../agent-talk/src',
+            '--reload-dir',
+            '../agent-novel/src',
           ],
         ],
         test: [['-m', 'pytest', 'tests']],
@@ -74,6 +90,14 @@ if (service === 'api') {
     },
     agentcooking: {
       cwd: resolve(repositoryRoot, 'services', 'agent-cooking'),
+      goals: { test: [['-m', 'pytest', 'tests']] },
+    },
+    agenttalk: {
+      cwd: resolve(repositoryRoot, 'services', 'agent-talk'),
+      goals: { test: [['-m', 'pytest', 'tests']] },
+    },
+    agentnovel: {
+      cwd: resolve(repositoryRoot, 'services', 'agent-novel'),
       goals: { test: [['-m', 'pytest', 'tests']] },
     },
   };

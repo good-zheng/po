@@ -58,6 +58,12 @@ services:
       IFLYTEK_API_KEY: ${IFLYTEK_API_KEY:-}
       IFLYTEK_API_SECRET: ${IFLYTEK_API_SECRET:-}
       IFLYTEK_TTS_VCN: ${IFLYTEK_TTS_VCN:-xiaoyan}
+      # 讯飞听写：与 TTS 共用 AppID/Key/Secret，未配置时 /ws/asr 返回可读错误并提示改用文字输入
+      IFLYTEK_ASR_LANGUAGE: ${IFLYTEK_ASR_LANGUAGE:-zh_cn}
+      IFLYTEK_ASR_ACCENT: ${IFLYTEK_ASR_ACCENT:-mandarin}
+      IFLYTEK_ASR_MAX_SECONDS: ${IFLYTEK_ASR_MAX_SECONDS:-55}
+      # chat 服务回调 /talk/internal/** 用的内网令牌；两端必须一致
+      APP_INTERNAL_TOKEN: ${APP_INTERNAL_TOKEN:?请在 .env 中设置 APP_INTERNAL_TOKEN}
       # 腾讯云 COS：头像/上传/TTS 音频落桶；密钥从 .env 注入，桶/地域有默认值
       COS_SECRET_ID: ${COS_SECRET_ID:-}
       COS_SECRET_KEY: ${COS_SECRET_KEY:-}
@@ -96,6 +102,20 @@ services:
       AGENT_CORE_LLM_API_KEY: ${AGENT_CORE_LLM_API_KEY:-}
       AGENT_CORE_EMBEDDING_MODEL: ${AGENT_CORE_EMBEDDING_MODEL:-}
       AGENT_CORE_EMBEDDING_API_KEY: ${AGENT_CORE_EMBEDDING_API_KEY:-}
+      # 言外 Agent 回调落库建议：走 compose 内网，令牌与 api 服务一致
+      # 前缀是 TALK_（agent-talk 的 Settings 只认 TALK_INTERNAL_TOKEN），
+      # 沿用 APP_INTERNAL_TOKEN 这个名字注入等于没配——落库会被静默跳过
+      TALK_API_BASE_URL: http://api:8080/api
+      TALK_INTERNAL_TOKEN: ${APP_INTERNAL_TOKEN:?请在 .env 中设置 APP_INTERNAL_TOKEN}
+      # 小说 Agent 的成稿与正典都经 /novel/internal/** 落库：同样走内网、同一令牌。
+      # 两个 store 由 NOVEL_PERSIST_ENABLED 统一开关（默认开），容器里必须指向服务名而非 localhost。
+      NOVEL_API_BASE_URL: http://api:8080/api
+      NOVEL_INTERNAL_TOKEN: ${APP_INTERNAL_TOKEN:?请在 .env 中设置 APP_INTERNAL_TOKEN}
+      # WS 握手的票据校验（novel-chat 需要身份才读得到正典）：chat 不持 jwt.secret，
+      # 把票据交回 api 的 /novel/internal/chat-ticket/verify 验。前缀是 PY_SERVER_
+      # （app/config.py 的 Settings），漏配即「没有验票通道」，novel-chat 一律拒连。
+      PY_SERVER_API_BASE_URL: http://api:8080/api
+      PY_SERVER_INTERNAL_TOKEN: ${APP_INTERNAL_TOKEN:?请在 .env 中设置 APP_INTERNAL_TOKEN}
       AGENT_CORE_CHECKPOINTER: ${AGENT_CORE_CHECKPOINTER:-redis}
       AGENT_CORE_REDIS_URL: redis://:${REDIS_PASSWORD:-123456}@redis:6379/0
     depends_on:
@@ -112,6 +132,10 @@ services:
       start_period: 10s
     restart: unless-stopped
 
+  # 管理端在本机走的是「compose 网关」形态：镜像自带的 apps/admin-web/nginx/admin.conf.template
+  # 监听 8080，这里把 /etc/nginx/nginx.conf 整个换成 infra/nginx/nginx.conf（监听 80、自带 /api 与 /ws 分流），
+  # 所以端口映射是 8000:80，容器里那份模板不会被 include。云托管上独立部署时不挂这个文件，
+  # 才用模板渲染出来的 8080，见 apps/admin-web/DEPLOY_CLOUDRUN.md。
   web:
     build:
       context: .

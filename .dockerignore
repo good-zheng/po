@@ -6,8 +6,13 @@ node_modules/
 **/node_modules/
 apps/admin-web/dist/
 apps/admin-web/src/.umi/
+apps/admin-web/src/.umi-production/
 apps/admin-web/node_modules/
 apps/admin-web/.umi/
+# novel-web 同理：本机 dist/ 与 Umi 生成目录不该进上下文，构建阶段会自己产出
+apps/novel-web/dist/
+apps/novel-web/src/.umi/
+apps/novel-web/src/.umi-production/
 packages/types/dist/
 packages/types/node_modules/
 # chat 镜像只需要 services 下的三个 Python 包源码；Java 服务与 Python 本地环境一律不发送
@@ -22,6 +27,11 @@ infra/
 .env
 .env.*
 !.env.example
+# 前端两个站点：生产档 .env 必须进上下文（域名烘进 JS 产物），本机开发档 .env.local 必须拦住
+apps/novel-web/.env.local
+!apps/novel-web/.env
+apps/admin-web/.env.local
+!apps/admin-web/.env
 # 生产密钥备忘清单只用于填控制台，绝不打进镜像（chat 的构建上下文是仓库根，故在根清单里排除）
 services/api/application-prod.json
 services/chat/deploy-prod.json

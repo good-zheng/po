@@ -67,6 +67,10 @@ jobs:
         env:
           HUSKY: 0
 
+      # @po/types 的 exports 只指向 dist/，App 源码引用其类型，先构建共享类型包
+      - name: Build shared types
+        run: pnpm types:build
+
       - name: Lint
         run: pnpm mobile:lint
 
@@ -75,6 +79,64 @@ jobs:
 
       - name: Test
         run: pnpm --filter @po/cooking exec jest --runInBand
+
+  mini:
+    name: Mini program (Taro)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.28.1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        env:
+          HUSKY: 0
+
+      # cooking-mini 有十余处 import type 来自 @po/types，必须先构建 dist 才能解析
+      - name: Build shared types
+        run: pnpm types:build
+
+      # 主包限额 2M：构建产物超限在这里挡住，而不是等到上传小程序时才失败
+      - name: Build weapp bundle
+        run: pnpm mini:build
+
+  brand:
+    name: Brand site (Astro)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.28.1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      # brand 的 engines 要求 node >=22.22.3；仓库未开 engine-strict，这里只告警不阻断
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        env:
+          HUSKY: 0
+
+      # 只跑 types + build，不跑 eslint/prettier：历史格式债会把门禁直接变红
+      - name: Type check (.astro)
+        run: pnpm --filter @po/brand exec astro check
+
+      - name: Build static site
+        run: pnpm --filter @po/brand exec astro build
 
   api:
     name: API (Java 17 + Maven)
@@ -93,7 +155,9 @@ jobs:
           --health-timeout=5s
           --health-retries=10
       redis:
-        image: redis:7-alpine
+        # 必须是 Redis Stack：langgraph 的 redis checkpointer 用 RedisJSON/RediSearch，
+        # 普通镜像会让 chat 静默降级为 memory checkpointer。与 docker-compose.yml 保持一致。
+        image: redis/redis-stack-server:latest
         ports:
           - 6379:6379
         options: >-
@@ -142,12 +206,17 @@ jobs:
             services/chat/pyproject.toml
             services/agent-core/pyproject.toml
             services/agent-cooking/pyproject.toml
+            services/agent-talk/pyproject.toml
+            services/agent-novel/pyproject.toml
 
-      # agent-core / agent-cooking 都不在 PyPI，必须先于 chat 按依赖序安装本地包
-      - name: Install agent-core, agent-cooking then chat
+      # 四个本地包都不在 PyPI，必须先于 chat 按依赖序 editable 安装
+      # （chat 的 pyproject 已把它们列为依赖，少装一个则 pip install -e . 直接失败）
+      - name: Install agent packages then chat
         run: |
           pip install -e '../agent-core[dev]'
           pip install -e '../agent-cooking[dev]'
+          pip install -e '../agent-talk[dev]'
+          pip install -e '../agent-novel[dev]'
           pip install -e '.[dev]'
 
       - name: Test agent-core (pytest)
@@ -155,6 +224,24 @@ jobs:
 
       - name: Test agent-cooking (pytest)
         run: python -m pytest ../agent-cooking/tests
+
+      - name: Test agent-talk (pytest)
+        run: python -m pytest ../agent-talk/tests
+
+      - name: Test agent-novel (pytest)
+        run: python -m pytest ../agent-novel/tests
+
+      # PRD §12.1 的一致性黄金集门禁：闸门召回/误报、抽取误采、别名归一四组阈值加覆盖台账。
+      # 单独一条 step（而不是并进上一条）：门禁转红时要立刻分清「闸门退化」还是「用例本身坏了」；
+      # 放在 Python job 里，不进前端/API 的主线构建时长——换模型、改提示词、改阈值都由它兜住。
+      - name: Novel consistency golden set gate (PRD 12.1)
+        run: python -m pytest ../agent-novel/tests/test_golden.py -q
+
+      # PRD §12 / N6 的离线半程：50 章规模下的注入上限（G2「P95 ≤ 4k」）、降级计数、
+      # 幂等重放与 as-of 边界。零模型消耗、零 MySQL，所以能常驻每次 PR；
+      # 真实召回/真实耗时/真实计费仍只在作者点头的长测里跑，别把这条当成那半程的替身。
+      - name: Novel long-run metrics gate (PRD 12 / N6 offline)
+        run: python -m pytest ../agent-novel/tests/test_longrun_metrics.py -q
 
       - name: Test chat (pytest)
         run: python -m pytest tests

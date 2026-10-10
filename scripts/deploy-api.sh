@@ -24,12 +24,16 @@ TAG="${TAG:-prod}"
 PLATFORM="${PLATFORM:-linux/amd64}"                # 云托管只跑 amd64
 
 # ---- 基础镜像：默认国内加速镜像（Docker Hub 本地直连不通）----
+# APT_MIRROR 同理：运行阶段要装 curl（compose 健康检查用），Ubuntu 自带源指向 archive.ubuntu.com
+# 会在 universe 索引上反复断连；传空串则保留镜像自带源（云端/梯子构建）。
 if [[ "${USE_OFFICIAL_IMAGES:-0}" == "1" ]]; then
   BUILD_IMAGE="${BUILD_IMAGE:-maven:3.9-eclipse-temurin-17}"
   RUNTIME_IMAGE="${RUNTIME_IMAGE:-eclipse-temurin:17-jre}"
+  APT_MIRROR="${APT_MIRROR:-}"
 else
   BUILD_IMAGE="${BUILD_IMAGE:-docker.m.daocloud.io/library/maven:3.9-eclipse-temurin-17}"
   RUNTIME_IMAGE="${RUNTIME_IMAGE:-docker.m.daocloud.io/library/eclipse-temurin:17-jre}"
+  APT_MIRROR="${APT_MIRROR:-mirrors.tuna.tsinghua.edu.cn}"
 fi
 
 IMAGE="$REGISTRY/$NAMESPACE/$REPO:$TAG"
@@ -37,10 +41,12 @@ IMAGE="$REGISTRY/$NAMESPACE/$REPO:$TAG"
 echo ">> 构建镜像: $IMAGE"
 echo "   BUILD_IMAGE=$BUILD_IMAGE"
 echo "   RUNTIME_IMAGE=$RUNTIME_IMAGE"
+echo "   APT_MIRROR=${APT_MIRROR:-（镜像自带源）}"
 docker build \
   --platform="$PLATFORM" \
   --build-arg BUILD_IMAGE="$BUILD_IMAGE" \
   --build-arg RUNTIME_IMAGE="$RUNTIME_IMAGE" \
+  --build-arg APT_MIRROR="$APT_MIRROR" \
   -t "$IMAGE" \
   "$SERVICE_DIR"
 

@@ -5,6 +5,9 @@
   "apps/cooking-app/**/*.{js,jsx,tsx,ts,css}": [
     "pnpm --dir apps/cooking-app exec biome check --write"
   ],
+  "apps/novel-web/**/*.{js,jsx,tsx,ts,css,less}": [
+    "pnpm --dir apps/novel-web exec biome check --write"
+  ],
   "packages/types/**/*.{js,jsx,tsx,ts}": [
     "bash -c 'pnpm --dir packages/types run typecheck'"
   ]
