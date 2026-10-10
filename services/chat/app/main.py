@@ -53,6 +53,9 @@ def create_app(orchestrator: Orchestrator | None = None) -> FastAPI:
     """构建应用实例；``orchestrator`` 供测试注入替身，运行时留空由 lifespan 装配。"""
     settings = get_settings()
     application = FastAPI(title="po-chat", lifespan=AppLifespan)
+    # 挂给 WS 握手层用（app/routers/ws.py 的 _settings）：握手发生在 lifespan 之外，
+    # 而测试要在不写环境变量、不污染进程级 lru_cache 的前提下注入验票配置。
+    application.state.settings = settings
     if orchestrator is not None:
         # 注入的实例先落到 app.state：WS 路由只在连接建立时读取一次，
         # 因此测试可在不启动 lifespan 的前提下直接驱动编排。

@@ -39,6 +39,14 @@ class Settings(BaseSettings):
     # JSON 语法，写成裸字符串更便于在 .env / 部署环境里直接维护。
     cors_origins: str = "http://localhost:8000,http://localhost:5173"
 
+    # WS 握手的身份层（见 app/ws_auth.py）：票据由 Spring Boot 签也由它验，
+    # 本服务既不加签 JWT 也不持 jwt.secret——那会把同一把密钥分发到第二个进程。
+    api_base_url: str = "http://localhost:8080/api"
+    # 与 Spring 侧 app.internal-token 同值；留空即「没配验票通道」，
+    # 需要身份的插槽（novel-chat）因此一律拒连（宁缺不可放）
+    internal_token: str = ""
+    ticket_timeout_seconds: float = 5.0
+
     @property
     def cors_origin_list(self) -> list[str]:
         """把逗号分隔的配置拆成 CORS 中间件需要的列表，并丢弃空项。

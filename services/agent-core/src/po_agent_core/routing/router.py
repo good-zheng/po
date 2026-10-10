@@ -99,6 +99,38 @@ class FallbackIntentRouter:
         return RouteDecision(intent=None, score=0.0, source="fallback")
 
 
+# OpenAI 兼容 embedding 服务对单次批量的上限（qwen 等返回
+# "batch size is invalid, it should not be larger than 20"）。
+# semantic_router 装配路由时会一次性提交全部语料，故需在编码层分批。
+EMBEDDING_BATCH_LIMIT = 20
+
+
+def _patch_encoder_batch_limit(encoder_cls: type, batch_size: int = EMBEDDING_BATCH_LIMIT) -> None:
+    """给 ``OpenAIEncoder.__call__`` 加上批量切分，使其不超过供应商上限。
+
+    必须改**类**方法而非实例属性：Python 对 ``__call__`` 这类特殊方法的查找
+    发生在类型上（``obj()`` 走 ``type(obj).__call__``），给实例赋值不会生效。
+
+    不切分的后果：路由语料超过 20 条时 embedding 返回 400，
+    ``HybridRouter`` 装配失败 → 意图路由降级为关键词模式，并持续刷重试日志。
+    """
+    if getattr(encoder_cls, "_po_batch_patched", False):
+        return
+    original_call = encoder_cls.__call__
+
+    def _batched_call(self, docs):
+        docs = list(docs)
+        if len(docs) <= batch_size:
+            return original_call(self, docs)
+        embeddings = []
+        for start in range(0, len(docs), batch_size):
+            embeddings.extend(original_call(self, docs[start:start + batch_size]))
+        return embeddings
+
+    encoder_cls.__call__ = _batched_call  # type: ignore[method-assign]
+    encoder_cls._po_batch_patched = True  # type: ignore[attr-defined]
+
+
 def _create_dense_encoder(settings: AgentCoreSettings) -> DenseEncoder:
     """从配置构建稠密编码器（OpenAI 兼容 embedding 接口）。
 
@@ -107,6 +139,7 @@ def _create_dense_encoder(settings: AgentCoreSettings) -> DenseEncoder:
     """
     from semantic_router.encoders import OpenAIEncoder
 
+    _patch_encoder_batch_limit(OpenAIEncoder)
     preset = _embedding_preset(settings)
     model = settings.embedding_model or preset
     api_key = settings.embedding_api_key or settings.llm_api_key

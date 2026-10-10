@@ -17,12 +17,17 @@ ENV PIP_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple
 
 RUN useradd --system --create-home appuser
 
-# 两个本地库包按依赖序 pip 安装：agent-core（编排核心）→ agent-cooking（烹饪插槽）
+# 四个本地库包按依赖序 pip 安装：agent-core（编排核心）→ agent-cooking / agent-talk / agent-novel（三个插槽）
 # agent-core 必须带 [redis] extra：langgraph-checkpoint-redis 是可选依赖，
 # 不装则 checkpointer=redis 会静默降级成 memory，Redis 部署等于白做。
 COPY services/agent-core /packages/agent-core
 COPY services/agent-cooking /packages/agent-cooking
-RUN pip install '/packages/agent-core[redis]' /packages/agent-cooking \
+COPY services/agent-talk /packages/agent-talk
+COPY services/agent-novel /packages/agent-novel
+# agent-talk 是 chat 的「言外」垂直 Agent 插槽，必须装进镜像，否则 /ws/chat(agent=talk) 起不来
+# agent-novel 同理：小说插槽缺包时 app/agent.py 只跳过本插槽，路由也就收不到「写小说」
+RUN pip install '/packages/agent-core[redis]' /packages/agent-cooking /packages/agent-talk \
+        /packages/agent-novel \
         fastapi 'uvicorn[standard]' pydantic-settings \
     && rm -rf /packages
 

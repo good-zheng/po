@@ -4,6 +4,9 @@
 
 - ``route_node``：取最后一条 HumanMessage，经 Layer1 意图路由
   （semantic-router 同步调用，``asyncio.to_thread`` 包裹避免阻塞事件循环）；
+  初始状态带了已登记的 ``forced_agent`` 时直接委托该插槽、不问路由——
+  「客户端知道要哪个 Agent」这条直连路径因此也仍由父图执行（interrupt
+  与 resume 才能落在同一个 thread 上，见宿主 ``app/agent.py``）；
 - 条件边：intent 命中某垂直 Agent 名即委托该子图，否则落 ``chitchat``；
 - ``chitchat``：直接用 chat model 应答（降级路由/闲聊的统一兜底）；
 - 单轮委托语义：Agent 执行完即 END。多轮工具循环在垂直 Agent 子图
@@ -63,6 +66,13 @@ def _build_supervisor_graph(
     agent_names = {agent.name for agent in agent_list}
 
     async def route_node(state: CoreState) -> dict[str, str | float]:
+        # 直连优先：客户端已点名插槽时不再问路由。语义路由是按意图相似度选的，
+        # 把「写第 N 章」这类成文请求判给 chitchat 的自由发挥，是 §1.2 要防的产出
+        # （真机 2026-10-10 实测过一次）；而调用方传 agent 就是在替模型拍这个板。
+        # 未登记的插槽名不拦，照常落语义路由，行为与不传一致。
+        forced = state.get("forced_agent") or ""
+        if forced in agent_names:
+            return {"intent": forced, "route_score": 1.0, "agent_name": forced}
         text = _last_user_text(state)
         decision = await asyncio.to_thread(router.route, text)
         # RouterLike.route 的具体返回类型由 routing.RouteDecision 定义；

@@ -6,12 +6,18 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages import AIMessage
 from langchain_core.outputs import ChatGeneration, ChatResult
 from langgraph.checkpoint.memory import InMemorySaver
+from langgraph.config import get_stream_writer
 from langgraph.graph import END, START, StateGraph
 from langgraph.types import Command, interrupt
 
 from app.agent import EchoChatModel, Orchestrator
 from app.main import create_app
-from po_agent_core import AgentCoreSettings, AgentRunner, FallbackIntentRouter
+from po_agent_core import (
+    AgentCoreSettings,
+    AgentRunner,
+    FallbackIntentRouter,
+    VerticalAgent,
+)
 from po_agent_core.supervisor.graph import build_supervisor_graph
 from po_agent_core.supervisor.state import CoreState
 
@@ -212,6 +218,86 @@ def test_resume_without_conversation_id_is_invalid(client: TestClient) -> None:
         assert frame["type"] == "error"
 
 
+# ---------- 点名插槽的那轮 interrupt，必须能在同一条 WS 上确认 ----------
+
+
+def build_agent_slot_orchestrator() -> Orchestrator:
+    """一张「子图内 interrupt」的插槽，复刻 novel 归档确认的装配形状。
+
+    关键是 ``builder.compile()`` **不挂 checkpointer**：生产里 novel / novel-chat 就
+    是这样，saver 由父图统一供给。路由用 :class:`FallbackIntentRouter`（恒判未命中），
+    于是「这一轮真的走到了插槽」无从靠相似度蒙对——只有 ``forced_agent`` 那条确定性
+    委托能到达 interrupt。
+    """
+    builder = StateGraph(CoreState)
+
+    async def archive(state: CoreState) -> dict:
+        value = interrupt({"question": "确认归档？"})
+        return {"messages": [AIMessage(content=f"已归档:{value}")]}
+
+    builder.add_node("archive", archive)
+    builder.add_edge(START, "archive")
+    builder.add_edge("archive", END)
+    slot = VerticalAgent(name="novel", description="生成链路探针", graph=builder.compile())
+    settings = AgentCoreSettings(_env_file=None, checkpointer="memory", llm_api_key="")
+    graph = build_supervisor_graph(
+        [slot], FallbackIntentRouter(), EchoChatModel(), checkpointer=InMemorySaver()
+    )
+    return Orchestrator(
+        graph=graph,
+        runner=AgentRunner(timeout_seconds=10),
+        settings=settings,
+        agents={slot.name: slot},
+    )
+
+
+def test_agent_frame_interrupt_resumes_on_the_same_socket() -> None:
+    """message 带 ``agent`` 起的那轮 interrupt，只带 conversation_id 的 resume 就得确认。
+
+    浏览器里的「确认归档」正是这一帧序列（`useNovelRun`：message 带 agent、resume 不带
+    agent）。此前 run 直连子图、resume 打回父图，两边不是同一份 checkpoint，卡片永远点
+    不动，所以这条用例同时锁两件事：委托的确定性，与 run/resume 的图对称性。
+    """
+    client = TestClient(create_app(orchestrator=build_agent_slot_orchestrator()))
+
+    with client.websocket_connect("/ws/chat") as websocket:
+        websocket.send_json({"type": "message", "content": "写完三章", "agent": "novel"})
+        frames = []
+        while True:
+            frame = websocket.receive_json()
+            frames.append(frame)
+            if frame["type"] == "interrupt":
+                break
+        assert frame["content"] == "确认归档？"
+        thread_id = next(
+            f["payload"]["thread_id"] for f in frames if f["type"] == "run_started"
+        )
+        # interrupt 之后本轮仍要消费到 done，resume 才发得出去（服务端逐条 await 发送）
+        drain_until_done(websocket)
+
+        websocket.send_json(
+            {"type": "resume", "content": "yes", "conversation_id": thread_id}
+        )
+        tokens, resumed = drain_until_done(websocket)
+        assert tokens == "已归档:yes"
+        assert all(f["type"] != "interrupt" for f in resumed)
+
+
+def test_agent_frame_never_reaches_chitchat() -> None:
+    """同一个 orchestrator 不传 agent 时落 chitchat（回显模型），传了才进插槽。
+
+    和上一条配对：证明委托确实由 `agent` 决定，而不是这张图本来就只有一条路。
+    """
+    client = TestClient(create_app(orchestrator=build_agent_slot_orchestrator()))
+
+    with client.websocket_connect("/ws/chat") as websocket:
+        websocket.send_json({"type": "message", "content": "写完三章"})
+        tokens, frames = drain_until_done(websocket)
+
+    assert tokens == "你说的是：写完三章"
+    assert all(f["type"] != "interrupt" for f in frames)
+
+
 # ---------- 编排降级链 ----------
 
 
@@ -226,3 +312,130 @@ def test_echo_model_replies_last_user_message() -> None:
 
     reply = EchoChatModel().invoke([HumanMessage(content="回显我")])
     assert reply.content == "你说的是：回显我"
+
+
+# ---------- 设定提议卡帧（§10.3 约定 1） ----------
+
+
+def build_proposal_orchestrator() -> Orchestrator:
+    """一张自定义事件 → 一帧 ``proposal``：未登记的事件类型会被翻译层静默丢弃。
+
+    这条用例锁的是三处必须同时改到位的契约（``EventType`` / ``WSOutFrame.type``
+    Literal / ``_EVENT_TO_FRAME``）——少改任一处，前端不会报错，只会永远收不到卡。
+    """
+    builder = StateGraph(CoreState)
+
+    async def propose(state: CoreState) -> dict:
+        get_stream_writer()(
+            {
+                "type": "proposal",
+                "content": "char:hero · eye_color · 夜里会变成金色",
+                "payload": {"bookId": 12, "asOfChapter": 3, "validFromChapter": 3},
+            }
+        )
+        return {"messages": [AIMessage(content="已给出讨论结论")]}
+
+    builder.add_node("propose", propose)
+    builder.add_edge(START, "propose")
+    builder.add_edge("propose", END)
+    settings = AgentCoreSettings(_env_file=None, checkpointer="memory", llm_api_key="")
+    return Orchestrator(
+        graph=builder.compile(checkpointer=InMemorySaver()),
+        runner=AgentRunner(timeout_seconds=10),
+        settings=settings,
+    )
+
+
+def test_proposal_event_reaches_the_client_as_a_frame() -> None:
+    client = TestClient(create_app(orchestrator=build_proposal_orchestrator()))
+
+    with client.websocket_connect("/ws/chat") as websocket:
+        websocket.send_json({"type": "message", "content": "聊聊主角"})
+        frames = []
+        while True:
+            frame = websocket.receive_json()
+            frames.append(frame)
+            if frame["type"] == "done":
+                break
+        card = [f for f in frames if f["type"] == "proposal"]
+        assert len(card) == 1
+        # payload 原样透传：字段名即 Java ProposalRequest，前端不需要翻译表
+        assert card[0]["payload"] == {"bookId": 12, "asOfChapter": 3, "validFromChapter": 3}
+
+
+# ---------- 定位键通道：configurable 而不是提示词前缀 ----------
+
+
+def build_probe_orchestrator() -> tuple[Orchestrator, dict]:
+    """直连插槽的探针：记录模型实际收到的文本与 ``configurable.context``。"""
+    builder = StateGraph(CoreState)
+    seen: dict = {}
+
+    async def probe(state: CoreState, config) -> dict:
+        seen["text"] = state["messages"][-1].content
+        seen["context"] = (config.get("configurable") or {}).get("context")
+        return {"messages": [AIMessage(content="ok")]}
+
+    builder.add_node("probe", probe)
+    builder.add_edge(START, "probe")
+    builder.add_edge("probe", END)
+    compiled = builder.compile(checkpointer=InMemorySaver())
+    settings = AgentCoreSettings(_env_file=None, checkpointer="memory", llm_api_key="")
+    slot = VerticalAgent(name="novel-chat", description="探针插槽", graph=compiled)
+    orchestrator = Orchestrator(
+        graph=compiled,
+        runner=AgentRunner(timeout_seconds=10),
+        settings=settings,
+        agents={slot.name: slot},
+    )
+    return orchestrator, seen
+
+
+def test_reserved_context_keys_never_reach_the_prompt(monkeypatch) -> None:
+    """bookId/chapterId 与 utteranceId 同类：只走 configurable，不进模型可见文本。
+
+    「读哪本书」如果以文本形态出现，模型就能复述、作者也能手填一个假 id 去试库读——
+    定位必须只由服务端手里的那份帧决定。非保留键（theme）仍按原样拼进前缀，
+    这条豁免不能反过来把旧行为改掉。
+
+    握手带票据：novel-chat 是需要身份的插槽（``app/ws_auth.AUTH_REQUIRED_AGENTS``），
+    匿名连接上这一帧根本不会进图，测不到上下文通道。验票本身由
+    ``test_ws_handshake.py`` 负责，这里只把它替身成「校验通过」。
+    """
+    from app.routers import ws as ws_router
+    from app.ws_auth import WsActor
+
+    async def resolve(ticket, settings=None):
+        return WsActor(uid=7)
+
+    monkeypatch.setattr(ws_router, "resolve_actor", resolve)
+    orchestrator, seen = build_probe_orchestrator()
+    client = TestClient(create_app(orchestrator=orchestrator))
+
+    with client.websocket_connect("/ws/chat?ticket=t-ok") as websocket:
+        websocket.send_json(
+            {
+                "type": "message",
+                "content": "主角的眼睛是什么颜色",
+                "agent": "novel-chat",
+                "conversation_id": "conv-probe",
+                "context": {
+                    "bookId": "12",
+                    "chapterId": "34",
+                    "utteranceId": "u-1",
+                    "theme": "dark",
+                },
+            }
+        )
+        tokens, _ = drain_until_done(websocket)
+
+    assert tokens == "ok"
+    assert seen["context"] == {
+        "bookId": "12",
+        "chapterId": "34",
+        "utteranceId": "u-1",
+        "theme": "dark",
+    }
+    for key in ("bookId", "chapterId", "utteranceId"):
+        assert key not in seen["text"]
+    assert "[theme: dark]" in seen["text"]

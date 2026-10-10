@@ -36,6 +36,8 @@ from po_agent_cooking import (
     MockRecipeStore,
     build_cooking_agent,
 )
+from po_agent_novel import NOVEL_AGENT_NAME, NOVEL_CHAT_AGENT_NAME, NOVEL_CHAT_AGENT_NAME
+from po_agent_talk import TALK_AGENT_NAME
 
 # 与 COOKING_UTTERANCES 逐字相同：KeywordIntentRouter 对原文命中给满分，
 # 保证这条用例在任何 embedding 配置下都稳定路由到 cooking。
@@ -70,8 +72,9 @@ def offline_settings() -> AgentCoreSettings:
 def test_builtin_agents_registers_cooking() -> None:
     agents = _builtin_agents(offline_settings())
 
-    assert [agent.name for agent in agents] == [COOKING_AGENT_NAME]
-    cooking = agents[0]
+    # 宿主默认会同时登记 cooking 与 talk 两个插槽，因此按名字取而不是按下标
+    assert COOKING_AGENT_NAME in [agent.name for agent in agents]
+    cooking = next(agent for agent in agents if agent.name == COOKING_AGENT_NAME)
     assert cooking.utterances == COOKING_UTTERANCES
     assert cooking.description, "description 是 AgentCard 与路由语料的共同来源，不能为空"
 
@@ -80,6 +83,8 @@ def test_builtin_agents_skips_missing_package(monkeypatch: pytest.MonkeyPatch) -
     # sys.modules 里置 None 是 CPython 表达「该模块不可导入」的标准手法，
     # 比真的卸载包更干净：函数内的延迟导入会抛 ImportError。
     monkeypatch.setitem(sys.modules, "po_agent_cooking", None)
+    monkeypatch.setitem(sys.modules, "po_agent_talk", None)
+    monkeypatch.setitem(sys.modules, "po_agent_novel", None)
 
     assert _builtin_agents(offline_settings()) == []
 
@@ -89,15 +94,42 @@ def test_builtin_agents_skips_failed_assembly(monkeypatch: pytest.MonkeyPatch) -
         raise RuntimeError("模拟插槽装配失败")
 
     monkeypatch.setattr("po_agent_cooking.build_cooking_agent", boom)
+    monkeypatch.setattr("po_agent_talk.build_talk_agent", boom)
+    monkeypatch.setattr("po_agent_novel.build_novel_agent", boom)
+    monkeypatch.setattr("po_agent_novel.build_novel_chat_agent", boom)
 
     # 装配异常被吞掉并记日志：返回空列表而非上抛，宿主启动不受影响
     assert _builtin_agents(offline_settings()) == []
 
 
+def test_novel_chat_failure_does_not_take_the_novel_slot_down(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """只跳过本插槽：对话面板起不来时生成链路照常登记。
+
+    novel 与 novel-chat 是两个插槽而不是一个「小说模块」的两种形态——
+    前者是会写库的长任务、后者只读，共用名字或共用生死都会让一边故障拖垮另一边。
+    """
+
+    def boom(*args, **kwargs):
+        raise RuntimeError("模拟 novel-chat 装配失败")
+
+    monkeypatch.setattr("po_agent_novel.build_novel_chat_agent", boom)
+    names = [agent.name for agent in _builtin_agents(offline_settings())]
+    assert NOVEL_AGENT_NAME in names
+    assert NOVEL_CHAT_AGENT_NAME not in names
+
+
 def test_slot_registration_is_importable_by_default() -> None:
     """默认配置（无任何 Key）下登记也不能抛错——离线模型负责兜底。"""
     agents = _builtin_agents(AgentCoreSettings(_env_file=None, llm_api_key=""))
-    assert len(agents) == 1
+    # cooking + talk + novel + novel-chat 都在，且各自只登记一次
+    assert sorted(agent.name for agent in agents) == [
+        COOKING_AGENT_NAME,
+        NOVEL_AGENT_NAME,
+        NOVEL_CHAT_AGENT_NAME,
+        TALK_AGENT_NAME,
+    ]
 
 
 # ---------- 端到端：WS 帧 → 路由 → 子图 → 工具 → 帧 ----------

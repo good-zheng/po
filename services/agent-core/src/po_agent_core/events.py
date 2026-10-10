@@ -39,6 +39,11 @@ class EventType(StrEnum):
     # output
     TEXT_MESSAGE_CONTENT = "text_message_content"
 
+    # 设定提议卡（§10.3 约定 1）：对话侧唯一的结构化产出，content 是人读的一句话，
+    # payload 是提案字段本体。它不是 tool 结果也不是审批请求——前端把它转成
+    # 「作者点采纳才落库」的卡片，编排侧不写任何库。
+    PROPOSAL = "proposal"
+
     # 阶段进度（graph 节点进入/完成）
     # 注意：runner 以 subgraphs=True 驱动，垂直 Agent 内部的子图节点
     # 也会以 STEP 上浮，因此 payload.node 可能是子图内部节点名，

@@ -69,6 +69,14 @@ class WSInFrame(BaseModel):
     # 语义上等价于 LangGraph 的 thread_id：同一 id 复用同一份会话记忆，
     # 也是 interrupt 后 resume 定位挂起线程的唯一凭据。
     conversation_id: str = ""
+    # 显式指定垂直 Agent 插槽名（如 "talk"）：命中则跳过意图路由，确定性委托该插槽
+    # （仍在 supervisor 父图上执行，好让 resume 命中同一份 checkpoint）。
+    # 缺省 None = 交给 supervisor 的 Layer1 路由决定，与历史上线的行为一致
+    # （这是后加字段，老客户端不发它也不会改变任何行为）。
+    agent: str | None = None
+    # 随消息携带的上下文元信息，宿主会把它拼成 [key: value] 前缀一起发给模型；
+    # 其中 utteranceId 是保留键——只用于结果回写定位，不进提示词。
+    context: dict[str, object] | None = None
 
 
 class WSOutFrame(BaseModel):
@@ -94,6 +102,7 @@ class WSOutFrame(BaseModel):
         "tool_call_end",
         "tool_call_result",
         "interrupt",
+        "proposal",
     ]
     content: str = ""
     # 可变默认值在 Pydantic V2 中是安全的：每个实例都会拿到深拷贝，

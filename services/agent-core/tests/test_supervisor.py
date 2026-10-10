@@ -82,6 +82,37 @@ async def test_unknown_intent_goes_to_chitchat() -> None:
     assert state["messages"][-1].content == "我是闲聊回复"
 
 
+async def test_forced_agent_delegates_without_consulting_router() -> None:
+    """点名即委托：路由一次都不被问，更不会被相似度判给 chitchat。
+
+    成文请求（「写第 N 章」）被判成闲聊、由聊天模型自由发挥写个开头，是真机
+    2026-10-10 实测到的事故（PRD §15.19-#7）；调用方传 ``forced_agent`` 就是
+    替模型把这个板拍了，同时也省掉一次 embedding 调用。
+    """
+    router = StubRouter({})  # 空决策表：任何文本都判未命中 → 本应落 chitchat
+    graph = build_graph(router)
+    state = await graph.ainvoke(
+        {"messages": [HumanMessage(content="写第三章")], "forced_agent": "echo"}
+    )
+
+    assert state["intent"] == "echo"
+    assert state["agent_name"] == "echo"
+    assert state["route_score"] == 1.0
+    assert state["messages"][-1].content == "echo:写第三章"
+    assert router.seen == []
+
+
+async def test_unknown_forced_agent_falls_back_to_routing() -> None:
+    # 未登记的插槽名不拦：照常问路由，行为与不传 forced_agent 一致
+    router = StubRouter({"写一首诗": RouteDecision("echo", 5.0, "stub")})
+    graph = build_graph(router)
+    state = await graph.ainvoke(
+        {"messages": [HumanMessage(content="写一首诗")], "forced_agent": "ghost"}
+    )
+    assert state["agent_name"] == "echo"
+    assert router.seen == ["写一首诗"]
+
+
 async def test_multiple_agents_route_independently() -> None:
     router = StubRouter(
         {

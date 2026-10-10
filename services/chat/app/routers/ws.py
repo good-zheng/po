@@ -11,6 +11,7 @@ THINKING / PLAN        ``thinking`` / ``plan``
 STEP                   ``step``
 TOOL_CALL_*            ``tool_call_start/args/end/result``
 INTERRUPT              ``interrupt``（等待 ``resume`` 帧）
+PROPOSAL               ``proposal``（设定提议卡：前端渲染成「采纳/驳回」，采纳走管理端 REST）
 RUN_FINISHED           ``done``
 RUN_ERROR              ``error``
 =====================  =====================================
@@ -18,6 +19,11 @@ RUN_ERROR              ``error``
 入站帧：``message``（新消息）、``resume``（interrupt 后继续）、
 ``ping``（心跳）。``conversation_id`` 贯穿三类帧，映射 LangGraph
 thread_id 实现多轮会话记忆；缺省时每条消息独立会话。
+
+握手身份：URL 可带 ``?ticket=<一次性票据>``（由 Spring Boot ``GET /api/novel/chat-ticket``
+签发，见 :mod:`app.ws_auth`）。带票且校验通过的连接被绑定到那位作者，需要身份的插槽
+（``agent=novel-chat``）才会启动编排；带坏票的连接在 accept 之前就被关掉；不带票的连接
+仍可匿名使用其余插槽（现网小程序没有换票流程，一刀切会直接断掉它们的聊天）。
 
 未来帧（lifecycle 中的 ``tool_approval_request`` 等）由 P3/P5 的
 MCP 工具审批流引入；前端对未知帧类型必须忽略而非报错。
@@ -51,18 +57,33 @@ interrupt / resume 的时序（前端必须遵守）
 from __future__ import annotations
 
 import logging
+import time
 from uuid import uuid4
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from pydantic import ValidationError
 
 from app.agent import Orchestrator
+from app.config import Settings, get_settings
 from app.schemas import WSInFrame, WSOutFrame
+from app.talk import persist_talk_result
+from app.ws_auth import (
+    AUTH_REQUIRED_AGENTS,
+    WsActor,
+    actor_scope,
+    resolve_actor,
+    ticket_from,
+)
 from po_agent_core.events import AgentEvent, EventType
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
+
+# 握手票据被拒的关闭码：4401 落在 WebSocket 保留码之外的应用自定义区间，
+# 与 talk 的 ASR 票据语义一致（「凭据不对」而不是「稍后再试」），
+# 客户端据此决定要不要先去换一张新票。
+HANDSHAKE_REJECTED_CODE = 4401
 
 # AgentEvent 类型 → 出站帧名的映射表：用查表代替 if/elif，新增事件只需加一行。
 # 未登记的类型（如 TOOL_APPROVAL_REQUEST 这类暂无下行语义的控制事件）在
@@ -78,6 +99,7 @@ _EVENT_TO_FRAME: dict[EventType, str] = {
     EventType.TOOL_CALL_END: "tool_call_end",
     EventType.TOOL_CALL_RESULT: "tool_call_result",
     EventType.INTERRUPT: "interrupt",
+    EventType.PROPOSAL: "proposal",
     EventType.RUN_FINISHED: "done",
     EventType.RUN_ERROR: "error",
 }
@@ -128,17 +150,70 @@ def _orchestrator(websocket: WebSocket) -> Orchestrator:
     return orchestrator
 
 
+def _settings(websocket: WebSocket) -> Settings:
+    """握手层要用的宿主配置：优先取应用状态上的注入实例，回落到进程级单例。"""
+    return getattr(websocket.app.state, "settings", None) or get_settings()
+
+
+class _Rejected:
+    """握手被拒的哨兵：连接已关闭，调用方必须直接 return 而不是 accept。"""
+
+
+_REJECTED = _Rejected()
+
+
+async def _handshake(websocket: WebSocket) -> WsActor | None | _Rejected:
+    """建立连接前的票据校验。
+
+    返回值三态，且刻意不用 ``None`` 同时表示「没带票」和「票不对」：
+    - :class:`WsActor` —— 带票且校验通过，连接绑定到这位作者；
+    - ``None`` —— 没带票，按匿名放行（cooking / talk / chitchat 的现网客户端还没有换票
+      流程，握手强拒等于直接断掉它们）；
+    - :class:`_Rejected` —— 带了坏票，且**已经关掉连接**，调用方直接 return。
+      坏票说明客户端已经走在正确的流程上，静默降级成匿名只会让「为什么读不到我的书」
+      变成一条查不出来的线上谜题。
+    """
+    ticket = ticket_from(websocket)
+    if ticket is None:
+        return None
+    actor = await resolve_actor(ticket, _settings(websocket))
+    if actor is not None:
+        return actor
+    await websocket.close(code=HANDSHAKE_REJECTED_CODE)
+    logger.warning("WS 握手被拒：票据无效或校验通道不可用")
+    return _REJECTED
+
+
 @router.websocket("/ws/chat")
 async def chat(websocket: WebSocket) -> None:
-    """聊天主循环：一连接多轮，串行处理入站帧并逐条回帧。
+    """建立连接：握手验票 → accept → 在作者上下文里跑主循环。
 
     路径固定为 ``/ws/chat``（不带 ``/api``，见 :mod:`app.main`）；连接期间
     编排器实例不变，因此可在进入循环前解析一次。
+
+    握手带 ``?ticket=`` 时连接被绑定到一位作者（见 :func:`_handshake`）：身份活在
+    ``actor_scope`` 的任务上下文里，novel 数据层据此给内网读口盖上 ``X-Actor-Uid``，
+    Java 侧再按 ``book.author_id`` 判归属。
     """
+    handshake = await _handshake(websocket)
+    if isinstance(handshake, _Rejected):
+        return
     await websocket.accept()
     # accept 之后再解析编排器：连接已建立，初始化失败也能以断连而非握手失败
     # 的形式暴露，客户端更容易确认原因。
     orchestrator = _orchestrator(websocket)
+    actor = handshake if isinstance(handshake, WsActor) else None
+    with actor_scope(actor.uid if actor is not None else None):
+        await _loop(websocket, orchestrator, actor)
+
+
+async def _loop(websocket: WebSocket, orchestrator: Orchestrator, actor: WsActor | None) -> None:
+    """入站帧主循环：一连接多轮，串行处理并逐条回帧。
+
+    ``actor`` 只用于帧级闸门：需要身份的插槽（:data:`app.ws_auth.AUTH_REQUIRED_AGENTS`）
+    在匿名连接上一律不启动编排——握手没有票据的连接读不到任何人的正典，
+    让它跑到 L1 编译那一步等于把校验挪到了事后。
+    """
     try:
         while True:
             raw = await websocket.receive_json()
@@ -155,6 +230,18 @@ async def chat(websocket: WebSocket) -> None:
                 await _send_frame(websocket, WSOutFrame(type="pong", content=frame.content))
                 continue
 
+            if frame.agent in AUTH_REQUIRED_AGENTS and actor is None:
+                # 帧级闸门（回 error 而不是关连接）：客户端可能是「先匿名连上、
+                # 登录后忘了换票」，关掉整条连接会把它其它插槽的会话一起打断。
+                await _send_frame(
+                    websocket,
+                    WSOutFrame(
+                        type="error",
+                        content=f"{frame.agent} 需要握手票据：先取 /api/novel/chat-ticket 再带 ?ticket= 连接",
+                    ),
+                )
+                continue
+
             if frame.type == "resume":
                 if not frame.conversation_id:
                     # resume 必须带上挂起线程的 id，否则无法定位 thread_id；
@@ -166,18 +253,38 @@ async def chat(websocket: WebSocket) -> None:
                         ),
                     )
                     continue
+                conversation_id = frame.conversation_id
                 events = orchestrator.resume(frame.conversation_id, frame.content)
             else:
                 # 不传 conversation_id 时由服务端生成：该 id 会随 run_started 帧
                 # 的 payload.thread_id 返回，客户端需保存并在下一轮回传，
                 # 否则每条消息都会落在新的 thread 上、失去多轮记忆。
                 conversation_id = frame.conversation_id or uuid4().hex
-                events = orchestrator.run(frame.content, conversation_id=conversation_id)
+                events = orchestrator.run(
+                    frame.content,
+                    conversation_id=conversation_id,
+                    agent=frame.agent,
+                    context=frame.context,
+                )
+            started = time.monotonic()
 
             # 逐条 await 发送，同一个 socket 上不存在并发写，因此无需加锁；
             # 这一串行性也是「interrupt 之后必须等 done 再发 resume」的成因。
+            chunks: list[str] = []
             async for event in events:
+                if event.type == EventType.TEXT_MESSAGE_CONTENT:
+                    chunks.append(event.content)
                 await _send_event(websocket, event)
+
+            # 一轮结束后回写结构化结果（只有 talk 插槽会真正执行，其余是空转）
+            await persist_talk_result(
+                agent=frame.agent,
+                context=frame.context,
+                conversation_id=conversation_id,
+                output="".join(chunks),
+                settings=orchestrator.settings,
+                latency_ms=int((time.monotonic() - started) * 1000),
+            )
     except (WebSocketDisconnect, _ClientGone):
         # 客户端正常关闭 / 发送时发现已断开：结束协程即可，不记录错误。
         return

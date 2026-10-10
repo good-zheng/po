@@ -61,6 +61,15 @@ from po_agent_core.supervisor.graph import build_supervisor_graph
 
 logger = logging.getLogger(__name__)
 
+# 上下文里的保留键：只用于宿主侧的结果回写定位，不拼进提示词，
+# 否则模型会把「utteranceId: 128」当成对话内容的一部分去分析。
+# bookId/chapterId 同属这一类：它们是「本轮读哪本书、截至哪一章」的定位键，
+# 由下面 :meth:`Orchestrator._config` 经 ``configurable`` 交给领域侧，模型不需要、
+# 也不应该在文本里看到一个能照着复述的 id（打字进去的假 id 决定不了任何库读）。
+RESERVED_CONTEXT_KEYS: frozenset[str] = frozenset(
+    {"utteranceId", "sessionId", "bookId", "chapterId"}
+)
+
 
 class EchoChatModel(BaseChatModel):
     """无 API Key 时的离线降级模型：回显最后一条用户消息。
@@ -126,26 +135,66 @@ class Orchestrator:
     graph: CompiledStateGraph
     runner: AgentRunner
     settings: AgentCoreSettings
+    # name → 插槽，供 WSInFrame.agent 直连某个垂直 Agent 时查表
+    agents: dict[str, VerticalAgent] = field(default_factory=dict)
     _checkpointer: CheckpointerManager | None = field(default=None, repr=False)
 
-    def _config(self, conversation_id: str) -> dict:
+    def _config(
+        self, conversation_id: str, context: dict[str, object] | None = None
+    ) -> dict:
         """构造 LangGraph 运行配置：会话标识即 ``thread_id``。
 
         多轮记忆与 interrupt 恢复都依赖这个映射——同一 id 才会命中同一份
         检查点，换 id 等于开新会话。
+
+        ``context`` 原样放进 ``configurable``：垂直 Agent 用
+        ``config["configurable"]["context"]`` 读它，这条通道对模型不可见，
+        因此「本轮读哪本书」由服务端手里的那份帧决定，而不是提示词里谁打了什么。
+        宿主不解释键名（chitchat/supervisor 都不看它），领域侧按自己的白名单取值。
         """
-        return {"configurable": {"thread_id": conversation_id}}
+        configurable: dict[str, object] = {"thread_id": conversation_id}
+        if context:
+            configurable["context"] = context
+        return {"configurable": configurable}
 
     async def run(
-        self, text: str, *, conversation_id: str | None = None
+        self,
+        text: str,
+        *,
+        conversation_id: str | None = None,
+        agent: str | None = None,
+        context: dict[str, object] | None = None,
     ) -> AsyncIterator[AgentEvent]:
-        """新消息进入编排：conversation_id 缺省时生成新会话。"""
+        """新消息进入编排：conversation_id 缺省时生成新会话。
+
+        :param agent: 显式指定插槽名则跳过意图路由、确定性委托该插槽，用于
+            「客户端已经知道要哪个 Agent」的场景（言外小程序、创作工作台的
+            生成面板即如此）；**不直连子图**，见下面 state 处的说明。
+        :param context: 上下文元信息，会拼成 ``[key: value]`` 前缀随消息发出，
+            其中 ``utteranceId`` 是保留键、只用于结果回写定位。
+        """
         thread = conversation_id or uuid4().hex
         # 只传本轮用户消息：历史由 checkpointer 按 thread_id 载入，再经 graph
         # 的 messages reducer 追加合并；若要重放上下文需连同历史一起传入。
-        state = {"messages": [HumanMessage(content=text)]}
+        content = text
+        if context:
+            prefix = "".join(
+                f"[{key}: {value}]\n"
+                for key, value in context.items()
+                if key not in RESERVED_CONTEXT_KEYS
+            )
+            if prefix:
+                content = prefix + content
+        state: dict[str, object] = {"messages": [HumanMessage(content=content)]}
+        # 直连也必须走父图：子图 compile() 刻意不挂 checkpointer（saver 由父图统一
+        # 供给），而 :meth:`resume` 只能按 conversation_id 打回 ``self.graph``——
+        # run 走子图、resume 走父图，两边不是同一个 checkpoint，垂直 Agent 的
+        # interrupt（novel 的归档确认）就永远确认不了。改为把插槽名塞进
+        # forced_agent，由 route 节点跳过语义路由。
+        if agent and agent in self.agents:
+            state["forced_agent"] = agent
         async for event in self.runner.astream(
-            self.graph, state, config=self._config(thread)
+            self.graph, state, config=self._config(thread, context)
         ):
             yield event
 
@@ -154,6 +203,9 @@ class Orchestrator:
 
         ``Command(resume=value)`` 让 graph 从挂起的节点处继续执行，而不是重跑
         整条链路；``value`` 是用户回答的原文，语义解释交由垂直 Agent 决定。
+
+        这里不需要 ``agent`` 参数：:meth:`run` 无论是否点名插槽都在同一个
+        ``thread_id`` 上跑父图，挂起点因此总在父图手里这份 checkpoint 里。
         """
         if not conversation_id:
             # 与路由层的校验重复一次：这里是更内层的守门，避免调用方绕过 WS
@@ -220,11 +272,41 @@ def _builtin_agents(settings: AgentCoreSettings) -> list[VerticalAgent]:
         from po_agent_cooking import build_cooking_agent
     except ImportError as exc:
         logger.info("未安装 po-agent-cooking，跳过 cooking 插槽：%s", exc)
-        return agents
+    else:
+        try:
+            agents.append(build_cooking_agent(settings))
+        except Exception as exc:  # 装配异常（配置/依赖问题）不该阻断宿主启动
+            logger.warning("cooking 插槽装配失败，已跳过：%s", exc)
     try:
-        agents.append(build_cooking_agent(settings))
-    except Exception as exc:  # 装配异常（配置/依赖问题）不该阻断宿主启动
-        logger.warning("cooking 插槽装配失败，已跳过：%s", exc)
+        from po_agent_talk import build_talk_agent
+    except ImportError as exc:
+        logger.info("未安装 po-agent-talk，跳过 talk 插槽：%s", exc)
+    else:
+        try:
+            agents.append(build_talk_agent(settings))
+        except Exception as exc:
+            logger.warning("talk 插槽装配失败，已跳过：%s", exc)
+    try:
+        from po_agent_novel import build_novel_agent
+    except ImportError as exc:
+        logger.info("未安装 po-agent-novel，跳过 novel 插槽：%s", exc)
+    else:
+        try:
+            agents.append(build_novel_agent(settings))
+        except Exception as exc:
+            logger.warning("novel 插槽装配失败，已跳过：%s", exc)
+    # 第四个插槽、第二个小说插槽：创作工作台右栏的对话面板（§10.3）。与 novel 插槽分开注册是
+    # 必要的——生成链路是会写库的长任务，对话面板只读不写，两者共用一个名字就会
+    # 让「直连 novel」的客户端拿到意料之外的行为。
+    try:
+        from po_agent_novel import build_novel_chat_agent
+    except ImportError as exc:
+        logger.info("未安装 po-agent-novel，跳过 novel-chat 插槽：%s", exc)
+    else:
+        try:
+            agents.append(build_novel_chat_agent(settings))
+        except Exception as exc:
+            logger.warning("novel-chat 插槽装配失败，已跳过：%s", exc)
     return agents
 
 
@@ -276,4 +358,10 @@ async def build_orchestrator(
         type(chat_model).__name__,
         len(agents or []),
     )
-    return Orchestrator(graph=graph, runner=runner, settings=settings, _checkpointer=manager)
+    return Orchestrator(
+        graph=graph,
+        runner=runner,
+        settings=settings,
+        agents={slot.name: slot for slot in (agents or [])},
+        _checkpointer=manager,
+    )
