@@ -1,0 +1,26 @@
+{
+  "miniprogramRoot": "dist/",
+  "projectname": "echo-talk",
+  "description": "言外：录下对方的话，实时转写成字，告诉你他真正想说什么，并给出可以直接照着说的回复",
+  "appid": "wx27721a6ef29e7e76",
+  "setting": {
+    "urlCheck": true,
+    "es6": false,
+    "enhance": false,
+    "compileHotReLoad": false,
+    "postcss": false,
+    "minified": true,
+    "minifyWXSS": true,
+    "minifyWXML": true,
+    "bundle": false
+  },
+  "compileType": "miniprogram",
+  "packOptions": {
+    "ignore": [
+      {
+        "type": "glob",
+        "value": "**/*.map"
+      }
+    ]
+  }
+}

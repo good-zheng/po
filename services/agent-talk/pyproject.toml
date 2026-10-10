@@ -1,0 +1,30 @@
+[project]
+name = "po-agent-talk"
+version = "0.1.0"
+description = "po 言外（EchoTalk）垂直 Agent：分析对方话语的真实意图与情绪，给出可直接照说的回复建议"
+requires-python = ">=3.11"
+dependencies = [
+    "po-agent-core",
+    "langgraph>=1.2,<2",
+    "langchain-core>=1.4,<2",
+    "pydantic>=2.7,<3",
+    "pydantic-settings>=2.5,<3",
+    "httpx>=0.27,<1",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "pytest-asyncio>=0.24"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+
+# po-agent-core 与本包均不在 PyPI，需先在 chat venv 里按序安装本地包：
+#   pip install -e services/agent-core && pip install -e services/agent-talk

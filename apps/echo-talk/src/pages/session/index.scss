@@ -1,0 +1,433 @@
+/* 会话页：录音状态条 + 对话流 + 洞察卡 + 建议卡 + 底部操作区
+   设计稿按 750（即下面写 28px 约等于 14pt） */
+
+.session {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: #f5f6f8;
+}
+
+/* ---------- 录音状态条 ---------- */
+.recbar {
+  display: flex;
+  align-items: center;
+  padding: 20px 28px;
+  background: #fff;
+  border-bottom: 1px solid #ebebed;
+}
+
+.dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #b8b8be;
+}
+
+.dot.live {
+  background: #e24b4a;
+  animation: rec-pulse 1.2s infinite;
+}
+
+@keyframes rec-pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.3; }
+  100% { opacity: 1; }
+}
+
+.recbar__text {
+  margin-left: 12px;
+  font-size: 26px;
+  font-weight: 500;
+  color: #1a1a1c;
+}
+
+.recbar__time {
+  margin-left: 12px;
+  font-size: 24px;
+  color: #6b6b73;
+}
+
+.speaker {
+  margin-left: auto;
+  display: flex;
+  padding: 4px;
+  background: #f5f6f8;
+  border-radius: 28px;
+}
+
+.speaker__item {
+  padding: 8px 24px;
+  font-size: 24px;
+  color: #6b6b73;
+  border-radius: 24px;
+}
+
+.speaker__item.on {
+  background: #fff;
+  color: #3b5bdb;
+  font-weight: 500;
+}
+
+/* ---------- 场景/异常提示 ---------- */
+.meta {
+  padding: 16px 28px 0;
+  display: flex;
+  align-items: center;
+}
+
+.meta__chip {
+  padding: 6px 20px;
+  font-size: 22px;
+  color: #6b6b73;
+  background: #fff;
+  border: 1px solid #ebebed;
+  border-radius: 40px;
+}
+
+.meta__warn {
+  margin-left: 16px;
+  font-size: 22px;
+  color: #a32d2d;
+}
+
+.meta__link {
+  margin-left: auto;
+  font-size: 24px;
+  color: #3b5bdb;
+}
+
+/* ---------- 对话流 ---------- */
+.stream {
+  flex: 1;
+  padding: 20px 28px;
+  overflow-y: auto;
+}
+
+.empty {
+  padding: 120px 0;
+  text-align: center;
+  font-size: 26px;
+  color: #9a9aa2;
+}
+
+/* 滚动探针：给 scroll-into-view 当靶子，本身不占视觉 */
+.stream__anchor {
+  height: 1px;
+}
+
+.turn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 28px;
+}
+
+.turn--me {
+  align-items: flex-end;
+}
+
+.turn__who {
+  font-size: 22px;
+  color: #9a9aa2;
+  margin-bottom: 8px;
+}
+
+.bubble {
+  max-width: 82%;
+  padding: 20px 26px;
+  font-size: 30px;
+  line-height: 1.55;
+  color: #1a1a1c;
+  background: #fff;
+  border-radius: 24px;
+}
+
+.turn--me .bubble {
+  background: #3b5bdb;
+  color: #fff;
+}
+
+.thinking {
+  margin-top: 12px;
+  padding: 16px 24px;
+  font-size: 24px;
+  color: #534ab7;
+  background: #eeedfe;
+  border: 1px solid #d9d6f8;
+  border-radius: 24px;
+}
+
+/* ---------- 洞察卡 ---------- */
+.insight {
+  margin-top: 12px;
+  padding: 24px 26px;
+  background: #eeedfe;
+  border: 1px solid #d9d6f8;
+  border-radius: 24px;
+  width: 92%;
+}
+
+.kv {
+  display: flex;
+  margin-bottom: 12px;
+  font-size: 26px;
+  line-height: 1.5;
+}
+
+.kv:last-child {
+  margin-bottom: 0;
+}
+
+.kv__k {
+  flex-shrink: 0;
+  padding: 2px 12px;
+  margin-right: 12px;
+  font-size: 22px;
+  color: #534ab7;
+  background: #e2e0fb;
+  border-radius: 12px;
+}
+
+.kv__v {
+  flex: 1;
+  color: #3c3489;
+}
+
+.kv__v--risk {
+  color: #8a3b16;
+}
+
+/* ---------- 建议卡 ---------- */
+.sugg {
+  margin-top: 12px;
+  width: 92%;
+  background: #fff;
+  border: 1px solid #ebebed;
+  border-radius: 24px;
+  overflow: hidden;
+}
+
+.sugg__hd {
+  padding: 18px 26px 8px;
+  font-size: 24px;
+  color: #6b6b73;
+}
+
+.card {
+  display: flex;
+  align-items: flex-start;
+  padding: 20px 26px;
+  border-top: 1px solid #ebebed;
+}
+
+.tag {
+  flex-shrink: 0;
+  padding: 4px 12px;
+  margin-top: 4px;
+  font-size: 22px;
+  border-radius: 10px;
+}
+
+.tag--0 { background: #e6f1fb; color: #185fa5; }
+.tag--1 { background: #faece7; color: #993c1d; }
+.tag--2 { background: #e1f5ee; color: #0f6e56; }
+
+.card__body {
+  flex: 1;
+  margin-left: 16px;
+}
+
+.card__text {
+  font-size: 28px;
+  line-height: 1.55;
+  color: #1a1a1c;
+}
+
+.card__why {
+  display: block;
+  margin-top: 6px;
+  font-size: 22px;
+  color: #9a9aa2;
+}
+
+.card__play {
+  flex-shrink: 0;
+  margin-left: 12px;
+  padding: 8px 18px;
+  font-size: 22px;
+  color: #3b5bdb;
+  background: #eef1fd;
+  border-radius: 28px;
+}
+
+/* ---------- 底部操作区 ---------- */
+.dock {
+  padding: 18px 28px 28px;
+  background: #fff;
+  border-top: 1px solid #ebebed;
+}
+
+.dock__hint {
+  display: block;
+  margin-bottom: 12px;
+  font-size: 22px;
+  color: #9a9aa2;
+}
+
+/* 多行输入：定高 + 内部滚动（微信 textarea 在 auto-height 关闭时超出即滚） */
+.dock__input {
+  box-sizing: border-box;
+  width: 100%;
+  height: 152px;
+  padding: 18px 24px;
+  font-size: 28px;
+  line-height: 1.5;
+  color: #1a1a1c;
+  background: #f5f6f8;
+  border: 1px solid #ebebed;
+  border-radius: 20px;
+  overflow-y: auto;
+}
+
+/* 两侧按钮绝对定位、麦克风居中：不用 flex-wrap/gap，微信上这两者不可靠 */
+.dock__ctl {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+}
+
+.dock__side {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  font-size: 26px;
+  color: #6b6b73;
+  padding: 0 8px;
+}
+
+.dock__side--send {
+  left: auto;
+  right: 0;
+  color: #3b5bdb;
+  font-weight: 500;
+}
+
+.dock__side.is-off {
+  color: #c2c2c8;
+}
+
+.dock__tip {
+  display: block;
+  text-align: center;
+  font-size: 22px;
+  color: #9a9aa2;
+}
+
+/* ---------- 按住录音的圆形麦克风 ---------- */
+.mic {
+  position: relative;
+  width: 168px;
+  height: 168px;
+  border-radius: 50%;
+  background: linear-gradient(160deg, #6d8bff, #3b5bdb);
+  box-shadow: 0 12px 28px rgba(59, 91, 219, 0.3);
+}
+
+.mic--on {
+  background: linear-gradient(160deg, #ff8a6b, #e24b4a);
+  box-shadow: 0 12px 28px rgba(226, 75, 74, 0.35);
+  animation: mic-breathe 1.1s ease-in-out infinite;
+}
+
+@keyframes mic-breathe {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+
+/* 扩散的两圈光环：错开半个周期，才有「正在收音」的呼吸感 */
+.mic__ring {
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  border: 3px solid rgba(226, 75, 74, 0.4);
+  border-radius: 50%;
+  animation: mic-ring 1.6s ease-out infinite;
+}
+
+.mic__ring--b {
+  animation-delay: 0.8s;
+}
+
+/* 放大到 1.25 就淡出：倍数再大光环会顶出操作行、盖到上面的输入框 */
+@keyframes mic-ring {
+  0% { transform: scale(1); opacity: 0.9; }
+  100% { transform: scale(1.25); opacity: 0; }
+}
+
+/* 麦克风图形用色块拼，不用字体图标：小程序里 emoji 字形随系统变，白色轮廓更稳定 */
+.mic__capsule {
+  position: absolute;
+  top: 28px;
+  left: 62px;
+  width: 44px;
+  height: 70px;
+  background: #fff;
+  border-radius: 22px;
+}
+
+.mic__arc {
+  box-sizing: border-box;
+  position: absolute;
+  top: 74px;
+  left: 50px;
+  width: 68px;
+  height: 44px;
+  border-left: 5px solid #fff;
+  border-right: 5px solid #fff;
+  border-bottom: 5px solid #fff;
+  border-bottom-left-radius: 34px;
+  border-bottom-right-radius: 34px;
+}
+
+.mic__stem {
+  position: absolute;
+  top: 118px;
+  left: 81px;
+  width: 6px;
+  height: 16px;
+  background: #fff;
+}
+
+.mic__base {
+  position: absolute;
+  top: 134px;
+  left: 64px;
+  width: 40px;
+  height: 5px;
+  background: #fff;
+  border-radius: 3px;
+}
+
+/* ---------- 游客提示条 ---------- */
+.guest-hint {
+  margin: 0 24px 12px;
+  padding: 20px 28px;
+  background: #eef1fd;
+  border: 1px solid #d5ddf9;
+  border-radius: 16px;
+}
+
+.guest-hint__text {
+  font-size: 24px;
+  line-height: 1.6;
+  color: #3b5bdb;
+}

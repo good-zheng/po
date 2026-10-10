@@ -1,0 +1,158 @@
+/* 会话记录：列表 + 行内展开全文。设计稿按 750（28px ≈ 14pt）
+   微信侧不用 flex-wrap / gap / calc，行内元素一律 margin 撑开 */
+
+.history {
+  min-height: 100vh;
+  padding: 24px 28px 40px;
+  background: #f5f6f8;
+}
+
+.h-empty {
+  padding: 160px 0;
+  text-align: center;
+  font-size: 26px;
+  color: #9a9aa2;
+}
+
+.h-item {
+  margin-bottom: 24px;
+  padding: 26px 28px;
+  background: #fff;
+  border: 1px solid #ebebed;
+  border-radius: 24px;
+}
+
+.h-item__head {
+  display: flex;
+  align-items: center;
+}
+
+.h-item__title {
+  flex: 1;
+  font-size: 30px;
+  font-weight: 500;
+  color: #1a1a1c;
+}
+
+.h-item__status {
+  flex-shrink: 0;
+  margin-left: 16px;
+  padding: 4px 14px;
+  font-size: 20px;
+  color: #6b6b73;
+  background: #f5f6f8;
+  border-radius: 12px;
+}
+
+.h-item__status.is-live {
+  color: #0f6e56;
+  background: #e1f5ee;
+}
+
+.h-item__preview {
+  margin-top: 12px;
+  font-size: 26px;
+  line-height: 1.5;
+  color: #6b6b73;
+}
+
+.h-item__meta {
+  display: flex;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.h-item__time,
+.h-item__num {
+  font-size: 22px;
+  color: #9a9aa2;
+}
+
+.h-item__dot {
+  margin: 0 10px;
+  font-size: 22px;
+  color: #c2c2c8;
+}
+
+.h-item__acts {
+  display: flex;
+  align-items: center;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #ebebed;
+}
+
+.h-act {
+  margin-right: 40px;
+  font-size: 26px;
+  color: #6b6b73;
+}
+
+.h-act--primary {
+  color: #3b5bdb;
+}
+
+.h-act--danger {
+  color: #c2483f;
+}
+
+.h-body {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px dashed #ebebed;
+}
+
+.h-turn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.h-turn--me {
+  align-items: flex-end;
+}
+
+.h-turn__who {
+  margin-bottom: 6px;
+  font-size: 20px;
+  color: #9a9aa2;
+}
+
+.h-turn__text {
+  max-width: 92%;
+  padding: 16px 22px;
+  font-size: 28px;
+  line-height: 1.5;
+  color: #1a1a1c;
+  background: #f5f6f8;
+  border-radius: 20px;
+}
+
+.h-turn--me .h-turn__text {
+  background: #eef1fd;
+}
+
+.h-turn__note {
+  display: block;
+  margin-top: 8px;
+  font-size: 22px;
+  line-height: 1.5;
+  color: #534ab7;
+}
+
+.h-loading {
+  padding: 20px 0;
+  text-align: center;
+  font-size: 24px;
+  color: #9a9aa2;
+}
+
+.h-footnote {
+  display: block;
+  margin-top: 8px;
+  text-align: center;
+  font-size: 20px;
+  line-height: 1.7;
+  color: #9a9aa2;
+}

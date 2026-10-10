@@ -1,0 +1,624 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>言外 EchoTalk · 小程序交互原型</title>
+<style>
+  :root{
+    --brand:#3b5bdb; --brand-soft:#eef1fd;
+    --rec:#e24b4a;
+    --ai-bg:#eeedfe; --ai-line:#d9d6f8; --ai-ink:#3c3489; --ai-sub:#534ab7;
+    --bg:#f5f6f8; --line:#ebebed; --ink:#1a1a1c; --ink2:#6b6b73; --ink3:#9a9aa2;
+    --r:12px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{margin:0;background:#eceef1;color:var(--ink);
+    font:400 14px/1.6 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",system-ui,sans-serif}
+  .stage{display:flex;gap:36px;align-items:flex-start;justify-content:center;padding:32px 24px 56px;flex-wrap:wrap}
+
+  /* ---------- 手机外框 ---------- */
+  .phone{width:390px;height:844px;flex:0 0 auto;background:#fff;border-radius:46px;
+    border:11px solid #1e1f23;box-shadow:0 18px 48px rgba(20,22,30,.22);
+    display:flex;flex-direction:column;overflow:hidden;position:relative}
+  .statusbar{height:44px;flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;
+    padding:0 26px;font-size:13px;font-weight:600}
+  .statusbar .dots{display:flex;gap:4px;align-items:center}
+  .statusbar i{display:block;width:4px;background:var(--ink);border-radius:1px}
+  .navbar{height:44px;flex:0 0 auto;position:relative;display:flex;align-items:center;justify-content:center;
+    font-size:16px;font-weight:500;border-bottom:.5px solid var(--line);background:#fff}
+  .capsule{position:absolute;right:10px;width:86px;height:31px;border-radius:16px;
+    border:.5px solid #dcdce0;background:#fafafa;display:flex;align-items:center;justify-content:space-evenly}
+  .capsule span{display:block;background:#8a8a90;border-radius:50%}
+  .capsule .d{width:4px;height:4px}
+  .capsule .c{width:14px;height:14px;background:none;border:1.5px solid #8a8a90}
+  .body{flex:1 1 auto;overflow-y:auto;background:var(--bg);scroll-behavior:smooth}
+  .body::-webkit-scrollbar{width:0}
+  .page{display:none;min-height:100%}
+  .page.on{display:block}
+  .tabbar{height:58px;flex:0 0 auto;display:flex;border-top:.5px solid var(--line);background:#fcfcfd}
+  .tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+    font-size:11px;color:var(--ink3);cursor:pointer}
+  .tab.on{color:var(--brand)}
+  .tab svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.6}
+
+  /* ---------- 会话页：录音状态条 ---------- */
+  .recbar{position:sticky;top:0;z-index:5;background:#fff;border-bottom:.5px solid var(--line);
+    padding:10px 14px;display:flex;align-items:center;gap:10px}
+  .rec-dot{width:8px;height:8px;border-radius:50%;background:var(--rec);flex:0 0 auto}
+  .rec-dot.live{animation:pulse 1.2s infinite}
+  @keyframes pulse{0%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.8)}100%{opacity:1;transform:scale(1)}}
+  .rec-txt{font-size:13px;font-weight:500}
+  .rec-time{font-size:12px;color:var(--ink2);font-variant-numeric:tabular-nums}
+  .wave{display:flex;align-items:center;gap:2px;height:16px;margin-left:2px}
+  .wave i{width:2px;background:var(--rec);border-radius:1px;opacity:.75;animation:wv .9s infinite ease-in-out}
+  @keyframes wv{0%,100%{height:4px}50%{height:15px}}
+  .speaker{margin-left:auto;display:flex;background:var(--bg);border-radius:14px;padding:2px;gap:2px}
+  .speaker button{border:0;background:none;font:inherit;font-size:12px;padding:4px 12px;border-radius:12px;
+    color:var(--ink2);cursor:pointer}
+  .speaker button.on{background:#fff;color:var(--brand);font-weight:500;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+  .speaker button.on.me{color:var(--ink)}
+
+  .scenechip{margin:10px 14px 0;display:inline-flex;align-items:center;gap:5px;font-size:11px;
+    color:var(--ink2);background:#fff;border:.5px solid var(--line);border-radius:20px;padding:4px 10px}
+
+  /* ---------- 消息流 ---------- */
+  .stream{padding:12px 14px 8px;display:flex;flex-direction:column;gap:10px}
+  .row{display:flex;flex-direction:column;gap:6px}
+  .row.me{align-items:flex-end}
+  .meta{font-size:11px;color:var(--ink3);padding:0 4px}
+  .bubble{max-width:82%;padding:10px 13px;border-radius:14px;font-size:15px;line-height:1.55;
+    background:#fff;box-shadow:0 1px 2px rgba(20,22,30,.05);position:relative}
+  .row.me .bubble{background:var(--brand);color:#fff}
+  .bubble .edit{font-size:11px;color:var(--ink3);margin-top:5px;cursor:pointer}
+  .row.me .bubble .edit{color:rgba(255,255,255,.7)}
+  .draft{padding:0 4px;font-size:14px;color:var(--ink3)}
+  .draft::after{content:"";display:inline-block;width:2px;height:14px;background:var(--brand);
+    vertical-align:-2px;margin-left:2px;animation:caret .8s infinite}
+  @keyframes caret{0%,100%{opacity:1}50%{opacity:0}}
+
+  /* ---------- AI 卡片 ---------- */
+  .aibox{margin:2px 0 4px}
+  .thinking{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--ai-sub);
+    background:var(--ai-bg);border:1px solid var(--ai-line);border-radius:var(--r);padding:10px 12px}
+  .thinking .spin{width:12px;height:12px;border:2px solid #c9c5f2;border-top-color:var(--ai-sub);
+    border-radius:50%;animation:sp .8s linear infinite}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  .insight{background:var(--ai-bg);border:1px solid var(--ai-line);border-radius:var(--r);padding:12px 13px}
+  .insight h4{margin:0 0 9px;font-size:12px;font-weight:500;color:var(--ai-ink);letter-spacing:.3px}
+  .kv{display:flex;gap:8px;margin-bottom:8px;font-size:13px;line-height:1.5}
+  .kv:last-child{margin-bottom:0}
+  .kv .k{flex:0 0 auto;font-size:11px;color:var(--ai-sub);background:#e2e0fb;border-radius:6px;
+    padding:2px 7px;height:fit-content;margin-top:1px}
+  .kv .v{color:var(--ai-ink)}
+  .kv .v.risk{color:#8a3b16}
+  .emo{display:inline-flex;align-items:center;gap:6px}
+  .bar{width:54px;height:4px;background:#d9d6f8;border-radius:2px;overflow:hidden}
+  .bar i{display:block;height:100%;background:var(--ai-sub)}
+
+  .sugg{margin-top:9px;background:#fff;border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+  .sugg .hd{display:flex;align-items:center;justify-content:space-between;padding:9px 12px 6px;
+    font-size:12px;color:var(--ink2)}
+  .card{display:flex;gap:10px;padding:10px 12px;border-top:.5px solid var(--line);align-items:flex-start}
+  .card .tag{flex:0 0 auto;font-size:11px;padding:2px 7px;border-radius:6px;margin-top:2px}
+  .tag.s1{background:#e6f1fb;color:#185fa5}.tag.s2{background:#faece7;color:#993c1d}.tag.s3{background:#e1f5ee;color:#0f6e56}
+  .card .txt{flex:1;font-size:14px;line-height:1.55}
+  .card .why{font-size:11px;color:var(--ink3);margin-top:4px}
+  .card .act{flex:0 0 auto;display:flex;flex-direction:column;gap:8px;align-items:center}
+  .iconbtn{width:28px;height:28px;border-radius:50%;border:.5px solid var(--line);background:#fff;
+    display:flex;align-items:center;justify-content:center;cursor:pointer}
+  .iconbtn svg{width:14px;height:14px;stroke:var(--ink2);fill:none;stroke-width:1.6}
+  .iconbtn.on{border-color:var(--brand);background:var(--brand-soft)}
+  .iconbtn.on svg{stroke:var(--brand)}
+  .refresh{width:100%;border:0;border-top:.5px solid var(--line);background:#fcfcfd;padding:9px;
+    font:inherit;font-size:12px;color:var(--ink2);cursor:pointer}
+
+  /* ---------- 底部操作区 ---------- */
+  .dock{flex:0 0 auto;background:#fff;border-top:.5px solid var(--line);padding:9px 12px 14px}
+  .inputrow{display:flex;gap:8px;align-items:center}
+  .inputrow input{flex:1;border:0;background:var(--bg);border-radius:18px;padding:9px 14px;font:inherit;font-size:14px;outline:none}
+  .send{border:0;background:var(--brand);color:#fff;border-radius:16px;padding:8px 15px;font:inherit;font-size:13px;cursor:pointer}
+  .send[disabled]{background:#c9cfee}
+  .ctrl{display:flex;gap:10px;margin-top:10px}
+  .ctrl button{flex:1;border:.5px solid var(--line);background:#fff;border-radius:10px;padding:9px;
+    font:inherit;font-size:13px;color:var(--ink2);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+  .ctrl .end{color:#fff;background:var(--rec);border-color:var(--rec)}
+
+  /* ---------- 历史 / 详情 / 我的 ---------- */
+  .sec{padding:14px}
+  .sec h3{margin:0 0 10px;font-size:13px;color:var(--ink2);font-weight:500}
+  .item{background:#fff;border-radius:var(--r);padding:13px 14px;margin-bottom:10px;
+    box-shadow:0 1px 2px rgba(20,22,30,.05);cursor:pointer}
+  .item .t{font-size:15px;font-weight:500;margin-bottom:5px}
+  .item .s{font-size:12px;color:var(--ink2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .item .f{font-size:11px;color:var(--ink3);margin-top:8px;display:flex;gap:10px}
+  .empty{text-align:center;color:var(--ink3);font-size:13px;padding:60px 0}
+  .detailhd{background:#fff;padding:14px;border-bottom:.5px solid var(--line)}
+  .detailhd .t{font-size:16px;font-weight:500}
+  .detailhd .f{font-size:11px;color:var(--ink3);margin-top:6px;display:flex;gap:12px}
+  .setting{background:#fff;border-radius:var(--r);overflow:hidden;margin-bottom:12px}
+  .setting .r{display:flex;align-items:center;justify-content:space-between;padding:13px 14px;
+    border-bottom:.5px solid var(--line);font-size:14px}
+  .setting .r:last-child{border-bottom:0}
+  .setting .r .sub{font-size:11px;color:var(--ink3);margin-top:3px}
+  .sw{width:42px;height:25px;border-radius:13px;background:#dcdce2;position:relative;cursor:pointer;flex:0 0 auto;transition:.2s}
+  .sw.on{background:var(--brand)}
+  .sw i{position:absolute;top:2.5px;left:2.5px;width:20px;height:20px;border-radius:50%;background:#fff;transition:.2s}
+  .sw.on i{left:19.5px}
+  .seg{display:flex;gap:6px;flex-wrap:wrap}
+  .seg button{border:.5px solid var(--line);background:#fff;border-radius:16px;padding:5px 12px;
+    font:inherit;font-size:12px;color:var(--ink2);cursor:pointer}
+  .seg button.on{border-color:var(--brand);color:var(--brand);background:var(--brand-soft)}
+  .user{display:flex;align-items:center;gap:12px;background:#fff;padding:16px 14px;border-radius:var(--r);margin-bottom:12px}
+  .user .av{width:48px;height:48px;border-radius:50%;background:var(--brand-soft);display:flex;
+    align-items:center;justify-content:center;color:var(--brand);font-size:17px;font-weight:500}
+
+  /* ---------- 原型说明面板 ---------- */
+  .notes{width:330px;flex:0 0 auto;font-size:13px;color:#4a4a52}
+  .notes h2{margin:0 0 4px;font-size:16px;font-weight:500;color:#1a1a1c}
+  .notes .lead{color:#6b6b73;margin:0 0 18px;font-size:12px}
+  .notes .b{background:#fff;border-radius:12px;padding:14px 16px;margin-bottom:12px;
+    box-shadow:0 1px 3px rgba(20,22,30,.06)}
+  .notes .b h3{margin:0 0 8px;font-size:13px;font-weight:500;color:#1a1a1c}
+  .notes ul{margin:0;padding-left:17px}
+  .notes li{margin-bottom:5px;line-height:1.55}
+  .notes code{background:#f0f1f4;padding:1px 5px;border-radius:4px;font-size:12px}
+  .demo{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+  .demo button{border:1px solid #d3d5da;background:#fff;border-radius:9px;padding:8px 14px;
+    font:inherit;font-size:13px;cursor:pointer;color:#1a1a1c}
+  .demo button:hover{background:#f5f6f8}
+  .demo button.pri{background:#3b5bdb;border-color:#3b5bdb;color:#fff}
+  .hint{font-size:12px;color:#8a8a92;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="stage">
+
+  <!-- ================= 手机 ================= -->
+  <div class="phone">
+    <div class="statusbar">
+      <span id="clock">9:41</span>
+      <span class="dots"><i style="height:4px"></i><i style="height:6px"></i><i style="height:8px"></i><i style="height:10px"></i></span>
+    </div>
+    <div class="navbar">
+      <span id="navtitle">言外</span>
+      <div class="capsule"><span class="d"></span><span class="d"></span><span class="c"></span></div>
+    </div>
+
+    <div class="body">
+      <!-- ---------- 会话页 ---------- -->
+      <div class="page on" id="p-session">
+        <div class="recbar">
+          <span class="rec-dot live" id="dot"></span>
+          <span class="rec-txt" id="rectxt">录音中</span>
+          <span class="wave" id="wave"></span>
+          <span class="rec-time" id="clock2">00:00</span>
+          <div class="speaker">
+            <button class="on" data-sp="other">对方</button>
+            <button data-sp="me">我</button>
+          </div>
+        </div>
+        <div style="padding:0 14px"><span class="scenechip" id="chip">场景：通用沟通</span></div>
+        <div class="stream" id="stream"></div>
+      </div>
+
+      <!-- ---------- 历史页 ---------- -->
+      <div class="page" id="p-history">
+        <div class="sec">
+          <h3>全部记录</h3>
+          <div id="hist"></div>
+        </div>
+      </div>
+
+      <!-- ---------- 详情页 ---------- -->
+      <div class="page" id="p-detail">
+        <div class="detailhd">
+          <div class="t" id="dt-title">—</div>
+          <div class="f" id="dt-meta">—</div>
+        </div>
+        <div class="stream" id="dt-stream"></div>
+      </div>
+
+      <!-- ---------- 我的 ---------- -->
+      <div class="page" id="p-me">
+        <div class="sec">
+          <div class="user"><div class="av">微</div><div><div style="font-size:15px;font-weight:500">微信用户</div>
+            <div style="font-size:11px;color:#9a9aa2;margin-top:3px">已通过微信登录</div></div></div>
+
+          <div class="setting">
+            <div class="r"><div><div>进入即自动开始录音</div><div class="sub">关闭后需手动点击开始</div></div>
+              <div class="sw on" data-k="autoRec"></div></div>
+            <div class="r"><div><div>默认说话人</div><div class="sub">新会话起始归属</div></div>
+              <div class="seg"><button class="on" data-defsp="other">对方</button><button data-defsp="me">我</button></div></div>
+          </div>
+
+          <div class="setting">
+            <div class="r"><div><div>分析场景</div><div class="sub">决定 AI 的视角与用词</div></div></div>
+            <div class="r"><div class="seg" style="width:100%">
+              <button class="on" data-scene="general">通用</button><button data-scene="work">职场</button>
+              <button data-scene="sales">销售</button><button data-scene="romance">亲密</button></div></div>
+          </div>
+
+          <div class="setting">
+            <div class="r"><div><div>保留原始音频</div><div class="sub">默认关闭，仅存转写文本</div></div>
+              <div class="sw" data-k="keepAudio"></div></div>
+            <div class="r"><div><div>建议自动朗读</div><div class="sub">出卡片后自动播报</div></div>
+              <div class="sw" data-k="autoSpeak"></div></div>
+          </div>
+
+          <div class="setting">
+            <div class="r" style="color:#a32d2d;justify-content:center">清除全部对话记录</div>
+          </div>
+          <div style="font-size:11px;color:#9a9aa2;text-align:center;line-height:1.7">
+            言外 v0.1 · 原型演示<br>录音内容仅用于实时转写，不保存原始音频
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 会话页底部操作 -->
+    <div class="dock" id="dock">
+      <div class="inputrow">
+        <input id="txt" placeholder="手动输入对方说的话…" />
+        <button class="send" id="send" disabled>发送</button>
+      </div>
+      <div class="ctrl">
+        <button id="btnPause"><span id="pIcon">❚❚</span><span id="pTxt">暂停</span></button>
+        <button class="end" id="btnEnd">■ 结束并保存</button>
+      </div>
+    </div>
+
+    <!-- tab bar -->
+    <div class="tabbar">
+      <div class="tab on" data-go="session">
+        <svg viewBox="0 0 24 24"><path d="M12 3v3m0 0a5 5 0 015 5v4a4 4 0 01-4 4H11a4 4 0 01-4-4v-4a5 5 0 015-5z"/><path d="M8 19v2m8-2v2"/></svg>
+        <span>会话</span></div>
+      <div class="tab" data-go="history">
+        <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+        <span>历史</span></div>
+      <div class="tab" data-go="me">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c0-3.3 3.1-5.5 7-5.5s7 2.2 7 5.5"/></svg>
+        <span>我的</span></div>
+    </div>
+  </div>
+
+  <!-- ================= 说明面板 ================= -->
+  <aside class="notes">
+    <h2>言外 EchoTalk · 交互原型</h2>
+    <p class="lead">对应 PRD：<code>apps/echo-talk/PRD.md</code> · M0–M2 关键流程</p>
+
+    <div class="b">
+      <h3>演示控制</h3>
+      <div class="demo">
+        <button class="pri" id="d-auto">自动播放一轮</button>
+        <button id="d-next">下一句</button>
+        <button id="d-reset">重置</button>
+      </div>
+      <p class="hint">进入即「录音中」——对应 PRD F1 默认开始录入。也可以直接在输入框打字后点发送，走 F7 文字输入链路。</p>
+    </div>
+
+    <div class="b">
+      <h3>这版原型验证什么</h3>
+      <ul>
+        <li><b>转写分层</b>：灰字起草 → 黑字定稿，定稿才触发分析</li>
+        <li><b>段级触发</b>：静音 1.2s / 满 30s 成句后才调 Agent，不逐字调用</li>
+        <li><b>说话人</b>：顶部切换条切到「我」时只记录不分析，气泡靠右</li>
+        <li><b>洞察结构</b>：真正想要 / 潜台词 / 情绪 / 风险四段</li>
+        <li><b>建议三分</b>：稳妥 · 共情 · 推进，可朗读、可换一批</li>
+        <li><b>留存</b>：结束自动生成标题并进入历史，可回看完整对话流</li>
+      </ul>
+    </div>
+
+    <div class="b">
+      <h3>还没做的（M3 及以后）</h3>
+      <ul>
+        <li>真实录音与讯飞 ASR 接入</li>
+        <li>真机 60s 分段重连、10 分钟续录的表现</li>
+        <li>噪声态、断网态、转写纠错后的重分析</li>
+        <li>场景预设对 prompt 的实际影响</li>
+      </ul>
+    </div>
+  </aside>
+</div>
+
+<script>
+/* ---------- 演示脚本：一轮真实感的谈判对话 ---------- */
+const SCRIPT = [
+  { sp:'other', text:'这个项目延期的事，你看着办吧。',
+    insight:{ want:'要你给明确答复，别把决定权推回去', sub:'我不想担这个责，你来定',
+      emo:'回避 · 略带不满', score:62, risk:'真自己拍板，出问题会背锅' },
+    sugg:[
+      {s:'稳妥',t:'我先理两个方案，下午三点前发你定夺，可以吗？',w:'给方案不给结论，保留对方决策权'},
+      {s:'共情',t:'我知道这事不好拍板，咱俩一起定，我先出个草案。',w:'先接住情绪，再降低对方压力'},
+      {s:'推进',t:'那我按 A 方案推进，有异议你随时叫停。',w:'给默认路径，减少来回'}
+    ]},
+  { sp:'me', text:'行，那我先出一版方案，晚上发你。' },
+  { sp:'other', text:'方案我不看了，你直接说结论吧。',
+    insight:{ want:'他要的是结果和确定性，不是过程', sub:'别拿过程糊弄我，我没时间',
+      emo:'不耐烦 · 略带压迫', score:71, risk:'只给结论不落依据，事后会被追责' },
+    sugg:[
+      {s:'稳妥',t:'结论是延期三天可控，代价是砍掉 B 模块，我同步了书面记录。',w:'结论 + 代价 + 留痕，三件套'},
+      {s:'共情',t:'我懂你时间紧，一句话：三天，砍 B，风险我兜底。',w:'压缩到一句，先给确定性'},
+      {s:'推进',t:'按三天交，B 模块下个迭代补，我现在去同步客户。',w:'直接落到动作，减少再来回'}
+    ]},
+  { sp:'other', text:'那客户那边怎么说？',
+    insight:{ want:'确认外部风险是否已被你接住', sub:'别让麻烦最后落到我头上',
+      emo:'试探 · 中性偏紧', score:55, risk:'含糊带过会被追问到底，反而被动' },
+    sugg:[
+      {s:'稳妥',t:'客户已知会，答复是接受延期但要求周报同步。',w:'给出已发生的动作与结果'},
+      {s:'共情',t:'我知道你最担心客户反应，已经沟通过了，没有升级。',w:'先点破他的担心，再给结论'},
+      {s:'推进',t:'我下午把客户邮件转你，你扫一眼就行。',w:'把证据递过去，结束追问'}
+    ]}
+];
+
+const state = {
+  page:'session', recording:true, speaker:'other', scene:'general',
+  turns:[], analyzing:false, draft:null, elapsed:0, scriptIdx:0, autoRec:true
+};
+
+const HIST = [
+  { id:'h1', title:'与房东谈续租涨价', time:'昨天 19:24', turns:8, dur:'12 分 40 秒',
+    preview:'房租明年要涨三百，你考虑一下…', scene:'general',
+    data:[
+      {sp:'other', text:'房租明年要涨三百，你考虑一下。',
+       insight:{want:'试探你能接受多少，留出还价空间',sub:'不接受可以谈，但别一分不涨',emo:'平和 · 试探',score:48,risk:'一口答应会被顺势再涨'},
+       sugg:[{s:'稳妥',t:'三百我接受一半，剩下的能不能把物业费包进去？',w:'先认一部分，再换条件'},
+             {s:'共情',t:'理解，这两年周围都涨了。我能续两年，价格稳一点可以吗？',w:'用长约换价格'},
+             {s:'推进',t:'那就按涨一百五定，我今天把合同续了。',w:'直接给台阶收口'}]},
+      {sp:'me', text:'我这边想续两年，价格能不能稳住？'} ]},
+  { id:'h2', title:'面试反问环节', time:'9月28日 15:02', turns:5, dur:'6 分 12 秒',
+    preview:'你还有什么想问我们的吗？', scene:'work',
+    data:[
+      {sp:'other', text:'你还有什么想问我们的吗？',
+       insight:{want:'看你有没有准备、关不关心这份工作',sub:'问薪水和假期的，我会在心里扣分',emo:'评估 · 中性',score:52,risk:'说「没有问题」直接失分'},
+       sugg:[{s:'稳妥',t:'这个岗位半年内最重要的目标是什么？',w:'问目标，显得想做事'},
+             {s:'共情',t:'团队现在最缺什么样的人？我想确认我能补上。',w:'把自己放进对方需求'},
+             {s:'推进',t:'如果我来，前三个月您希望我先解决什么？',w:'直接进入角色，压迫感适中'}]}]}
+];
+
+/* ---------- 工具 ---------- */
+const $  = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+/* ---------- 渲染 ---------- */
+function render(){
+  // tabbar / 页面切换
+  $$('.tab').forEach(t => t.classList.toggle('on', t.dataset.go === state.page));
+  ['session','history','detail','me'].forEach(p =>
+    $('#p-'+p).classList.toggle('on', state.page === p));
+  $('#dock').style.display = (state.page === 'session') ? 'block' : 'none';
+  $('#navtitle').textContent = ({session:'言外',history:'历史',detail:'会话详情',me:'我的'})[state.page];
+
+  // 录音状态条
+  $('#dot').classList.toggle('live', state.recording);
+  $('#dot').style.background = state.recording ? 'var(--rec)' : '#b8b8be';
+  $('#rectxt').textContent = state.recording ? '录音中' : '已暂停';
+  $('#wave').style.opacity = state.recording ? 1 : .25;
+  $('#wave').style.visibility = state.recording ? 'visible':'hidden';
+
+  $$('.speaker button').forEach(b => b.classList.toggle('on', b.dataset.sp === state.speaker));
+  $$('.speaker button').forEach(b => b.classList.toggle('me', b.dataset.sp === 'me'));
+  $('#chip').textContent = '场景：' + ({general:'通用沟通',work:'职场谈判',sales:'客户销售',romance:'亲密关系'})[state.scene];
+
+  renderStream($('#stream'));
+  renderHistory();
+}
+
+function bubble(t, i){
+  const me = t.sp === 'me';
+  let h = `<div class="row ${me?'me':''}">`;
+  h += `<div class="meta">${me?'我':'对方'}${t.src==='text'?' · 手动输入':''}</div>`;
+  h += `<div class="bubble">${esc(t.text)}<div class="edit">点此纠错 · 改说话人</div></div>`;
+  if(t.insight){
+    h += `<div class="aibox"><div class="insight">
+      <h4>AI 洞察</h4>
+      <div class="kv"><span class="k">真正想要</span><span class="v">${esc(t.insight.want)}</span></div>
+      <div class="kv"><span class="k">潜台词</span><span class="v">${esc(t.insight.sub)}</span></div>
+      <div class="kv"><span class="k">情绪</span><span class="v"><span class="emo">${esc(t.insight.emo)}
+        <span class="bar"><i style="width:${t.insight.score}%"></i></span></span></span></div>
+      <div class="kv"><span class="k">风险</span><span class="v risk">${esc(t.insight.risk)}</span></div>
+      </div>`;
+    h += `<div class="sugg"><div class="hd"><span>可以这样回</span><span>段级触发 · ${t.latency}s</span></div>`;
+    t.sugg.forEach((s,j) => {
+      const cls = ['s1','s2','s3'][j];
+      h += `<div class="card"><span class="tag ${cls}">${s.s}</span>
+        <div class="txt">${esc(s.t)}<div class="why">${esc(s.w)}</div></div>
+        <div class="act">
+          <div class="iconbtn" data-act="speak" data-i="${i}" data-j="${j}" title="朗读">
+            <svg viewBox="0 0 24 24"><path d="M4 9v6h3l5 4V5L7 9H4z"/><path d="M16.5 8.5a5 5 0 010 7"/></svg></div>
+          <div class="iconbtn" data-act="copy" data-i="${i}" data-j="${j}" title="复制">
+            <svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 012-2h8"/></svg></div>
+        </div></div>`;
+    });
+    h += `<button class="refresh" data-act="more" data-i="${i}">换一批</button></div></div>`;
+  }
+  return h + '</div>';
+}
+
+function renderStream(el){
+  let h = '';
+  state.turns.forEach((t,i) => h += bubble(t,i));
+  if(state.analyzing){
+    h += `<div class="aibox"><div class="thinking"><span class="spin"></span>正在理解这句话…</div></div>`;
+  }
+  if(state.draft){
+    h += `<div class="draft">${esc(state.draft)}</div>`;
+  }
+  if(!h){
+    h = `<div class="empty">${state.recording ? '已开始录音，等着对方开口…' : '已暂停'}</div>`;
+  }
+  el.innerHTML = h;
+  el.scrollTop = el.scrollHeight;
+}
+
+function renderHistory(){
+  const all = [...(state.saved ? [state.saved] : []), ...HIST];
+  $('#hist').innerHTML = all.length ? all.map(s =>
+    `<div class="item" data-open="${s.id}">
+      <div class="t">${esc(s.title)}</div>
+      <div class="s">${esc(s.preview)}</div>
+      <div class="f"><span>${s.time}</span><span>${s.turns} 轮</span><span>${s.dur}</span></div>
+    </div>`).join('') : '<div class="empty">还没有记录</div>';
+}
+
+function esc(s){ return String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+
+/* ---------- 演示推进 ---------- */
+async function playTurn(item){
+  if(state.analyzing) return;
+  state.speaker = item.sp;
+  render();
+
+  // 1) 起草上屏（灰字，打字机）
+  state.draft = '';
+  render();
+  for(let i=1;i<=item.text.length;i++){
+    state.draft = item.text.slice(0,i);
+    $('#stream').querySelector('.draft').textContent = state.draft;
+    $('#stream').scrollTop = $('#stream').scrollHeight;
+    await sleep(45);
+  }
+  await sleep(420);                       // 静音断句的停顿
+  state.draft = null;
+
+  // 2) 定稿
+  const turn = { sp:item.sp, text:item.text, src:'voice' };
+  state.turns.push(turn);
+  render();
+
+  // 3) 只有「对方」的话才进入分析
+  if(item.sp === 'other'){
+    state.analyzing = true; render();
+    await sleep(1250);
+    turn.insight = item.insight;
+    turn.sugg = item.sugg;
+    turn.latency = (Math.random()*1.4+1.6).toFixed(1);
+    state.analyzing = false; render();
+  }
+  await sleep(500);
+}
+
+async function playRound(){
+  const item = SCRIPT[state.scriptIdx % SCRIPT.length];
+  state.scriptIdx++;
+  await playTurn(item);
+}
+
+/* ---------- 交互绑定 ---------- */
+$$('.tab').forEach(t => t.onclick = () => { state.page = t.dataset.go; render(); });
+
+$$('.speaker button').forEach(b => b.onclick = () => { state.speaker = b.dataset.sp; render(); });
+
+$('#txt').oninput = e => $('#send').disabled = !e.target.value.trim();
+$('#send').onclick = () => {
+  const v = $('#txt').value.trim(); if(!v) return;
+  $('#txt').value = ''; $('#send').disabled = true;
+  const turn = { sp:state.speaker, text:v, src:'text' };
+  state.turns.push(turn); render();
+  if(state.speaker === 'other'){
+    state.analyzing = true; render();
+    setTimeout(() => {
+      const pick = SCRIPT.find(s => s.sp==='other') || SCRIPT[0];
+      turn.insight = { want:'（原型）这句会按通用场景重新分析', sub:'—', emo:'中性', score:50, risk:'—' };
+      turn.sugg = pick.sugg; turn.latency = '2.1';
+      state.analyzing = false; render();
+    }, 1250);
+  }
+};
+
+$('#btnPause').onclick = () => {
+  state.recording = !state.recording;
+  $('#pTxt').textContent = state.recording ? '暂停' : '继续';
+  $('#pIcon').textContent = state.recording ? '❚❚' : '▶';
+  render();
+};
+
+$('#btnEnd').onclick = () => {
+  const n = state.turns.filter(t => t.sp === 'other').length;
+  if(!n){ alert('还没有内容可保存'); return; }
+  state.saved = {
+    id:'cur', title:'与王总聊项目延期', time:'刚刚',
+    turns:state.turns.length, dur:fmt(state.elapsed),
+    preview:state.turns[0].text.slice(0,22)+'…', scene:state.scene, data:state.turns.slice()
+  };
+  state.page = 'history'; render();
+};
+
+$('#hist').onclick = e => {
+  const it = e.target.closest('[data-open]'); if(!it) return;
+  const s = [...(state.saved?[state.saved]:[]), ...HIST].find(x => x.id === it.dataset.open);
+  openDetail(s);
+};
+
+function openDetail(s){
+  $('#dt-title').textContent = s.title;
+  $('#dt-meta').innerHTML = `<span>${s.time}</span><span>${s.turns} 轮</span><span>${s.dur}</span>`;
+  const tmp = state.turns; state.turns = s.data;
+  $('#dt-stream').innerHTML = s.data.map((t,i) => bubble(t,i)).join('');
+  state.turns = tmp;
+  state.page = 'detail'; render();
+}
+
+// 卡片上的朗读 / 复制 / 换一批
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-act]'); if(!b) return;
+  const i = +b.dataset.i, t = state.turns[i]; if(!t) return;
+  if(b.dataset.act === 'speak'){
+    $$('.iconbtn.on').forEach(x => x.classList.remove('on'));
+    b.classList.add('on');
+    try{ const u = new SpeechSynthesisUtterance(t.sugg[+b.dataset.j].t); u.lang='zh-CN'; speechSynthesis.speak(u); }catch(_){}
+    setTimeout(() => b.classList.remove('on'), 1600);
+  }
+  if(b.dataset.act === 'copy'){
+    b.classList.add('on');
+    navigator.clipboard?.writeText(t.sugg[+b.dataset.j].t).catch(()=>{});
+    setTimeout(() => b.classList.remove('on'), 900);
+  }
+  if(b.dataset.act === 'more'){
+    const cur = t.sugg.map(s => s.t).join('|');
+    const pool = SCRIPT.filter(s => s.sp === 'other').flatMap(s => s.sugg);
+    let next = pool.slice(0,3);
+    let guard = 0;
+    while(next.map(s=>s.t).join('|') === cur && guard++ < 6){
+      const off = Math.floor(Math.random()*(pool.length-3+1));
+      next = pool.slice(off, off+3);
+    }
+    t.sugg = next; render();
+  }
+});
+
+// 设置页开关 / 场景 / 默认说话人
+document.addEventListener('click', e => {
+  const sw = e.target.closest('.sw');
+  if(sw){ sw.classList.toggle('on'); if(sw.dataset.k === 'autoRec') state.autoRec = sw.classList.contains('on'); return; }
+  const sc = e.target.closest('[data-scene]');
+  if(sc){ $$('[data-scene]').forEach(x => x.classList.remove('on')); sc.classList.add('on'); state.scene = sc.dataset.scene; render(); return; }
+  const ds = e.target.closest('[data-defsp]');
+  if(ds){ $$('[data-defsp]').forEach(x => x.classList.remove('on')); ds.classList.add('on'); state.speaker = ds.dataset.defsp; render(); }
+});
+
+// 演示控制
+$('#d-auto').onclick = async () => { $('#d-auto').disabled = true; await playRound(); $('#d-auto').disabled = false; };
+$('#d-next').onclick = () => playRound();
+$('#d-reset').onclick = () => {
+  state.turns = []; state.analyzing = false; state.draft = null; state.scriptIdx = 0;
+  state.speaker = 'other'; state.recording = true; state.saved = null;
+  $('#pTxt').textContent = '暂停'; $('#pIcon').textContent = '❚❚';
+  render();
+};
+
+/* ---------- 计时 / 波形 / 时钟 ---------- */
+function fmt(s){ const m = String(Math.floor(s/60)).padStart(2,'0'), x = String(Math.floor(s%60)).padStart(2,'0'); return m+':'+x; }
+setInterval(() => { if(state.recording){ state.elapsed++; $('#clock2').textContent = fmt(state.elapsed); } }, 1000);
+$('#wave').innerHTML = Array.from({length:11},(_,i)=>
+  `<i style="animation-delay:${(i*0.09).toFixed(2)}s"></i>`).join('');
+setInterval(() => {
+  const d = new Date();
+  $('#clock').textContent = d.getHours()+':'+String(d.getMinutes()).padStart(2,'0');
+}, 10000);
+
+render();
+</script>
+</body>
+</html>
