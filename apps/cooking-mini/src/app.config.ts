@@ -41,7 +41,7 @@ export default defineAppConfig({
       },
       {
         pagePath: 'pages/ai/chat',
-        text: 'AI 助手',
+        text: '菜谱问答',
         iconPath: 'assets/icons/tab-ai.png',
         selectedIconPath: 'assets/icons/tab-ai-active.png',
       },

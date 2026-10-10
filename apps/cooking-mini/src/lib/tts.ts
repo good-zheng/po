@@ -1,4 +1,6 @@
 import Taro from '@tarojs/taro';
+import type { Result } from '@po/types';
+import { getSessionToken } from '@/lib/auth/session';
 import { apiClient, resolveAssetUrl } from '@/lib/api/client';
 
 /** 与后端 /tts/prefetch 的截断值保持一致 */
@@ -52,6 +54,10 @@ function play(audio: Taro.InnerAudioContext, fullUrl: string) {
  * 不等待、失败静默——真正 speak 时仍会走单条合成兜底。
  */
 export function prefetch(recipeId: number, clips: SpeechClip[]) {
+  // 后端 /tts/prefetch 需登录：游客浏览详情页时不必发起必然 401 的预热请求
+  if (!getSessionToken()) {
+    return;
+  }
   // 一道菜内 name 唯一（step-N / finish），按 name 去重即可；本地已有地址的不再问后端
   const byName = new Map(clips.map((clip) => [clip.name, clip]));
   const pending = Array.from(byName.values())

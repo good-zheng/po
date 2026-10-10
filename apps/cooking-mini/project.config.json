@@ -14,5 +14,13 @@
     "minifyWXML": true,
     "bundle": false
   },
-  "compileType": "miniprogram"
+  "compileType": "miniprogram",
+  "packOptions": {
+    "ignore": [
+      {
+        "type": "glob",
+        "value": "**/*.map"
+      }
+    ]
+  }
 }

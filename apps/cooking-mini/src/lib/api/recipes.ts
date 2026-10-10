@@ -27,8 +27,27 @@ export async function fetchRecipeDetail(id: number): Promise<Recipe> {
   return apiClient.get<Recipe>(`/recipes/${id}`);
 }
 
-export async function fetchRecipeCategories(): Promise<RecipeCategory[]> {
-  return apiClient.get<RecipeCategory[]>('/recipe-categories');
+/**
+ * 分类表近乎静态，但首页、分类页、分类详情页都会各要一次。
+ * 缓存同一个 Promise 而不是结果：并发调用只发一次请求，失败时清掉缓存留给下次重试。
+ */
+let categoriesPromise: Promise<RecipeCategory[]> | null = null;
+
+export function fetchRecipeCategories(force = false): Promise<RecipeCategory[]> {
+  if (categoriesPromise && !force) {
+    return categoriesPromise;
+  }
+  const pending = apiClient
+    .get<RecipeCategory[]>('/recipe-categories')
+    .catch((error: unknown) => {
+      // 失败不留在缓存里，否则一次网络抖动会让分类页永远空白
+      if (categoriesPromise === pending) {
+        categoriesPromise = null;
+      }
+      throw error;
+    });
+  categoriesPromise = pending;
+  return pending;
 }
 
 export async function fetchFavorites(page = 0, size = 20): Promise<PageResponse<Recipe>> {

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { View, Text, Input, ScrollView } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import type { RecipeBrief } from '@po/types';
@@ -6,7 +6,6 @@ import { useAuth } from '@/lib/auth/auth-context';
 import { currentPageUrl, saveReturnTo } from '@/lib/auth/return-path';
 import { askAssistant } from '@/lib/ai/chat';
 import { useCooking } from '@/lib/cooking/cooking-context';
-import { CHAT_WS_URL } from '@/config/env';
 import './chat.scss';
 
 type ChatMessage = {
@@ -18,9 +17,6 @@ type ChatMessage = {
 };
 
 const SUGGESTIONS = ['今晚吃什么', '推荐几道快手菜', '剁椒鱼头怎么做'];
-const CONNECT_TIMEOUT = 8000;
-const RUN_TIMEOUT = 90000;
-const PING_INTERVAL = 30000;
 
 let messageSeq = 0;
 function nextId() {
@@ -36,12 +32,6 @@ function welcomeMessage(): ChatMessage {
   };
 }
 
-let conversationId: string | null = null;
-
-export function resetConversation() {
-  conversationId = null;
-}
-
 // 游客可完整浏览聊天界面；只有在真正发消息时才要求登录（跳转由用户触发，不自动重定向）
 export default function AIChat() {
   return <ChatView />;
@@ -52,9 +42,6 @@ function ChatView() {
   const [messages, setMessages] = useState<ChatMessage[]>(() => [welcomeMessage()]);
   const [input, setInput] = useState('');
   const [pending, setPending] = useState(false);
-  const socketRef = useRef<Taro.SocketTask | null>(null);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const pingRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const { cancelCooking, clearNote, note, session } = useCooking();
 
   useEffect(() => {
@@ -75,37 +62,8 @@ function ChatView() {
     ]);
   }, [clearNote, note]);
 
-  useEffect(() => {
-    return () => {
-      cleanup();
-    };
-  }, []);
-
-  const cleanup = () => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-      timerRef.current = null;
-    }
-    if (pingRef.current) {
-      clearInterval(pingRef.current);
-      pingRef.current = null;
-    }
-    if (socketRef.current) {
-      try {
-        socketRef.current.close({});
-      } catch {
-        // ignore
-      }
-      socketRef.current = null;
-    }
-  };
-
-  const patchMessage = useCallback((id: number, patch: (msg: ChatMessage) => ChatMessage) => {
-    setMessages((prev) => prev.map((m) => (m.id === id ? patch(m) : m)));
-  }, []);
-
   const send = useCallback(
-    (raw: string) => {
+    async (raw: string) => {
       const text = raw.trim();
       if (!text || pending) return;
 
@@ -124,168 +82,52 @@ function ChatView() {
       ]);
       setPending(true);
 
-      cleanup();
-
-      let streamed = false;
-      let fellBack = false;
-
-      // 大模型这条链路一个字都没给（服务没起、离线、超时）：退回本地菜谱规则，
-      // 保证没有模型可用时聊天框依然能查菜、给推荐。
-      const finish = () => {
-        cleanup();
-        setPending(false);
-        if (streamed || fellBack) return;
-        fellBack = true;
-        void askAssistant(text).then((reply) => {
-          patchMessage(replyId, (m) => ({
-            ...m,
-            recipes: reply.recipes?.length
-              ? reply.recipes.map((r) => ({ id: r.id, title: r.title }))
-              : m.recipes,
-            suggestions: reply.suggestions ?? SUGGESTIONS,
-            text: reply.text,
-          }));
-        });
-      };
-
-      const connectTimer = setTimeout(finish, CONNECT_TIMEOUT);
-
-      Taro.connectSocket({
-        url: CHAT_WS_URL,
-      })
-        .then((socket) => {
-          socketRef.current = socket;
-
-          socket.onOpen(() => {
-            clearTimeout(connectTimer);
-
-            timerRef.current = setTimeout(finish, RUN_TIMEOUT);
-
-            pingRef.current = setInterval(() => {
-              try {
-                socket.send({ data: JSON.stringify({ type: 'ping', content: 'ping' }) });
-              } catch {
-                // ignore
+      // 回复只来自本地菜谱库（分类 / 菜谱 / 详情三个只读接口）。askAssistant 内部
+      // 已把取数失败兜成一句人话，所以这里不再包一层 catch。
+      const reply = await askAssistant(text);
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === replyId
+            ? {
+                ...m,
+                recipes: reply.recipes?.length
+                  ? reply.recipes.map((r) => ({ id: r.id, title: r.title }))
+                  : m.recipes,
+                suggestions: reply.suggestions ?? SUGGESTIONS,
+                text: reply.text,
               }
-            }, PING_INTERVAL);
-
-            const frame: Record<string, unknown> = {
-              type: 'message',
-              content: text,
-            };
-            if (conversationId) {
-              frame.conversation_id = conversationId;
-            }
-            socket.send({ data: JSON.stringify(frame) });
-          });
-
-          socket.onMessage((res) => {
-            try {
-              const frame = JSON.parse(res.data as string) as {
-                type: string;
-                content?: string;
-                payload?: Record<string, unknown>;
-              };
-
-              switch (frame.type) {
-                case 'run_started':
-                  if (frame.payload?.thread_id) {
-                    conversationId = frame.payload.thread_id as string;
-                  }
-                  break;
-
-                case 'token':
-                  if (frame.content) {
-                    streamed = true;
-                    patchMessage(replyId, (m) => ({
-                      ...m,
-                      text: m.text + frame.content,
-                    }));
-                  }
-                  break;
-
-                case 'tool_call_result':
-                  if (
-                    frame.payload?.name === 'search_recipes' ||
-                    frame.payload?.name === 'get_recipe_detail'
-                  ) {
-                    try {
-                      const data = JSON.parse(frame.content || '[]');
-                      const items: Array<{ id: number; title: string }> = Array.isArray(data)
-                        ? data
-                        : data.recipes
-                          ? data.recipes
-                          : data.recipe
-                            ? [data.recipe]
-                            : [];
-                      if (items.length > 0) {
-                        streamed = true;
-                        const recipes: RecipeBrief[] = items.map((r) => ({
-                          id: r.id,
-                          title: r.title,
-                        }));
-                        patchMessage(replyId, (m) => {
-                          const existing = m.recipes ?? [];
-                          const seen = new Set(existing.map((r) => r.id));
-                          const deduped = recipes.filter((r) => !seen.has(r.id));
-                          return { ...m, recipes: [...existing, ...deduped] };
-                        });
-                      }
-                    } catch {
-                      // ignore parse errors
-                    }
-                  }
-                  break;
-
-                case 'error':
-                  streamed = true;
-                  patchMessage(replyId, (m) => ({
-                    ...m,
-                    text: `${m.text}\n\n${frame.content || '出错了'}`,
-                  }));
-                  break;
-
-                case 'done':
-                  finish();
-                  break;
-              }
-            } catch {
-              // ignore non-JSON frames
-            }
-          });
-
-          socket.onError(finish);
-
-          socket.onClose(finish);
-        })
-        .catch(() => {
-          clearTimeout(connectTimer);
-          finish();
-        });
+            : m,
+        ),
+      );
+      setPending(false);
     },
-    [patchMessage, pending, status],
+    [pending, status],
   );
 
   const resetChat = () => {
-    cleanup();
-    resetConversation();
     setMessages([welcomeMessage()]);
     setPending(false);
     setInput('');
   };
 
   const scrollToMessage = messages.length > 0 ? messages[messages.length - 1].id : 0;
-  const lastAssistantId = [...messages].reverse().find((m) => m.role === 'assistant')?.id;
+  let lastAssistantId = 0;
+  for (let i = messages.length - 1; i >= 0; i -= 1) {
+    if (messages[i].role === 'assistant') {
+      lastAssistantId = messages[i].id;
+      break;
+    }
+  }
 
   return (
     <View className="chat">
       <View className="chat-header">
         <View className="header-left">
           <View className="avatar-icon">
-            <Text className="avatar-text">AI</Text>
+            <Text className="avatar-text">厨</Text>
           </View>
           <View>
-            <Text className="header-title">AI 指导</Text>
+            <Text className="header-title">菜谱问答</Text>
             <Text className="header-sub">做菜的事都可以问我</Text>
           </View>
         </View>
@@ -308,7 +150,7 @@ function ChatView() {
             return (
               <View key={msg.id} id={`msg-${msg.id}`} className="message assistant">
                 <View className="msg-avatar assistant-avatar">
-                  <Text className="msg-avatar-text">AI</Text>
+                  <Text className="msg-avatar-text">厨</Text>
                 </View>
                 <View className="bubble assistant-bubble typing-bubble">
                   <Text className="typing-text">正在翻菜谱…</Text>
@@ -322,7 +164,7 @@ function ChatView() {
               <View className={`message ${msg.role}`}>
                 {msg.role === 'assistant' ? (
                   <View className="msg-avatar assistant-avatar">
-                    <Text className="msg-avatar-text">AI</Text>
+                    <Text className="msg-avatar-text">厨</Text>
                   </View>
                 ) : null}
                 <View className={`bubble ${msg.role}-bubble`}>

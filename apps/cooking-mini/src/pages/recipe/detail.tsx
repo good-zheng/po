@@ -222,7 +222,12 @@ export default function RecipeDetail() {
                     </View>
                   ) : null}
                   {step.imageUrl ? (
-                    <Image className="step-image" src={resolveAssetUrl(step.imageUrl)} mode="aspectFill" />
+                    <Image
+                      className="step-image"
+                      src={resolveAssetUrl(step.imageUrl)}
+                      mode="aspectFill"
+                      lazyLoad
+                    />
                   ) : null}
                 </View>
               </View>

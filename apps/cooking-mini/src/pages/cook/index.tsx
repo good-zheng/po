@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { View, Text, Image } from '@tarojs/components';
 import Taro, { useLoad, useUnload } from '@tarojs/taro';
 import type { Recipe } from '@po/types';
@@ -21,11 +21,65 @@ import './index.scss';
 /** 计时结束的「叮叮」提示音：与 Expo 同一份 step-done.wav，由后端静态目录提供 */
 const ALERT_SOUND_URL = resolveAssetUrl('/api/sounds/step-done.wav') || '';
 
-type TimerState = {
+type StepTimerProps = {
   totalSeconds: number;
-  remaining: number;
-  running: boolean;
+  onTimeUp: () => void;
+  onDismiss: () => void;
 };
+
+/**
+ * 计时卡。
+ *
+ * 每秒一跳的 remaining 必须关在这个子组件自己的 state 里：放页面级就是整页每秒重渲染一次，
+ * 一道 40 分钟的菜守着就是两千多次无谓的 diff 与 setData。子组件自己跳，页面只在
+ * 「时间到」那一下被回调叫醒一次。
+ */
+function StepTimer({ totalSeconds, onTimeUp, onDismiss }: StepTimerProps) {
+  const [remaining, setRemaining] = useState(totalSeconds);
+  const [running, setRunning] = useState(true);
+  const timeUp = remaining === 0;
+
+  useEffect(() => {
+    if (!running || timeUp) {
+      return;
+    }
+    const handle = setInterval(() => {
+      setRemaining((prev) => Math.max(0, prev - 1));
+    }, 1000);
+    return () => clearInterval(handle);
+  }, [running, timeUp]);
+
+  // timeUp 只会从 false 翻到 true 一次，提醒也只响这一次
+  useEffect(() => {
+    if (timeUp) {
+      onTimeUp();
+    }
+  }, [timeUp, onTimeUp]);
+
+  const progress = totalSeconds > 0 ? (remaining / totalSeconds) * 100 : 0;
+
+  return (
+    <View className="timer-card">
+      <View className="timer-header">
+        <Text className="timer-label">{'\u23F1'} {timeUp ? '计时结束' : '这一步需要等待'}</Text>
+        <Text className="timer-display">{formatClock(remaining)}</Text>
+      </View>
+      <View className="timer-progress">
+        <View className="timer-progress-fill" style={{ width: `${progress}%` }} />
+      </View>
+      <View className="timer-actions">
+        {timeUp ? null : (
+          <View className="timer-btn" onClick={() => setRunning((prev) => !prev)}>
+            <Text className="timer-btn-text">{running ? '暂停计时' : '继续计时'}</Text>
+          </View>
+        )}
+        <View className="timer-btn" onClick={timeUp ? onDismiss : () => setRemaining(0)}>
+          <Text className="timer-btn-text">{timeUp ? '收起计时' : '跳过等待'}</Text>
+        </View>
+      </View>
+    </View>
+  );
+}
 
 export default function CookEntry() {
   return (
@@ -39,7 +93,8 @@ function CookPage() {
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [recipeId, setRecipeId] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [timer, setTimer] = useState<TimerState | null>(null);
+  const [timerTotal, setTimerTotal] = useState<number | null>(null);
+  const [timeUp, setTimeUp] = useState(false);
   const [ttsEnabled, setTtsEnabled] = useState(true);
   const [ttsAvailable, setTtsAvailable] = useState(false);
   const [finished, setFinished] = useState(false);
@@ -74,7 +129,9 @@ function CookPage() {
       .finally(() => setLoading(false));
   });
 
-  const steps = sortSteps(recipe?.steps);
+  // 排序结果必须固定：这一页会因播报、铃声、时间到等多处状态变化反复渲染，
+  // sortSteps 每次新建一批对象的话，依赖 step 的 effect 与 memo 卡片都会被当成「变了」
+  const steps = useMemo(() => sortSteps(recipe?.steps), [recipe]);
   const stepCount = steps.length;
   const stepIndex =
     session && session.recipeId === recipeId
@@ -83,7 +140,7 @@ function CookPage() {
   const step = steps[stepIndex];
   const nextStep = steps[stepIndex + 1];
   const isLastStep = stepCount > 0 && stepIndex === stepCount - 1;
-  const timeUp = Boolean(timer && timer.remaining === 0);
+  const stepSeconds = useMemo(() => stepDurationSeconds(step), [step]);
 
   // 数据就绪即登记/恢复会话
   useEffect(() => {
@@ -92,29 +149,11 @@ function CookPage() {
     }
   }, [recipe, stepCount, beginCooking]);
 
-  // 换步骤重新计时：有时长的自动开表，无时长的不显示计时卡
+  // 换步骤重新计时：有时长的自动开表（只剩时长，读秒交给计时卡自己），无时长的不显示计时卡
   useEffect(() => {
-    const seconds = stepDurationSeconds(step);
-    setTimer(seconds > 0 ? { totalSeconds: seconds, remaining: seconds, running: true } : null);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stepIndex, recipeId]);
-
-  // 每秒递减
-  useEffect(() => {
-    if (!timer?.running) {
-      return;
-    }
-    const handle = setInterval(() => {
-      setTimer((prev) => {
-        if (!prev?.running) {
-          return prev;
-        }
-        const remaining = Math.max(0, prev.remaining - 1);
-        return { ...prev, remaining, running: remaining > 0 };
-      });
-    }, 1000);
-    return () => clearInterval(handle);
-  }, [timer?.running]);
+    setTimerTotal(stepSeconds > 0 ? stepSeconds : null);
+    setTimeUp(false);
+  }, [stepIndex, recipeId, stepSeconds]);
 
   // 换步骤播报当前做法（含首步：step 由 undefined 变为有值时也应触发）
   // finished 后不再播报：完成时清空会话会让 stepIndex 回落，若不拦截会误播第一步
@@ -133,6 +172,11 @@ function CookPage() {
       playAlert();
     }
   }, [timeUp, playAlert]);
+
+  // 计时卡每秒自己跳，只在归零这一步叫醒页面
+  const handleTimeUp = useCallback(() => {
+    setTimeUp(true);
+  }, []);
 
   useUnload(() => {
     stopAlert();
@@ -168,19 +212,15 @@ function CookPage() {
     goToStep(stepIndex + 1);
   };
 
-  const skipWait = () => {
-    setTimer((prev) => (prev ? { ...prev, remaining: 0, running: false } : prev));
-  };
-
   const dismissTimer = () => {
     stopAlert();
-    setTimer(null);
+    setTimerTotal(null);
   };
 
   const restartTimer = () => {
-    const seconds = stepDurationSeconds(step);
-    if (seconds > 0) {
-      setTimer({ totalSeconds: seconds, remaining: seconds, running: true });
+    if (stepSeconds > 0) {
+      setTimeUp(false);
+      setTimerTotal(stepSeconds);
     }
   };
 
@@ -231,7 +271,6 @@ function CookPage() {
   }
 
   const progress = ((stepIndex + 1) / stepCount) * 100;
-  const timerProgress = timer ? (timer.remaining / timer.totalSeconds) * 100 : 0;
 
   return (
     <View className="cook-page">
@@ -271,27 +310,16 @@ function CookPage() {
           <Image className="step-image" src={resolveAssetUrl(step.imageUrl) || ''} mode="aspectFill" />
         ) : null}
 
-        {timer ? (
-          <View className="timer-card">
-            <View className="timer-header">
-              <Text className="timer-label">{'\u23F1'} {timeUp ? '计时结束' : '这一步需要等待'}</Text>
-              <Text className="timer-display">{formatClock(timer.remaining)}</Text>
-            </View>
-            <View className="timer-progress">
-              <View className="timer-progress-fill" style={{ width: `${timerProgress}%` }} />
-            </View>
-            <View className="timer-actions">
-              {timeUp ? null : (
-                <View className="timer-btn" onClick={() => setTimer((p) => (p ? { ...p, running: !p.running } : p))}>
-                  <Text className="timer-btn-text">{timer.running ? '暂停计时' : '继续计时'}</Text>
-                </View>
-              )}
-              <View className="timer-btn" onClick={timeUp ? dismissTimer : skipWait}>
-                <Text className="timer-btn-text">{timeUp ? '收起计时' : '跳过等待'}</Text>
-              </View>
-            </View>
-          </View>
-        ) : stepDurationSeconds(step) > 0 ? (
+        {timerTotal !== null ? (
+          // key 用步骤序号：换步骤必然重挂，读秒从这一步的时长重新开始，
+          // 页面其余部分不再跟着秒针一起重渲染
+          <StepTimer
+            key={stepIndex}
+            totalSeconds={timerTotal}
+            onTimeUp={handleTimeUp}
+            onDismiss={dismissTimer}
+          />
+        ) : stepSeconds > 0 ? (
           <View className="timer-reopen" onClick={restartTimer}>
             <Text className="timer-reopen-text">{'\u23F1'} 开始 {step.duration} 分钟计时</Text>
           </View>

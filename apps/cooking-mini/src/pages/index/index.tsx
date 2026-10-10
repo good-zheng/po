@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { View, Text, Input, ScrollView } from '@tarojs/components';
 import Taro, { useReachBottom, usePullDownRefresh } from '@tarojs/taro';
 import type { Recipe, RecipeCategory, RecipeSort } from '@po/types';
@@ -9,6 +9,8 @@ import './index.scss';
 const PAGE_SIZE = 20;
 const HISTORY_KEY = 'search_history';
 const MAX_HISTORY = 10;
+/** 停手多久才真的发请求：搜索是逐字输入的，不等一拍就是打五个字发五次列表请求 */
+const SEARCH_DEBOUNCE_MS = 300;
 
 const DIFFICULTY_OPTIONS: { label: string; value: number | undefined }[] = [
   { label: '难度-不限', value: undefined },
@@ -44,6 +46,7 @@ function RecipeList() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [categories, setCategories] = useState<RecipeCategory[]>([]);
   const [keyword, setKeyword] = useState('');
+  const [query, setQuery] = useState('');
   const [categoryId, setCategoryId] = useState<number | undefined>();
   const [difficulty, setDifficulty] = useState<number | undefined>();
   const [sort, setSort] = useState<RecipeSort>('recommend');
@@ -62,19 +65,29 @@ function RecipeList() {
       });
   }, []);
 
+  // 击键只改输入框，停手才提交：让 filter 只跟着「已提交的搜索词」走
+  useEffect(() => {
+    const handle = setTimeout(() => setQuery(keyword.trim()), SEARCH_DEBOUNCE_MS);
+    return () => clearTimeout(handle);
+  }, [keyword]);
+
   const filter = useMemo(
     () => ({
       categoryIds: categoryId ? [categoryId] : undefined,
       difficulty,
-      keyword,
+      keyword: query,
       sort,
     }),
-    [categoryId, difficulty, keyword, sort],
+    [categoryId, difficulty, query, sort],
   );
+
+  const requestSeq = useRef(0);
 
   const loadRecipes = useCallback(
     async (pageNum: number, reset = false) => {
-      if (loading) return;
+      // 不再用 loading 互斥：那样会在上一次请求还没回来时把新的筛选条件直接吞掉
+      // （表现为改了条件列表不动）。改为每次发出递增序号，回来的若不是最新一次就丢弃。
+      const seq = ++requestSeq.current;
       setLoading(true);
       try {
         const res = await fetchRecipes({
@@ -82,6 +95,9 @@ function RecipeList() {
           page: pageNum,
           size: PAGE_SIZE,
         });
+        if (seq !== requestSeq.current) {
+          return;
+        }
         const newRecipes = res.content || [];
         if (reset) {
           setRecipes(newRecipes);
@@ -91,12 +107,16 @@ function RecipeList() {
         setHasMore(pageNum < res.totalPages - 1);
         setPage(pageNum);
       } catch {
-        Taro.showToast({ title: '加载失败', icon: 'none' });
+        if (seq === requestSeq.current) {
+          Taro.showToast({ title: '加载失败', icon: 'none' });
+        }
       } finally {
-        setLoading(false);
+        if (seq === requestSeq.current) {
+          setLoading(false);
+        }
       }
     },
-    [filter, loading],
+    [filter],
   );
 
   useEffect(() => {
@@ -127,19 +147,14 @@ function RecipeList() {
   };
 
   const handleSearch = (term?: string) => {
-    const searchTerm = term ?? keyword;
-    if (searchTerm.trim()) {
-      setKeyword(searchTerm.trim());
-      addHistory(searchTerm.trim());
-    } else {
-      setKeyword('');
+    const searchTerm = (term ?? keyword).trim();
+    setKeyword(searchTerm);
+    // 回车与点历史是明确意图，不等防抖
+    setQuery(searchTerm);
+    if (searchTerm) {
+      addHistory(searchTerm);
     }
     setShowHistory(false);
-  };
-
-  const selectHistory = (term: string) => {
-    setKeyword(term);
-    handleSearch(term);
   };
 
   const goToRecipe = (id: number) => {
@@ -178,7 +193,7 @@ function RecipeList() {
             </View>
             <View className="history-tags">
               {history.map((h) => (
-                <View key={h} className="history-tag" onClick={() => selectHistory(h)}>
+                <View key={h} className="history-tag" onClick={() => handleSearch(h)}>
                   <Text className="history-tag-text">{h}</Text>
                 </View>
               ))}

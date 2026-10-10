@@ -9,7 +9,7 @@ const SEARCH_SIZE = 5;
 
 /**
  * 把一句用户提问变成一条助手回复：先识别意图，再按意图取本地菜谱数据。
- * WebSocket 大模型不可用时的本地兜底。
+ * 这条链路只读菜谱库接口，不经过任何模型，也是小程序唯一的应答来源。
  */
 export async function askAssistant(
   message: string,

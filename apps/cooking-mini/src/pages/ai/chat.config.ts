@@ -1,3 +1,3 @@
 export default definePageConfig({
-  navigationBarTitleText: 'AI 助手',
+  navigationBarTitleText: '菜谱问答',
 });

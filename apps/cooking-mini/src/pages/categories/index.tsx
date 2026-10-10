@@ -21,9 +21,9 @@ export default function CategoriesPage() {
   const [categories, setCategories] = useState<RecipeCategory[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const loadCategories = async () => {
+  const loadCategories = async (force = false) => {
     try {
-      const data = await fetchRecipeCategories();
+      const data = await fetchRecipeCategories(force);
       setCategories(data);
     } catch {
       Taro.showToast({ title: '分类加载失败', icon: 'none' });
@@ -36,8 +36,9 @@ export default function CategoriesPage() {
     loadCategories();
   }, []);
 
+  // 分类结果被模块级缓存复用，下拉刷新要显式绕过缓存
   usePullDownRefresh(() => {
-    loadCategories().then(() => Taro.stopPullDownRefresh());
+    loadCategories(true).then(() => Taro.stopPullDownRefresh());
   });
 
   const sections: CategorySection[] = SECTIONS.map((s) => ({

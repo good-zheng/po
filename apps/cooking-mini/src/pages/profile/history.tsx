@@ -70,7 +70,12 @@ function RecipeList({
             onClick={() => Taro.navigateTo({ url: `/pages/recipe/detail?id=${recipe.id}` })}
           >
             {recipe.coverImageUrl ? (
-              <Image className="card-cover" src={resolveAssetUrl(recipe.coverImageUrl)} mode="aspectFill" />
+              <Image
+                className="card-cover"
+                src={resolveAssetUrl(recipe.coverImageUrl)}
+                mode="aspectFill"
+                lazyLoad
+              />
             ) : (
               <View className="card-cover-placeholder">
                 <Text className="placeholder-icon">🍽️</Text>
