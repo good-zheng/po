@@ -172,7 +172,7 @@ class ChatWSRequest extends AbstractXRequestClass<
       return;
     }
 
-    // run_started/step/thinking/plan/tool_call_*/interrupt 为编排过程帧：
+    // run_started/step/thinking/plan/proposal/tool_call_*/interrupt 为编排过程帧：
     // 信息性透传，不结束请求、不触发回调
   }
 

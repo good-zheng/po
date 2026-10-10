@@ -7,6 +7,14 @@ export default {
   'menu.recipes.review': 'Recipe Review',
   'menu.recipes.categories': 'Categories',
 
+  'menu.novel': 'Novels',
+  'menu.novel.list': 'Book List',
+  'menu.novel.review': 'Conflict Ledger',
+  'menu.novel.new': 'New Book',
+  'menu.novel.detail': 'Book Detail',
+  'menu.novel.edit': 'Edit Book',
+  'menu.novel.studio': 'Studio',
+
   'menu.users': 'Users',
   'menu.users.list': 'User List',
   'menu.users.approval': 'Approval',

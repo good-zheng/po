@@ -12,19 +12,18 @@ import {
   ProFormCheckbox,
   ProFormText,
 } from '@ant-design/pro-components';
-import {
-  FormattedMessage,
-  Helmet,
-  SelectLang,
-  useIntl,
-  useModel,
-} from '@umijs/max';
+import { FormattedMessage, Helmet, SelectLang, useIntl } from '@umijs/max';
 import { Alert, App, Button, Tabs } from 'antd';
 import { createStyles } from 'antd-style';
-import React, { startTransition, useState } from 'react';
+import React, { useState } from 'react';
 import { Footer } from '@/components';
 import { login } from '@/services/ant-design-pro/api';
 import { getFakeCaptcha } from '@/services/ant-design-pro/login';
+import {
+  isAdminRole,
+  noAdminPermissionMessage,
+  TOKEN_STORAGE_KEY,
+} from '@/utils/session';
 import Settings from '../../../../config/defaultSettings';
 
 /**
@@ -132,26 +131,13 @@ const Login: React.FC = () => {
     {} as API.LoginResult,
   );
   const [type, setType] = useState<string>('account');
-  const { initialState, setInitialState } = useModel('@@initialState');
   const { styles } = useStyles();
   const { message } = App.useApp();
   const intl = useIntl();
 
-  const fetchUserInfo = async () => {
-    const userInfo = await initialState?.fetchUserInfo?.();
-    if (userInfo) {
-      startTransition(() => {
-        setInitialState((s) => ({
-          ...s,
-          currentUser: userInfo,
-        }));
-      });
-    }
-  };
-
   const handleSubmit = async (values: API.LoginParams) => {
     try {
-      // 登录
+      // 登录：client 固定 admin，后端据此拒绝非管理端角色
       const msg = await login({ ...values, type, client: 'admin' });
       if (msg.success) {
         const defaultLoginSuccessMessage = intl.formatMessage({
@@ -159,13 +145,21 @@ const Login: React.FC = () => {
           defaultMessage: '登录成功！',
         });
 
+        // 角色直接取登录响应里的 role：不必再打一次 /users/me，
+        // 免得后端已经放行、会话接口却说「无权限」时两边互相矛盾。
+        if (!isAdminRole(msg.data?.role)) {
+          message.error(noAdminPermissionMessage(msg.data?.role));
+          return;
+        }
+
         // 2. 存储 Token (结合你之前的配置，存入 localStorage)
-        localStorage.setItem('token', msg.data?.token || '');
+        localStorage.setItem(TOKEN_STORAGE_KEY, msg.data?.token || '');
         message.success(defaultLoginSuccessMessage);
-        await fetchUserInfo();
+
+        // 整页跳回业务页：getInitialState 会用 /users/me 重建会话，
+        // 失败时会带着具体原因停在登录页，而不是无声无息。
         const urlParams = new URL(window.location.href).searchParams;
-        const redirectUrl = getSafeRedirectUrl(urlParams.get('redirect'));
-        window.location.href = redirectUrl;
+        window.location.href = getSafeRedirectUrl(urlParams.get('redirect'));
         return;
       }
       // 如果失败去设置用户错误信息

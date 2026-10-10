@@ -3,6 +3,8 @@ import type { RequestConfig } from '@umijs/max';
 import { getIntl } from '@umijs/max';
 import { message as messageAntd, notification } from 'antd';
 
+import { TOKEN_STORAGE_KEY } from '@/utils/session';
+
 // 错误处理方案： 错误类型
 enum ErrorShowType {
   SILENT = 0,
@@ -20,7 +22,6 @@ interface ResponseStructure {
   showType?: ErrorShowType;
 }
 
-const TOKEN_STORAGE_KEY = 'token';
 const LOGIN_PATH = '/user/login';
 
 /** 会话失效：清除本地令牌并回到登录页（带着回跳地址） */

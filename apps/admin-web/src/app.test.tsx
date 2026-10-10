@@ -12,6 +12,11 @@ const mockHistory = {
 };
 
 const mockQueryCurrentUser = vi.fn();
+const mockMessageError = vi.fn();
+
+vi.mock('antd', () => ({
+  message: { error: mockMessageError },
+}));
 
 vi.mock('@umijs/max', () => ({
   history: mockHistory,
@@ -51,6 +56,7 @@ vi.mock('../config/defaultSettings', () => ({
 describe('app getInitialState', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    localStorage.clear();
     mockHistory.location = {
       pathname: '/welcome',
       search: '',
@@ -90,6 +96,8 @@ describe('app getInitialState', () => {
       expect.stringContaining('/user/login?redirect='),
     );
     expect(state.currentUser).toBeUndefined();
+    // 访客本地没有令牌，被拒是预期之内，不必弹窗
+    expect(mockMessageError).not.toHaveBeenCalled();
   });
 
   it('should not fetch currentUser on login page', async () => {
@@ -160,5 +168,79 @@ describe('app getInitialState', () => {
     expect(mockReplace).toHaveBeenCalledWith(
       expect.stringContaining('/user/login?redirect='),
     );
+    expect(mockMessageError).toHaveBeenCalledWith(
+      '该账号无管理端权限（当前角色：user）',
+    );
+  });
+
+  it('fetchUserInfo should tell the caller which role was rejected', async () => {
+    const { getInitialState } = await import('./app');
+    mockQueryCurrentUser.mockResolvedValue({
+      data: { id: 4, username: 'chef', role: 'user' },
+    });
+
+    const state = await getInitialState();
+
+    await expect(state.fetchUserInfo?.()).rejects.toThrow(
+      '该账号无管理端权限（当前角色：user）',
+    );
+  });
+
+  it('fetchUserInfo should report the HTTP status of a failing session call', async () => {
+    const { getInitialState } = await import('./app');
+    mockQueryCurrentUser.mockResolvedValue({
+      data: { id: 1, username: 'root', role: 'admin' },
+    });
+
+    const state = await getInitialState();
+
+    const httpError: any = new Error('Request failed');
+    httpError.response = { status: 403 };
+    mockQueryCurrentUser.mockRejectedValue(httpError);
+
+    await expect(state.fetchUserInfo?.()).rejects.toThrow(
+      '会话接口失败：HTTP 403',
+    );
+    expect(localStorage.getItem('token')).toBeNull();
+  });
+
+  it('fetchUserInfo should prefer the backend business message', async () => {
+    const { getInitialState } = await import('./app');
+    mockQueryCurrentUser.mockResolvedValue({
+      data: { id: 1, username: 'root', role: 'admin' },
+    });
+
+    const state = await getInitialState();
+
+    const bizError: any = new Error('未登录或登录状态已失效');
+    bizError.name = 'BizError';
+    bizError.info = { code: 401, message: '未登录或登录状态已失效' };
+    mockQueryCurrentUser.mockRejectedValue(bizError);
+
+    await expect(state.fetchUserInfo?.()).rejects.toThrow(
+      '会话接口失败：未登录或登录状态已失效',
+    );
+  });
+
+  it('should not nest the redirect when already on the login page', async () => {
+    const { getInitialState } = await import('./app');
+    mockHistory.location = {
+      pathname: '/user/login',
+      search: '?redirect=%2Fwelcome',
+      hash: '',
+    };
+    localStorage.setItem('token', 'user-token');
+    mockQueryCurrentUser.mockResolvedValue({
+      data: { id: 3, username: 'chef', role: 'user' },
+    });
+
+    const state = await getInitialState();
+
+    // 登录页上会话被拒时只该提示原因，不能再 replace 一次登录页，
+    // 否则 redirect 会把自己套进去越滚越长。
+    await expect(state.fetchUserInfo?.()).rejects.toThrow(
+      '该账号无管理端权限（当前角色：user）',
+    );
+    expect(mockReplace).not.toHaveBeenCalled();
   });
 });

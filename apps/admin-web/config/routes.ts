@@ -88,6 +88,55 @@ export default [
     ],
   },
   {
+    path: '/novel',
+    name: 'novel',
+    icon: 'read',
+    access: 'canAdmin',
+    routes: [
+      {
+        path: '/novel',
+        redirect: '/novel/list',
+      },
+      {
+        path: '/novel/list',
+        name: 'list',
+        component: './novel/list',
+      },
+      {
+        path: '/novel/review',
+        name: 'review',
+        component: './novel/review',
+      },
+      {
+        path: '/novel/new',
+        name: 'new',
+        hideInMenu: true,
+        component: './novel/new',
+      },
+      {
+        // 动态段一律带 book/ 前缀：写成 /novel/:bookId 会和 list、new 抢匹配
+        path: '/novel/book/:bookId',
+        name: 'detail',
+        hideInMenu: true,
+        component: './novel/detail',
+      },
+      {
+        path: '/novel/book/:bookId/edit',
+        name: 'edit',
+        hideInMenu: true,
+        component: './novel/edit',
+      },
+      {
+        // 三栏工作台：layout:false 跳出 ProLayout 的 mix 菜单，否则左栏被菜单挤掉（§10.3）
+        path: '/novel/book/:bookId/studio',
+        name: 'studio',
+        hideInMenu: true,
+        layout: false,
+        component: './novel/studio',
+      },
+    ],
+  },
+  {
     path: '/chatbot',
     name: 'chatbot',
     icon: 'robot',

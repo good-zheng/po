@@ -3,6 +3,7 @@ import type { Settings as LayoutSettings } from '@ant-design/pro-components';
 import { SettingDrawer } from '@ant-design/pro-components';
 import type { RequestConfig, RunTimeLayoutConfig } from '@umijs/max';
 import { history, Link } from '@umijs/max';
+import { message } from 'antd';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import React from 'react';
@@ -20,18 +21,37 @@ import {
   VersionDropdown,
 } from '@/components';
 import { currentUser as queryCurrentUser } from '@/services/ant-design-pro/api';
+import {
+  isAdminRole,
+  noAdminPermissionMessage,
+  TOKEN_STORAGE_KEY,
+} from '@/utils/session';
 import defaultSettings from '../config/defaultSettings';
 import { errorConfig } from './requestErrorConfig';
 
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
 
-/** 与后端 ClientConstants 对应：管理后台只接受管理员与超级管理员 */
-const isAdminRole = (role?: string) =>
-  role === 'admin' || role === 'superadmin';
+/** 把 /users/me 的异常翻译成一句能直接展示的话：业务文案 > HTTP 状态码 > 网络不可达 */
+function sessionFailureMessage(error: unknown): string {
+  const bizMessage = (error as { info?: { message?: string } })?.info?.message;
+  if (bizMessage) {
+    return `会话接口失败：${bizMessage}`;
+  }
+  const status = (error as { response?: { status?: number } })?.response
+    ?.status;
+  if (status) {
+    return `会话接口失败：HTTP ${status}`;
+  }
+  return '会话接口请求未完成：网络不可达';
+}
 
 const redirectToLogin = () => {
   const { pathname, search, hash } = history.location;
+  // 已经在登录页时不再自嵌套，否则 redirect 参数会越滚越长
+  if (pathname === loginPath) {
+    return;
+  }
   history.replace(
     `${loginPath}?redirect=${encodeURIComponent(pathname + search + hash)}`,
   );
@@ -44,25 +64,29 @@ export async function getInitialState(): Promise<{
   settings?: Partial<LayoutSettings>;
   currentUser?: API.CurrentUser;
   loading?: boolean;
-  fetchUserInfo?: () => Promise<API.CurrentUser | undefined>;
+  fetchUserInfo?: () => Promise<API.CurrentUser>;
   settingDrawerOpen?: boolean;
 }> {
-  const fetchUserInfo = async () => {
+  /**
+   * 校验会话并返回当前用户。失败时抛出带原因的错误，而不是静默地把人送回登录页 ——
+   * 「登录成功却不跳转」最难查的地方，就是这一步原本什么都没留下。
+   */
+  const fetchUserInfo = async (): Promise<API.CurrentUser> => {
+    let msg: Awaited<ReturnType<typeof queryCurrentUser>>;
     try {
-      const msg = await queryCurrentUser({
+      msg = await queryCurrentUser({
         skipErrorHandler: true,
       });
-      if (!isAdminRole(msg.data?.role)) {
-        // 普通用户令牌对管理后台无效：清掉本地会话，回到登录页
-        localStorage.removeItem('token');
-        redirectToLogin();
-        return undefined;
-      }
-      return msg.data;
-    } catch (_error) {
-      redirectToLogin();
+    } catch (error) {
+      localStorage.removeItem(TOKEN_STORAGE_KEY);
+      throw new Error(sessionFailureMessage(error));
     }
-    return undefined;
+    if (!isAdminRole(msg.data?.role)) {
+      // 普通用户令牌对管理后台无效：清掉本地会话，原因交给调用方展示
+      localStorage.removeItem(TOKEN_STORAGE_KEY);
+      throw new Error(noAdminPermissionMessage(msg.data?.role));
+    }
+    return msg.data;
   };
   // 如果不是登录页面，执行
   const { location } = history;
@@ -71,13 +95,22 @@ export async function getInitialState(): Promise<{
       location.pathname,
     )
   ) {
-    const currentUser = await fetchUserInfo();
-    return {
-      fetchUserInfo,
-      currentUser,
-      settings: defaultSettings as Partial<LayoutSettings>,
-      settingDrawerOpen: false,
-    };
+    // 访客本来就没有令牌，被拒是预期；带着令牌却被拒就必须说清楚原因
+    const hadToken = Boolean(localStorage.getItem(TOKEN_STORAGE_KEY));
+    try {
+      const currentUser = await fetchUserInfo();
+      return {
+        fetchUserInfo,
+        currentUser,
+        settings: defaultSettings as Partial<LayoutSettings>,
+        settingDrawerOpen: false,
+      };
+    } catch (error) {
+      if (hadToken) {
+        message.error((error as Error).message);
+      }
+      redirectToLogin();
+    }
   }
   return {
     fetchUserInfo,
@@ -205,7 +238,13 @@ export const layout: RunTimeLayoutConfig = ({
  * @doc https://umijs.org/docs/max/request#配置
  */
 export const request: RequestConfig = {
-  baseURL: isDev ? process.env.UMI_APP_API_BASE_URL : '',
+  // 生产：用 .env（生产档）里的接口域名，值是构建期烘进产物的常量 —— 改域名要重新打镜像。
+  // 该项留空时 baseURL 为空串，请求退化成同源 /api，由容器里的 nginx 反代兜住。
+  // 开发：留空走同源，交给 config/proxy.ts 按 .env.local 的本机地址分流，mock 与抓包都在同域下。
+  baseURL:
+    process.env.NODE_ENV === 'production'
+      ? process.env.UMI_APP_API_BASE_URL
+      : '',
   ...errorConfig,
 };
 

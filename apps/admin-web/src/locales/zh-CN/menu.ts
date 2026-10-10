@@ -7,6 +7,14 @@ export default {
   'menu.recipes.review': '菜谱审核',
   'menu.recipes.categories': '分类管理',
 
+  'menu.novel': '小说管理',
+  'menu.novel.list': '作品列表',
+  'menu.novel.review': '冲突台账',
+  'menu.novel.new': '新建作品',
+  'menu.novel.detail': '书籍详情',
+  'menu.novel.edit': '编辑书籍',
+  'menu.novel.studio': '创作工作台',
+
   'menu.users': '用户管理',
   'menu.users.list': '用户列表',
   'menu.users.approval': '注册审批',

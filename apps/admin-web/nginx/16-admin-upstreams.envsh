@@ -1,0 +1,48 @@
+#!/bin/sh
+# vim:sw=4:ts=4:sts=4:et
+# 由官方 nginx 镜像的 /docker-entrypoint.sh 在 20-envsubst-on-templates.sh 之前 source
+# （文件名要排在 20 之前，且 .envsh 后缀才会被 source 而不是子 shell 执行）。
+# 这里只负责把四个键准备成 envsubst 看得见的环境变量：
+#   ADMIN_API_UPSTREAM / ADMIN_CHAT_UPSTREAM   —— 两个反代目标 host:port（已归一化）
+#   ADMIN_API_RESOLVERS / ADMIN_CHAT_RESOLVERS —— 同一个 DNS，喂给模板里的 resolver 指令
+#
+# 两条铁律：
+# 1. 这是被 source 的脚本，跑在和 entrypoint 同一个子 shell 里——export 出的变量才可能被后面的
+#    envsubst 看到；反过来，在这里 `exit` 会直接终止容器启动，所以任何分支都只能往下走。
+# 2. 本步骤失败也不该拖死静态页。管理端进不去时人先看得到登录页，而不是一个反复重启的容器。
+
+# 归一化：控制台里粘成 http://host:8080/ 也当它是对的
+admin_norm() {
+  printf '%s' "${1:-}" | sed -e 's#^[a-zA-Z][a-zA-Z0-9+._-]*://##' -e 's#/*$##'
+}
+
+# 取容器自己的 DNS：变量式 proxy_pass 是运行时解析，必须有 resolver
+admin_resolvers=$(awk '$1 == "nameserver" { if ($2 ~ ":") printf "[%s] ", $2; else printf "%s ", $2 }' \
+  /etc/resolv.conf 2>/dev/null) || admin_resolvers=''
+admin_resolvers=${admin_resolvers% }
+if [ -z "$admin_resolvers" ]; then
+  admin_resolvers=127.0.0.1
+  echo "16-admin-upstreams.envsh: WARN /etc/resolv.conf 里读不到 nameserver，resolver 退成 127.0.0.1"
+fi
+export ADMIN_API_RESOLVERS="$admin_resolvers"
+export ADMIN_CHAT_RESOLVERS="$admin_resolvers"
+
+# 未配置时填一个永不解析的名字：失败落在单个请求上（502，error.log 里这个名字一眼可辨），
+# 而不是落在启动上——落在启动上就是云托管那次「创建版本失败」。
+admin_api_upstream=$(admin_norm "${ADMIN_API_UPSTREAM:-}") || admin_api_upstream=''
+if [ -z "$admin_api_upstream" ]; then
+  admin_api_upstream=admin-api-upstream-not-configured.invalid
+  echo "16-admin-upstreams.envsh: WARN 未设置 ADMIN_API_UPSTREAM，/api 将回 502"
+fi
+export ADMIN_API_UPSTREAM="$admin_api_upstream"
+
+admin_chat_upstream=$(admin_norm "${ADMIN_CHAT_UPSTREAM:-}") || admin_chat_upstream=''
+if [ -z "$admin_chat_upstream" ]; then
+  admin_chat_upstream=admin-chat-upstream-not-configured.invalid
+  # 管理端的 WS 没有构建期域名可退（chatbot/service.ts 用 window.location.host 拼同源地址），
+  # 缺这个变量的症状是聊天页与工作台的流式对话一直连不上，静态页其余部分正常。
+  echo "16-admin-upstreams.envsh: WARN 未设置 ADMIN_CHAT_UPSTREAM，/ws/chat 将回 502（聊天页与创作工作台不可用）"
+fi
+export ADMIN_CHAT_UPSTREAM="$admin_chat_upstream"
+
+echo "16-admin-upstreams.envsh: /api = $ADMIN_API_UPSTREAM，/ws/chat = $ADMIN_CHAT_UPSTREAM，resolver = $ADMIN_API_RESOLVERS"
