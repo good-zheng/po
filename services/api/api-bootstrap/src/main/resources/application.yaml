@@ -74,6 +74,9 @@ app:
   name: po
   version: 1.0.0
   description: 破
+  # chat 服务（agent-talk）回调 /talk/internal/** 落库用的内网令牌；
+  # 未配置时该端点一律拒绝。生产由环境变量 APP_INTERNAL_TOKEN 注入
+  internal-token: ${APP_INTERNAL_TOKEN:}
 
 # ==========================
 # JWT 配置
@@ -105,6 +108,16 @@ xfyun:
     api-key: ${IFLYTEK_API_KEY:}
     api-secret: ${IFLYTEK_API_SECRET:}
     vcn: ${IFLYTEK_TTS_VCN:xiaoyan}
+  # 语音听写（IAT v2，WebSocket）：与 TTS 共用同一套 hmac-sha256 签名（shared 的 XfyunSigner）
+  # 本地密钥写在 application-local.yaml 的 xfyun.iat 下（已被 .gitignore 排除），此处仅作默认值/容器环境变量回退
+  # max-seconds 是单个讯飞会话的时长上限，讯飞硬限制 60s，留 5s 余量主动收尾重开
+  iat:
+    app-id: ${IFLYTEK_APP_ID:}
+    api-key: ${IFLYTEK_API_KEY:}
+    api-secret: ${IFLYTEK_API_SECRET:}
+    language: ${IFLYTEK_ASR_LANGUAGE:zh_cn}
+    accent: ${IFLYTEK_ASR_ACCENT:mandarin}
+    max-seconds: ${IFLYTEK_ASR_MAX_SECONDS:55}
 
 # ==========================
 # 腾讯云 COS 对象存储（头像 / 通用上传 / TTS 音频落桶）

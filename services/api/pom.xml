@@ -30,6 +30,8 @@
         <module>shared</module>
         <module>identity</module>
         <module>recipe</module>
+        <module>talk</module>
+        <module>novel</module>
         <module>api-bootstrap</module>
     </modules>
 

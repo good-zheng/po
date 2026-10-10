@@ -2,23 +2,17 @@ package com.goodzheng.po.recipe.tts;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.goodzheng.po.shared.xfyun.XfyunSigner;
 import java.net.URI;
-import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.WebSocket;
 import java.nio.charset.StandardCharsets;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.LinkedHashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.TimeUnit;
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -155,34 +149,8 @@ public class XfyunTtsService {
     }
 
     private String buildAuthUrl() {
-        String date = DateTimeFormatter.RFC_1123_DATE_TIME
-                .withLocale(Locale.ENGLISH)
-                .format(ZonedDateTime.now(ZoneOffset.UTC));
-        // 结尾不能带换行，否则讯飞判定 HMAC 不匹配
-        String origin = "host: " + HOST + "\n" + "date: " + date + "\n" + "GET " + PATH + " HTTP/1.1";
-        String signature = hmacSha256Base64(properties.getApiSecret(), origin);
-        String authOrigin = "api_key=\"" + properties.getApiKey()
-                + "\", algorithm=\"hmac-sha256\", headers=\"host date request-line\", signature=\"" + signature + "\"";
-        String authorization = Base64.getEncoder().encodeToString(authOrigin.getBytes(StandardCharsets.UTF_8));
-
-        return "wss://" + HOST + PATH
-                + "?authorization=" + enc(authorization)
-                + "&host=" + enc(HOST)
-                + "&date=" + enc(date);
-    }
-
-    private static String hmacSha256Base64(String secret, String data) {
-        try {
-            Mac mac = Mac.getInstance("HmacSHA256");
-            mac.init(new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
-            return Base64.getEncoder().encodeToString(mac.doFinal(data.getBytes(StandardCharsets.UTF_8)));
-        } catch (Exception e) {
-            throw new IllegalStateException("讯飞签名计算失败", e);
-        }
-    }
-
-    private static String enc(String value) {
-        return URLEncoder.encode(value, StandardCharsets.UTF_8).replace("+", "%20");
+        // 签名逻辑统一收敛到 shared 的 XfyunSigner（TTS / IAT 同套签名）
+        return XfyunSigner.signedWebSocketUrl(HOST, PATH, properties.getApiKey(), properties.getApiSecret());
     }
 
     private static void close(WebSocket ws) {

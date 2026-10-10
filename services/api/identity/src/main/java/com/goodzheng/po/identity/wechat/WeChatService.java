@@ -51,8 +51,15 @@ public class WeChatService {
         Map<String, Object> response = wxGet(url);
 
         if (response.containsKey("errcode") && !Integer.valueOf(0).equals(response.get("errcode"))) {
+            Integer errCode = (Integer) response.get("errcode");
+            String errMsg = String.valueOf(response.get("errmsg"));
+            // 40029 invalid code 最常见于开发者工具游客模式：wx.login 返回假 code；
+            // 其次为 code 已用过/过期、或 code 由 A 小程序签发却用 B 的 secret 换
+            String hint = Integer.valueOf(40029).equals(errCode)
+                    ? "（code 无效：确认微信开发者工具未处于游客模式、appid 已绑定当前账号，且 code 未被复用/过期）"
+                    : "";
             log.warn("wx jscode2session failed: {}", response);
-            throw new RuntimeException("微信登录失败: " + response.get("errmsg"));
+            throw new RuntimeException("微信登录失败: " + errMsg + hint);
         }
 
         String openId = (String) response.get("openid");

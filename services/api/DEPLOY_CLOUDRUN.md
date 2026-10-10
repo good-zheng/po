@@ -21,6 +21,7 @@ pnpm api:deploy:official             # 云端/梯子环境用官方 Docker Hub �
 # 换 tag / 换镜像仓库命名空间：Git Bash 下用环境变量覆盖（cmd/PowerShell 不认这种写法，直接改脚本默认值）
 TAG=v2 bash scripts/deploy-api.sh
 NAMESPACE=... REPO=... bash scripts/deploy-api.sh
+APT_MIRROR= bash scripts/deploy-api.sh     # 空值＝运行阶段保留 Ubuntu 自带 apt 源
 ```
 
 脚本产物镜像地址形如：
@@ -35,15 +36,19 @@ cd services/api
 docker build \
   --build-arg BUILD_IMAGE=docker.m.daocloud.io/library/maven:3.9-eclipse-temurin-17 \
   --build-arg RUNTIME_IMAGE=docker.m.daocloud.io/library/eclipse-temurin:17-jre \
+  --build-arg APT_MIRROR=mirrors.tuna.tsinghua.edu.cn \
   -t ccr.ccs.tencentyun.com/tcb-100053273154-byrm/ca-eyxzseoz_po:prod .
 docker push ccr.ccs.tencentyun.com/tcb-100053273154-byrm/ca-eyxzseoz_po:prod
 ```
 
-## 3. Dockerfile 的三处国内加速（本地被墙时才需要）
+## 3. Dockerfile 的四处国内加速（本地被墙时才需要）
 
 1. 两条 `FROM` 用 build-arg 参数化，默认前缀 `docker.m.daocloud.io/library/`；云端可 `USE_OFFICIAL_IMAGES=1`（或直接 `--build-arg` 传官方镜像名）覆盖。
 2. **不要加** `# syntax=docker/dockerfile:1`——它会触发 BuildKit 去 Docker Hub 拉 `docker/dockerfile:1` 前端镜像而被墙。当前语法（`ARG` 在 `FROM` 前）内置解析器即支持。
 3. `services/api/maven-settings.xml` 把 Maven Central 镜像到阿里云，`COPY` 进构建阶段 `/root/.m2/settings.xml`，否则 `mvn dependency:go-offline` 极慢/超时。
+4. 运行阶段的 apt 源默认换到 `APT_MIRROR`（清华）。这一步装的是 `curl`，删不掉——`docker-compose.yml` 的 api 健康检查是 `curl -fsS http://localhost:8080/api/actuator/health | grep -q ...`。Ubuntu 自带源指向 `archive.ubuntu.com`，本地网络下会在 `universe` 的 Packages 索引上反复断连（实测 `Ign` 重试 6 次后 `Connection failed [IP: 91.189.9x.x 80]`，`apt-get update` 以 **exit 100** 收场）。云端/梯子构建传 `--build-arg APT_MIRROR=`（空串）即保留镜像自带源。
+
+**新增 Maven 模块必须同步补两条 `COPY`**。Dockerfile 为了层缓存是逐模块复制的（`COPY novel/pom.xml novel/` + `COPY novel/src novel/src`），漏一条不会在 COPY 阶段报错，而是在下一步炸：`Child module /build/<模块> of /build/pom.xml does not exist`（reactor 读根 pom 就失败）。这个坑已踩两次——`talk` 一次、`novel` 一次，判据是根 `pom.xml` 的 `<module>` 列表与 Dockerfile 的 `COPY` 列表逐一对齐。
 
 `services/api/.dockerignore` 单独一份：compose 的 build 上下文是 `services/api`，根 `.dockerignore` 不作用于此，须在此排除 `application-local.yaml`/`application-prod.*`。
 
@@ -67,7 +72,7 @@ docker push ccr.ccs.tencentyun.com/tcb-100053273154-byrm/ca-eyxzseoz_po:prod
   2. 若 http 仍失败（连接被拒 / `errcode 40164` IP 白名单 / 未授权），才说明「开放接口服务」没开或权限没绑：去**微信侧**云托管控制台（`cloud.weixin.qq.com/cloudrun`，或小程序后台 → 云托管；**不是**腾讯云 CloudBase 控制台），左侧「微信开放能力」→「开放接口服务」（老版叫「云调用」），它是**环境级**开关，不在服务详情页里；开启后需重新发版。
   3. 开启开放接口服务后，需 access_token 的接口不必自己传（网关注入）。`jscode2session` 不需要 token；`getPhoneNumber` 需要，但该流程目前搁置。
   4. 小程序、Expo 均无需改，两端共用后端 jscode2session 逻辑。
-  **方案 B（备选，A 的第 2 步也走不通时）**：把 `apps/cooking-mini/src/lib/api/client.ts` 从 `Taro.request` 换成云调用 `Taro.cloud.callContainer`，云托管直接注入 `X-WX-OPENID`，后端 `AuthServiceImpl.resolveOpenId` 已优先读该头、无头才回退 jscode2session，服务端可完全不碰微信接口。代价：普通 `wx.request` 直连域名不会注入此头（必须改造客户端），且 Expo 端用不了 callContainer。
+  **方案 B（不要采用）**：把 `apps/cooking-mini/src/lib/api/client.ts` 从 `Taro.request` 换成云调用 `Taro.cloud.callContainer`，由云托管注入 `X-WX-OPENID`、服务端不再调微信接口。这条路已在 2026-09-30 移除：`/auth/openid-login` 是 `permitAll`，而线上走的是免域名 `wx.request`（不注入该头），任何客户端都能自填 `X-Wx-Openid` 冒充任意用户换取 JWT。若将来真要上 callContainer，不能只信 openid 头，必须同时校验云托管注入的 `X-WX-SKEY`（拿它回微信侧验签）或按渠道拆成两个入口并只在内网渠道启用。
 - **免域名校验不全覆盖**：云托管免域名 HTTP 校验管 `request/uploadFile`，但**不管 WebSocket 与 audio/COS 播放**。小程序「开发设置-服务器域名」需另加：
   - socket 合法域名：聊天服务的 `wss://…run.tcloudbase.com`
   - downloadFile 合法域名：COS `https://7072-prod-d7g3zal0655a67232-1496875399.cos.ap-shanghai.myqcloud.com`

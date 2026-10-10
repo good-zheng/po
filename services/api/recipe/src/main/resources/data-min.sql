@@ -25,7 +25,7 @@ INSERT INTO recipe_step (recipe_id, step_number, content, duration) VALUES
   (@r, 5, '坛口盖荷叶封严，微火煨至汤色浓稠', 120);
 
 -- ========== 2. 荔枝肉 ==========
-INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('荔枝肉', '福州宴席老菜，猪瘦肉剞十字花刀后炸成荔枝卷，外裹糖醋汁红亮酸甜，缀以荸荠，形似荔珠而得名。', NULL, 25, 12, 37, 2, 4, '闽菜', '经典,酸甜,猪肉,福州名菜', 1, TRUE, 133, 420, 26, 26, 20, '剞花刀要切透而不切断，炸时肉片自然卷成荔球；糖醋汁先调好再下锅，二次裹汁才亮。', '酸甜爽口');
+INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('荔枝肉', '福州宴席老菜，猪瘦肉剞十字花刀后炸成荔枝卷，外裹糖醋汁红亮酸甜，缀以荸荠，形似荔珠而得名。', 'https://7072-prod-d7g3zal0655a67232-1496875399.cos.ap-shanghai.myqcloud.com/po/covers/min-lizhirou.jpg', 25, 12, 37, 2, 4, '闽菜', '经典,酸甜,猪肉,福州名菜', 1, TRUE, 133, 420, 26, 26, 20, '剞花刀要切透而不切断，炸时肉片自然卷成荔球；糖醋汁先调好再下锅，二次裹汁才亮。', '酸甜爽口');
 SET @r = LAST_INSERT_ID();
 INSERT INTO recipe_ingredient (recipe_id, name, amount, unit, is_essential, sort_order, image_url) VALUES
   (@r, '猪瘦肉', '400', 'g', TRUE, 1, '/api/ingredients/zhushourou.jpg'),
@@ -47,7 +47,7 @@ INSERT INTO recipe_step (recipe_id, step_number, content, duration) VALUES
   (@r, 6, '锅留底油下糖醋汁烧沸，倒肉块荸荠翻匀裹汁', 4);
 
 -- ========== 3. 醉排骨 ==========
-INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('醉排骨', '福州老巷名味，猪肋排先炸后拌，以黄酒、蒜末、糖醋调成醉汁，趁热裹匀冷后入味，酒香酸甜而肉质外酥内嫩。', NULL, 30, 10, 40, 2, 4, '闽菜', '经典,宴客,排骨,福州名菜', 1, TRUE, 235, 450, 24, 34, 12, '醉汁要趁排骨刚出锅滚烫时拌，热才吸得进去；黄酒要用福建老酒，香气足而不发苦。', '酸甜酒香');
+INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('醉排骨', '福州老巷名味，猪肋排先炸后拌，以黄酒、蒜末、糖醋调成醉汁，趁热裹匀冷后入味，酒香酸甜而肉质外酥内嫩。', 'https://7072-prod-d7g3zal0655a67232-1496875399.cos.ap-shanghai.myqcloud.com/po/covers/min-zuopaigu.jpg', 30, 10, 40, 2, 4, '闽菜', '经典,宴客,排骨,福州名菜', 1, TRUE, 235, 450, 24, 34, 12, '醉汁要趁排骨刚出锅滚烫时拌，热才吸得进去；黄酒要用福建老酒，香气足而不发苦。', '酸甜酒香');
 SET @r = LAST_INSERT_ID();
 INSERT INTO recipe_ingredient (recipe_id, name, amount, unit, is_essential, sort_order, image_url) VALUES
   (@r, '猪肋排', '500', 'g', TRUE, 1, '/api/ingredients/zhupaigu.jpg'),
@@ -70,7 +70,7 @@ INSERT INTO recipe_step (recipe_id, step_number, content, duration) VALUES
   (@r, 6, '热排骨倒入醉汁盆，趁热翻拌裹匀晾凉', 3);
 
 -- ========== 4. 姜母鸭 ==========
-INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('姜母鸭', '闽南冬令进补名菜，老姜剁米用麻油炒香，与土鸭同焖，鸭肉酥烂汤汁带姜辣酒香，一锅热气驱寒。', NULL, 20, 50, 70, 2, 4, '闽菜', '经典,时令,鸭肉,闽菜名菜', 1, TRUE, 135, 400, 30, 26, 6, '老姜要剁碎炒至干香再下鸭，麻油全程不能糊；加黄酒焖要小火，火大姜苦而出不了香。', '姜香咸鲜');
+INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('姜母鸭', '闽南冬令进补名菜，老姜剁米用麻油炒香，与土鸭同焖，鸭肉酥烂汤汁带姜辣酒香，一锅热气驱寒。', 'https://7072-prod-d7g3zal0655a67232-1496875399.cos.ap-shanghai.myqcloud.com/po/covers/min-jiangmuya.jpg', 20, 50, 70, 2, 4, '闽菜', '经典,时令,鸭肉,闽菜名菜', 1, TRUE, 135, 400, 30, 26, 6, '老姜要剁碎炒至干香再下鸭，麻油全程不能糊；加黄酒焖要小火，火大姜苦而出不了香。', '姜香咸鲜');
 SET @r = LAST_INSERT_ID();
 INSERT INTO recipe_ingredient (recipe_id, name, amount, unit, is_essential, sort_order, image_url) VALUES
   (@r, '土鸭', '半', '只(约900g)', TRUE, 1, '/api/ingredients/ya.jpg'),
@@ -93,7 +93,7 @@ INSERT INTO recipe_step (recipe_id, step_number, content, duration) VALUES
   (@r, 6, '开盖大火收至汤汁浓，撒葱花装盘', 4);
 
 -- ========== 5. 海蛎煎 ==========
-INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('海蛎煎', '闽南街头灵魂小吃，海蛎拌入番薯粉浆，蛋液裹边煎至焦香，蘸甜辣酱外酥内糯，厦门泉州夜宵摊必点。', NULL, 15, 10, 25, 1, 2, '闽菜', '家常,小吃,海鲜,闽南名吃', 1, TRUE, 167, 320, 15, 18, 25, '粉浆要调得稀，下锅前才拌入海蛎和蒜苗；火要大煎才起泡边脆，翻面一次定形别乱铲。', '咸鲜软糯');
+INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('海蛎煎', '闽南街头灵魂小吃，海蛎拌入番薯粉浆，蛋液裹边煎至焦香，蘸甜辣酱外酥内糯，厦门泉州夜宵摊必点。', 'https://7072-prod-d7g3zal0655a67232-1496875399.cos.ap-shanghai.myqcloud.com/po/covers/min-houlizhen.jpg', 15, 10, 25, 1, 2, '闽菜', '家常,小吃,海鲜,闽南名吃', 1, TRUE, 167, 320, 15, 18, 25, '粉浆要调得稀，下锅前才拌入海蛎和蒜苗；火要大煎才起泡边脆，翻面一次定形别乱铲。', '咸鲜软糯');
 SET @r = LAST_INSERT_ID();
 INSERT INTO recipe_ingredient (recipe_id, name, amount, unit, is_essential, sort_order, image_url) VALUES
   (@r, '海蛎', '200', 'g', TRUE, 1, '/api/ingredients/tianluo.jpg'),
@@ -113,7 +113,7 @@ INSERT INTO recipe_step (recipe_id, step_number, content, duration) VALUES
   (@r, 5, '翻面再煎半分钟至两面金黄，配蘸汁上桌', 2);
 
 -- ========== 6. 厦门沙茶面 ==========
-INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('厦门沙茶面', '厦门华侨带回的南洋味，沙茶酱调出橙红汤头，配碱面与虾、贝、豆腐，汤浓带花生微辣，是厦门人的早午餐魂。', NULL, 20, 25, 45, 2, 2, '闽菜', '经典,小吃,面食,厦门名吃', 1, TRUE, 200, 480, 20, 20, 55, '沙茶酱先用油炒散再冲汤，炒过香气才化得开；汤要滚着下面，面断生即起否则糊汤。', '咸鲜微辣');
+INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('厦门沙茶面', '厦门华侨带回的南洋味，沙茶酱调出橙红汤头，配碱面与虾、贝、豆腐，汤浓带花生微辣，是厦门人的早午餐魂。', 'https://7072-prod-d7g3zal0655a67232-1496875399.cos.ap-shanghai.myqcloud.com/po/covers/min-shachamian.jpg', 20, 25, 45, 2, 2, '闽菜', '经典,小吃,面食,厦门名吃', 1, TRUE, 200, 480, 20, 20, 55, '沙茶酱先用油炒散再冲汤，炒过香气才化得开；汤要滚着下面，面断生即起否则糊汤。', '咸鲜微辣');
 SET @r = LAST_INSERT_ID();
 INSERT INTO recipe_ingredient (recipe_id, name, amount, unit, is_essential, sort_order, image_url) VALUES
   (@r, '碱水面', '300', 'g', TRUE, 1, '/api/ingredients/jianshuimian.jpg'),
@@ -137,7 +137,7 @@ INSERT INTO recipe_step (recipe_id, step_number, content, duration) VALUES
   (@r, 6, '撒花生碎与葱花即成', 2);
 
 -- ========== 7. 福州鱼丸 ==========
-INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('福州鱼丸', '福州没有鱼丸不成席，海鳗剔肉打浆做皮，包入猪肉馅，挤丸入温水定型，咬开爆汁皮弹馅香，是闽江边的手艺。', NULL, 45, 20, 65, 3, 4, '闽菜', '经典,海鲜,小吃,福州名菜', 1, TRUE, 201, 260, 18, 12, 18, '鱼肉要加盐水顺一个方向搅上劲才起胶做皮，水温八十度下丸养熟，沸水滚会冲破丸皮。', '咸鲜弹嫩');
+INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('福州鱼丸', '福州没有鱼丸不成席，海鳗剔肉打浆做皮，包入猪肉馅，挤丸入温水定型，咬开爆汁皮弹馅香，是闽江边的手艺。', 'https://7072-prod-d7g3zal0655a67232-1496875399.cos.ap-shanghai.myqcloud.com/po/covers/min-fuzhouyuwan.jpg', 45, 20, 65, 3, 4, '闽菜', '经典,海鲜,小吃,福州名菜', 1, TRUE, 201, 260, 18, 12, 18, '鱼肉要加盐水顺一个方向搅上劲才起胶做皮，水温八十度下丸养熟，沸水滚会冲破丸皮。', '咸鲜弹嫩');
 SET @r = LAST_INSERT_ID();
 INSERT INTO recipe_ingredient (recipe_id, name, amount, unit, is_essential, sort_order, image_url) VALUES
   (@r, '海鳗', '400', 'g', TRUE, 1, '/api/ingredients/shanyupian.jpg'),
@@ -160,7 +160,7 @@ INSERT INTO recipe_step (recipe_id, step_number, content, duration) VALUES
   (@r, 6, '撒葱花淋香油，连汤盛入碗中', 2);
 
 -- ========== 8. 太平燕 ==========
-INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('太平燕', '福州婚寿宴席必备的太平燕，番薯粉与猪瘦肉千锤打成薄燕皮，裹肉馅成燕，配鸭蛋入汤，取平安团圆之意。', NULL, 50, 20, 70, 3, 4, '闽菜', '宴客,汤羹,小吃,福州名菜', 1, TRUE, 252, 300, 20, 14, 24, '燕皮要用木槌把瘦肉和番薯粉锤成纸才弹韧，包馅留一指宽边捏出燕尾；汤必须清澈见底。', '清鲜醇厚');
+INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('太平燕', '福州婚寿宴席必备的太平燕，番薯粉与猪瘦肉千锤打成薄燕皮，裹肉馅成燕，配鸭蛋入汤，取平安团圆之意。', 'https://7072-prod-d7g3zal0655a67232-1496875399.cos.ap-shanghai.myqcloud.com/po/covers/min-taipingshui.jpg', 50, 20, 70, 3, 4, '闽菜', '宴客,汤羹,小吃,福州名菜', 1, TRUE, 252, 300, 20, 14, 24, '燕皮要用木槌把瘦肉和番薯粉锤成纸才弹韧，包馅留一指宽边捏出燕尾；汤必须清澈见底。', '清鲜醇厚');
 SET @r = LAST_INSERT_ID();
 INSERT INTO recipe_ingredient (recipe_id, name, amount, unit, is_essential, sort_order, image_url) VALUES
   (@r, '猪瘦肉', '250', 'g', TRUE, 1, '/api/ingredients/zhushourou.jpg'),
@@ -182,7 +182,7 @@ INSERT INTO recipe_step (recipe_id, step_number, content, duration) VALUES
   (@r, 6, '撒葱花淋香油即成', 2);
 
 -- ========== 9. 闽南卤面 ==========
-INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('闽南卤面', '漳州泉州年节必备，碱面入锅与卤汤同煮，勾出稠亮芡汁，配虾、蛋、卤肉与豆芽，浇上蒜蓉醋，一碗浓滑热香。', NULL, 25, 20, 45, 2, 4, '闽菜', '家常,宴客,汤面,闽南名吃', 1, TRUE, 301, 460, 22, 16, 58, '面要另锅煮散再入卤，边推边勾薄芡成琉璃芡才不糊底；起锅后淋蒜醋打蛋花提香。', '咸鲜浓滑');
+INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('闽南卤面', '漳州泉州年节必备，碱面入锅与卤汤同煮，勾出稠亮芡汁，配虾、蛋、卤肉与豆芽，浇上蒜蓉醋，一碗浓滑热香。', 'https://7072-prod-d7g3zal0655a67232-1496875399.cos.ap-shanghai.myqcloud.com/po/covers/min-minnanlujian.jpg', 25, 20, 45, 2, 4, '闽菜', '家常,宴客,汤面,闽南名吃', 1, TRUE, 301, 460, 22, 16, 58, '面要另锅煮散再入卤，边推边勾薄芡成琉璃芡才不糊底；起锅后淋蒜醋打蛋花提香。', '咸鲜浓滑');
 SET @r = LAST_INSERT_ID();
 INSERT INTO recipe_ingredient (recipe_id, name, amount, unit, is_essential, sort_order, image_url) VALUES
   (@r, '碱水面', '400', 'g', TRUE, 1, '/api/ingredients/jianshuimian.jpg'),
@@ -206,7 +206,7 @@ INSERT INTO recipe_step (recipe_id, step_number, content, duration) VALUES
   (@r, 6, '淋蛋花撒豆芽，浇蒜醋汁翻匀出锅', 3);
 
 -- ========== 10. 建瓯板鸭 ==========
-INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('建瓯板鸭', '建瓯板鸭已有千余年，冬季把麻鸭剖开压扁风干成板，吃时蒸透斩件，皮脆肉紧咸香带腊味，佐酒最宜。', NULL, 30, 60, 90, 2, 6, '闽菜', '经典,宴客,腊味,闽北名菜', 1, TRUE, 122, 380, 30, 28, 2, '板鸭先用温水泡半小时退咸，加姜片黄酒上锅蒸透才回软，斩件要顺肉纹横切而不散。', '咸香腊味');
+INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('建瓯板鸭', '建瓯板鸭已有千余年，冬季把麻鸭剖开压扁风干成板，吃时蒸透斩件，皮脆肉紧咸香带腊味，佐酒最宜。', 'https://7072-prod-d7g3zal0655a67232-1496875399.cos.ap-shanghai.myqcloud.com/po/covers/min-jianoubanya.jpg', 30, 60, 90, 2, 6, '闽菜', '经典,宴客,腊味,闽北名菜', 1, TRUE, 122, 380, 30, 28, 2, '板鸭先用温水泡半小时退咸，加姜片黄酒上锅蒸透才回软，斩件要顺肉纹横切而不散。', '咸香腊味');
 SET @r = LAST_INSERT_ID();
 INSERT INTO recipe_ingredient (recipe_id, name, amount, unit, is_essential, sort_order, image_url) VALUES
   (@r, '板鸭', '半', '只(约600g)', TRUE, 1, '/api/ingredients/ya.jpg'),
@@ -224,7 +224,7 @@ INSERT INTO recipe_step (recipe_id, step_number, content, duration) VALUES
   (@r, 5, '摆盘淋原汁，配辣椒油蘸食', 3);
 
 -- ========== 11. 淡糟香螺片 ==========
-INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('淡糟香螺片', '闽菜刀工代表作，香螺肉剞上十字花刀汆成螺卷，以红糟、虾油、姜丝爆炒，脆嫩爽口、糟香清郁，极考火候。', NULL, 30, 10, 40, 3, 4, '闽菜', '经典,刀工,河鲜,闽菜名菜', 1, TRUE, 254, 180, 16, 6, 10, '螺片入沸水即捞、汆十秒便卷，久煮则老韧；红糟先用油炒出香再下锅，急火快炒才挂得住。', '糟香脆嫩');
+INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('淡糟香螺片', '闽菜刀工代表作，香螺肉剞上十字花刀汆成螺卷，以红糟、虾油、姜丝爆炒，脆嫩爽口、糟香清郁，极考火候。', 'https://7072-prod-d7g3zal0655a67232-1496875399.cos.ap-shanghai.myqcloud.com/po/covers/min-tanzaoxuangluopian.jpg', 30, 10, 40, 3, 4, '闽菜', '经典,刀工,河鲜,闽菜名菜', 1, TRUE, 254, 180, 16, 6, 10, '螺片入沸水即捞、汆十秒便卷，久煮则老韧；红糟先用油炒出香再下锅，急火快炒才挂得住。', '糟香脆嫩');
 SET @r = LAST_INSERT_ID();
 INSERT INTO recipe_ingredient (recipe_id, name, amount, unit, is_essential, sort_order, image_url) VALUES
   (@r, '香螺肉', '400', 'g', TRUE, 1, '/api/ingredients/tianluo.jpg'),
@@ -247,7 +247,7 @@ INSERT INTO recipe_step (recipe_id, step_number, content, duration) VALUES
   (@r, 6, '勾水淀粉亮汁即出锅', 1);
 
 -- ========== 12. 鸡汤汆海蚌 ==========
-INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('鸡汤汆海蚌', '闽侯一带的闽菜极品，以鸡清汤冲汆新鲜海蚌，蚌肉脆嫩汤清见底，全靠一手滚汤激熟的手上功夫。', NULL, 20, 20, 40, 3, 2, '闽菜', '经典,汤羹,河鲜,闽菜名菜', 1, TRUE, 197, 150, 16, 5, 6, '海蚌要片得薄，滚汤冲入即加盖焖十几秒；汤不够沸则蚌肉带腥而不脆。', '清鲜原味');
+INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('鸡汤汆海蚌', '闽侯一带的闽菜极品，以鸡清汤冲汆新鲜海蚌，蚌肉脆嫩汤清见底，全靠一手滚汤激熟的手上功夫。', 'https://7072-prod-d7g3zal0655a67232-1496875399.cos.ap-shanghai.myqcloud.com/po/covers/min-jitangcuanhaibang.jpg', 20, 20, 40, 3, 2, '闽菜', '经典,汤羹,河鲜,闽菜名菜', 1, TRUE, 197, 150, 16, 5, 6, '海蚌要片得薄，滚汤冲入即加盖焖十几秒；汤不够沸则蚌肉带腥而不脆。', '清鲜原味');
 SET @r = LAST_INSERT_ID();
 INSERT INTO recipe_ingredient (recipe_id, name, amount, unit, is_essential, sort_order, image_url) VALUES
   (@r, '海蚌肉', '300', 'g', TRUE, 1, '/api/ingredients/baoyu.jpg'),
@@ -268,7 +268,7 @@ INSERT INTO recipe_step (recipe_id, step_number, content, duration) VALUES
   (@r, 6, '撒葱花即可，汤面清亮不见渣', 1);
 
 -- ========== 13. 红糟鳗鱼 ==========
-INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('红糟鳗鱼', '福州人家年节味，海鳗切段用红糟、黄酒腌透，裹粉炸至外酥里嫩，红亮糟香带酸甜，冷吃热吃皆宜。', NULL, 30, 15, 45, 2, 4, '闽菜', '经典,河鲜,宴客,福州名菜', 1, TRUE, 112, 380, 26, 26, 12, '鳗段一定要用红糟加黄酒腌透两小时去腥上色；炸时先六成热定型，再升温逼油才酥。', '糟香咸甜');
+INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('红糟鳗鱼', '福州人家年节味，海鳗切段用红糟、黄酒腌透，裹粉炸至外酥里嫩，红亮糟香带酸甜，冷吃热吃皆宜。', 'https://7072-prod-d7g3zal0655a67232-1496875399.cos.ap-shanghai.myqcloud.com/po/covers/min-hongzaomanyu.jpg', 30, 15, 45, 2, 4, '闽菜', '经典,河鲜,宴客,福州名菜', 1, TRUE, 112, 380, 26, 26, 12, '鳗段一定要用红糟加黄酒腌透两小时去腥上色；炸时先六成热定型，再升温逼油才酥。', '糟香咸甜');
 SET @r = LAST_INSERT_ID();
 INSERT INTO recipe_ingredient (recipe_id, name, amount, unit, is_essential, sort_order, image_url) VALUES
   (@r, '海鳗', '600', 'g', TRUE, 1, '/api/ingredients/shanyupian.jpg'),
@@ -290,7 +290,7 @@ INSERT INTO recipe_step (recipe_id, step_number, content, duration) VALUES
   (@r, 6, '升七成热大火复炸至外壳酥脆，沥油装盘', 3);
 
 -- ========== 14. 花生汤 ==========
-INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('花生汤', '闽南古早味甜汤，花生仁加小苏打慢炖至酥而不散，汤色乳白甜润，配油条是厦门人天亮前的早餐。', NULL, 20, 150, 170, 1, 4, '闽菜', '家常,甜品,早餐,闽南名吃', 1, TRUE, 244, 220, 9, 15, 14, '花生要泡透去皮，炖时只放小苏打不放糖，煮到酥烂才下冰糖，过早加糖怎么煮都不烂。', '甜润清香');
+INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('花生汤', '闽南古早味甜汤，花生仁加小苏打慢炖至酥而不散，汤色乳白甜润，配油条是厦门人天亮前的早餐。', 'https://7072-prod-d7g3zal0655a67232-1496875399.cos.ap-shanghai.myqcloud.com/po/covers/min-huashengtang.jpg', 20, 150, 170, 1, 4, '闽菜', '家常,甜品,早餐,闽南名吃', 1, TRUE, 244, 220, 9, 15, 14, '花生要泡透去皮，炖时只放小苏打不放糖，煮到酥烂才下冰糖，过早加糖怎么煮都不烂。', '甜润清香');
 SET @r = LAST_INSERT_ID();
 INSERT INTO recipe_ingredient (recipe_id, name, amount, unit, is_essential, sort_order, image_url) VALUES
   (@r, '花生', '200', 'g', TRUE, 1, '/api/ingredients/huasheng.jpg'),
@@ -308,7 +308,7 @@ INSERT INTO recipe_step (recipe_id, step_number, content, duration) VALUES
   (@r, 5, '可选窝入鸡蛋，盛碗撒几粒熟花生', 4);
 
 -- ========== 15. 土笋冻 ==========
-INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('土笋冻', '闽南独有奇味，晋江沿海的沙虫熬煮出天然胶质，连虫带汤倒碗冷凝成冻，切块蘸芥末酱油，晶莹弹滑清鲜。', NULL, 30, 40, 70, 2, 6, '闽菜', '传统,小吃,海鲜,闽南名吃', 1, TRUE, 311, 130, 12, 3, 8, '沙虫靠反复揉搓挤净泥沙，长时间熬煮才释出胶质，趁热连虫带汤入碗，凉透自然凝成冻。', '清鲜弹滑');
+INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('土笋冻', '闽南独有奇味，晋江沿海的沙虫熬煮出天然胶质，连虫带汤倒碗冷凝成冻，切块蘸芥末酱油，晶莹弹滑清鲜。', 'https://7072-prod-d7g3zal0655a67232-1496875399.cos.ap-shanghai.myqcloud.com/po/covers/min-tusunbing.jpg', 30, 40, 70, 2, 6, '闽菜', '传统,小吃,海鲜,闽南名吃', 1, TRUE, 311, 130, 12, 3, 8, '沙虫靠反复揉搓挤净泥沙，长时间熬煮才释出胶质，趁热连虫带汤入碗，凉透自然凝成冻。', '清鲜弹滑');
 SET @r = LAST_INSERT_ID();
 INSERT INTO recipe_ingredient (recipe_id, name, amount, unit, is_essential, sort_order, image_url) VALUES
   (@r, '沙虫', '300', 'g', TRUE, 1, '/api/ingredients/niqiu.jpg'),
@@ -330,7 +330,7 @@ INSERT INTO recipe_step (recipe_id, step_number, content, duration) VALUES
   (@r, 6, '取出切块，蘸芥末酱油食用', 4);
 
 -- ========== 16. 沙县扁肉 ==========
-INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('沙县扁肉', '沙县小吃的灵魂，猪后腿肉用木槌敲成脆馅，薄皮裹成菱形小馄饨，滚水烫熟配清汤，皮薄馅脆带弹牙。', NULL, 40, 15, 55, 2, 4, '闽菜', '家常,小吃,面食,沙县名吃', 1, TRUE, 225, 280, 16, 12, 26, '肉馅要捶不要剁，加冰水摔打出胶质才脆弹；包时只捏两角留边，才成扁肉的菱形。', '咸鲜爽滑');
+INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('沙县扁肉', '沙县小吃的灵魂，猪后腿肉用木槌敲成脆馅，薄皮裹成菱形小馄饨，滚水烫熟配清汤，皮薄馅脆带弹牙。', 'https://7072-prod-d7g3zal0655a67232-1496875399.cos.ap-shanghai.myqcloud.com/po/covers/min-shaxianbianrou.jpg', 40, 15, 55, 2, 4, '闽菜', '家常,小吃,面食,沙县名吃', 1, TRUE, 225, 280, 16, 12, 26, '肉馅要捶不要剁，加冰水摔打出胶质才脆弹；包时只捏两角留边，才成扁肉的菱形。', '咸鲜爽滑');
 SET @r = LAST_INSERT_ID();
 INSERT INTO recipe_ingredient (recipe_id, name, amount, unit, is_essential, sort_order, image_url) VALUES
   (@r, '猪后腿肉馅', '300', 'g', TRUE, 1, '/api/ingredients/zhuroumo.jpg'),
@@ -354,7 +354,7 @@ INSERT INTO recipe_step (recipe_id, step_number, content, duration) VALUES
   (@r, 6, '扁肉捞入汤碗，撒葱花淋香油', 2);
 
 -- ========== 17. 泉州烧肉粽 ==========
-INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('泉州烧肉粽', '泉州端午的烧肉粽，糯米先炒酱油上色，包入五香猪肉、香菇、虾米与咸蛋黄，粽叶扎紧煮透，油润咸香弹糯。', NULL, 40, 120, 160, 2, 6, '闽菜', '时令,小吃,糯米,泉州名吃', 1, TRUE, 91, 430, 18, 22, 42, '糯米要泡足沥干，用葱酥和酱油先炒至均匀上色再包；煮时大火压足两小时才黏糯不透心。', '咸香油润');
+INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('泉州烧肉粽', '泉州端午的烧肉粽，糯米先炒酱油上色，包入五香猪肉、香菇、虾米与咸蛋黄，粽叶扎紧煮透，油润咸香弹糯。', 'https://7072-prod-d7g3zal0655a67232-1496875399.cos.ap-shanghai.myqcloud.com/po/covers/min-quanzhoushourouzong.jpg', 40, 120, 160, 2, 6, '闽菜', '时令,小吃,糯米,泉州名吃', 1, TRUE, 91, 430, 18, 22, 42, '糯米要泡足沥干，用葱酥和酱油先炒至均匀上色再包；煮时大火压足两小时才黏糯不透心。', '咸香油润');
 SET @r = LAST_INSERT_ID();
 INSERT INTO recipe_ingredient (recipe_id, name, amount, unit, is_essential, sort_order, image_url) VALUES
   (@r, '糯米', '600', 'g', TRUE, 1, '/api/ingredients/nuomi.jpg'),

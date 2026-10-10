@@ -86,14 +86,30 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,
                                 "/recipes", "/recipes/*",
                                 "/recipe-categories", "/recipe-categories/*",
+                                "/books", "/books/*",
+                                "/books/*/chapters", "/books/*/chapters/*",
+                                "/books/*/characters", "/books/*/characters/*",
                                 "/avatars/**", "/covers/**", "/ingredients/**", "/sounds/**").permitAll()
+                        // ASR 网关握手：WebSocket 不能带头，改用一次性 ticket，在握手拦截器里校验；
+                        // 必须放行，否则握手在到达 handler 前就被 401 掉
+                        .requestMatchers("/ws/asr").permitAll()
+                        // chat 服务回调落库建议：Python 侧拿不到 JWT，由 Controller 校验 X-Internal-Token
+                        .requestMatchers("/talk/internal/**").permitAll()
+                        // agent-novel 的正典写入与 as-of 读取同属内网回调：Python 侧没有管理端 JWT
+                        // （JWT 只活 24 小时，不能当服务长期凭据），同样由 NovelInternalController 自校令牌
+                        .requestMatchers("/novel/internal/**").permitAll()
+                        // 创作工作台（正典手改、冲突裁定、进度）：作者级唯一入口，读写都要管理端 JWT。
+                        // 放在 internal 那条 permitAll 之后：内网通道继续靠自校 X-Internal-Token，
+                        // 其余 /novel/** 一律 ADMIN_CLIENT——正典与台账不是读者内容，没有开放的理由
+                        .requestMatchers("/novel/**").access(ADMIN_CLIENT)
                         // 探活端点公开（云托管滚动发布要读它）；metrics/prometheus/info 只给管理端
                         .requestMatchers("/actuator/health", "/actuator/health/**").permitAll()
                         .requestMatchers("/actuator/**").access(ADMIN_CLIENT)
                         // 用户管理：仅管理端管理员
                         .requestMatchers("/users/**").access(ADMIN_CLIENT)
                         // 内容写操作：仅管理端管理员（App 普通用户不能创建/修改/删除内容）
-                        .requestMatchers("/recipes/**", "/recipe-categories/**").access(ADMIN_CLIENT)
+                        // /books 的 GET 在上面已 permitAll（读者端书架/目录/正文要公开），这里只兜写操作
+                        .requestMatchers("/recipes/**", "/recipe-categories/**", "/books/**").access(ADMIN_CLIENT)
                         .anyRequest().authenticated())
                 .exceptionHandling(handler -> handler
                         .authenticationEntryPoint(this::writeUnauthorized)

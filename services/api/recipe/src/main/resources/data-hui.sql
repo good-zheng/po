@@ -68,7 +68,7 @@ INSERT INTO recipe_step (recipe_id, step_number, content, duration) VALUES
   (@r, 6, '加黄酒尝味补盐，撒葱段连煲上桌', 3);
 
 -- ========== 4. 胡氏一品锅 ==========
-INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('胡氏一品锅', '源自绩溪胡氏宗祠的合族大锅菜，因待客以一品之名传开。鸭块、五花肉、香干、笋片层层码放慢炖两小时，越炖越浓越吃越香。', NULL, 45, 130, 175, 3, 6, '徽菜', '经典,宴客,汤羹,徽菜名菜', 1, TRUE, 257, 400, 26, 30, 4, '料要层层压实码放，汤只注八成满；小火炖足两小时中途不开盖，百味才融成一锅。', '咸鲜醇厚');
+INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('胡氏一品锅', '源自绩溪胡氏宗祠的合族大锅菜，因待客以一品之名传开。鸭块、五花肉、香干、笋片层层码放慢炖两小时，越炖越浓越吃越香。', 'https://7072-prod-d7g3zal0655a67232-1496875399.cos.ap-shanghai.myqcloud.com/po/covers/hui-yipinguo.jpg', 45, 130, 175, 3, 6, '徽菜', '经典,宴客,汤羹,徽菜名菜', 1, TRUE, 257, 400, 26, 30, 4, '料要层层压实码放，汤只注八成满；小火炖足两小时中途不开盖，百味才融成一锅。', '咸鲜醇厚');
 SET @r = LAST_INSERT_ID();
 INSERT INTO recipe_ingredient (recipe_id, name, amount, unit, is_essential, sort_order, image_url) VALUES
   (@r, '土鸭', '半', '只(约800g)', TRUE, 1, '/api/ingredients/ya.jpg'),
@@ -93,7 +93,7 @@ INSERT INTO recipe_step (recipe_id, step_number, content, duration) VALUES
   (@r, 7, '开盖补盐，转中火滚10分钟至汤汁浓醇，连锅上桌边加热边吃', 10);
 
 -- ========== 5. 李鸿章大杂烩 ==========
-INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('李鸿章大杂烩', '李鸿章府上应酬名菜，相传宴美国使团时仓促凑成一锅烩菜反获盛赞。海参虾仁火腿烩进浓鸡汤，软糯脆嫩并存，荤而不燥。', NULL, 30, 30, 60, 3, 4, '徽菜', '经典,宴客,海鲜,徽菜名菜', 1, TRUE, 153, 260, 29, 14, 3, '海参、鸡片先各自焯水定型；烩时推勺不划圈，薄芡分两次下，汤才清而裹味。', '咸鲜浓厚');
+INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('李鸿章大杂烩', '李鸿章府上应酬名菜，相传宴美国使团时仓促凑成一锅烩菜反获盛赞。海参虾仁火腿烩进浓鸡汤，软糯脆嫩并存，荤而不燥。', 'https://7072-prod-d7g3zal0655a67232-1496875399.cos.ap-shanghai.myqcloud.com/po/covers/hui-dzahue.jpg', 30, 30, 60, 3, 4, '徽菜', '经典,宴客,海鲜,徽菜名菜', 1, TRUE, 153, 260, 29, 14, 3, '海参、鸡片先各自焯水定型；烩时推勺不划圈，薄芡分两次下，汤才清而裹味。', '咸鲜浓厚');
 SET @r = LAST_INSERT_ID();
 INSERT INTO recipe_ingredient (recipe_id, name, amount, unit, is_essential, sort_order, image_url) VALUES
   (@r, '海参', '300', 'g', TRUE, 1, '/api/ingredients/yuchi.jpg'),
@@ -116,7 +116,7 @@ INSERT INTO recipe_step (recipe_id, step_number, content, duration) VALUES
   (@r, 6, '分两次淋水淀粉推勺勾薄芡，汤浓亮即盛盘', 3);
 
 -- ========== 6. 徽州刀板香 ==========
-INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('徽州刀板香', '徽州咸肉雅号刀板香，腌三日风干七日，蒸时垫木板吸去浮油。肉色琥珀透光，肥肉不腻瘦肉不柴，薄切一盘便是地道下酒菜。', NULL, 40, 50, 90, 3, 6, '徽菜', '经典,卤味,宴客,徽州特色', 1, TRUE, 250, 280, 19, 22, 1, '腌三日风干七日急不得；蒸时垫木板吸油，晾至温热再逆纹切，片薄透光才正宗。', '咸香醇厚');
+INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('徽州刀板香', '徽州咸肉雅号刀板香，腌三日风干七日，蒸时垫木板吸去浮油。肉色琥珀透光，肥肉不腻瘦肉不柴，薄切一盘便是地道下酒菜。', 'https://7072-prod-d7g3zal0655a67232-1496875399.cos.ap-shanghai.myqcloud.com/po/covers/hui-daobanxiang.jpg', 40, 50, 90, 3, 6, '徽菜', '经典,卤味,宴客,徽州特色', 1, TRUE, 250, 280, 19, 22, 1, '腌三日风干七日急不得；蒸时垫木板吸油，晾至温热再逆纹切，片薄透光才正宗。', '咸香醇厚');
 SET @r = LAST_INSERT_ID();
 INSERT INTO recipe_ingredient (recipe_id, name, amount, unit, is_essential, sort_order, image_url) VALUES
   (@r, '带皮土猪肉', '800', 'g', TRUE, 1, '/api/ingredients/wuhuarou.jpg'),
@@ -133,7 +133,7 @@ INSERT INTO recipe_step (recipe_id, step_number, content, duration) VALUES
   (@r, 6, '晾至温热逆纹切薄片，码盘趁热食用', 5);
 
 -- ========== 7. 黄山炖鸽 ==========
-INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('黄山炖鸽', '黄山一带的滋补头汤，当地人用山泉炖嫩鸽，只加姜与黄酒吊出本味。汤清如茶油，鸽肉酥烂离骨，一勺入口从喉咙暖到胃里。', NULL, 15, 140, 155, 2, 4, '徽菜', '经典,汤羹,滋补,徽州特色', 1, TRUE, 290, 190, 24, 9, 2, '全程微火，汤面只冒虾眼泡；炖足两小时肉自离骨，先下盐则肉柴汤浑。', '清鲜醇和');
+INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('黄山炖鸽', '黄山一带的滋补头汤，当地人用山泉炖嫩鸽，只加姜与黄酒吊出本味。汤清如茶油，鸽肉酥烂离骨，一勺入口从喉咙暖到胃里。', 'https://7072-prod-d7g3zal0655a67232-1496875399.cos.ap-shanghai.myqcloud.com/po/covers/hui-huangshandunge.jpg', 15, 140, 155, 2, 4, '徽菜', '经典,汤羹,滋补,徽州特色', 1, TRUE, 290, 190, 24, 9, 2, '全程微火，汤面只冒虾眼泡；炖足两小时肉自离骨，先下盐则肉柴汤浑。', '清鲜醇和');
 SET @r = LAST_INSERT_ID();
 INSERT INTO recipe_ingredient (recipe_id, name, amount, unit, is_essential, sort_order, image_url) VALUES
   (@r, '乳鸽', '2', '只(约600g)', TRUE, 1, '/api/ingredients/tuji.jpg'),
@@ -150,7 +150,7 @@ INSERT INTO recipe_step (recipe_id, step_number, content, duration) VALUES
   (@r, 5, '加黄酒和盐调味，连煲上桌', 3);
 
 -- ========== 8. 茶叶熏鸡 ==========
-INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('茶叶熏鸡', '徽州人把茶做进菜里的聪明菜。茶叶同米饭白糖入锅起烟，熏出枣红油亮外皮，烟香混着茶清香钻进骨缝，冷食热食两相宜。', NULL, 25, 60, 85, 3, 6, '徽菜', '经典,卤味,宴客,徽州特色', 1, TRUE, 92, 250, 26, 15, 2, '熏只争五分钟：大火起烟即转中火，见皮色枣红立刻出锅，久熏发苦破皮。', '茶香熏鲜');
+INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('茶叶熏鸡', '徽州人把茶做进菜里的聪明菜。茶叶同米饭白糖入锅起烟，熏出枣红油亮外皮，烟香混着茶清香钻进骨缝，冷食热食两相宜。', 'https://7072-prod-d7g3zal0655a67232-1496875399.cos.ap-shanghai.myqcloud.com/po/covers/hui-chayexunji.jpg', 25, 60, 85, 3, 6, '徽菜', '经典,卤味,宴客,徽州特色', 1, TRUE, 92, 250, 26, 15, 2, '熏只争五分钟：大火起烟即转中火，见皮色枣红立刻出锅，久熏发苦破皮。', '茶香熏鲜');
 SET @r = LAST_INSERT_ID();
 INSERT INTO recipe_ingredient (recipe_id, name, amount, unit, is_essential, sort_order, image_url) VALUES
   (@r, '三黄鸡', '1', '只(约1000g)', TRUE, 1, '/api/ingredients/tuji.jpg'),
@@ -171,7 +171,7 @@ INSERT INTO recipe_step (recipe_id, step_number, content, duration) VALUES
   (@r, 6, '斩件码盘，原汁淋面', 4);
 
 -- ========== 9. 火腿炖甲鱼 ==========
-INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('火腿炖甲鱼', '徽菜高席炖菜，甲鱼裙边配徽州火腿同煨，不点一滴酱油。汤色醇厚油亮，裙边糯滑粘嘴，火腿咸香衬出龟肉清甜，最见火功。', NULL, 20, 100, 120, 2, 4, '徽菜', '经典,宴客,汤羹,徽菜名菜', 1, TRUE, 298, 165, 22, 7, 2, '裙边必须烫净黑膜去腥；焯透后一次性加足开水，微火炖足一个半钟至软糯弹滑。', '咸鲜醇厚');
+INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('火腿炖甲鱼', '徽菜高席炖菜，甲鱼裙边配徽州火腿同煨，不点一滴酱油。汤色醇厚油亮，裙边糯滑粘嘴，火腿咸香衬出龟肉清甜，最见火功。', 'https://7072-prod-d7g3zal0655a67232-1496875399.cos.ap-shanghai.myqcloud.com/po/covers/hui-huotuijiayu.jpg', 20, 100, 120, 2, 4, '徽菜', '经典,宴客,汤羹,徽菜名菜', 1, TRUE, 298, 165, 22, 7, 2, '裙边必须烫净黑膜去腥；焯透后一次性加足开水，微火炖足一个半钟至软糯弹滑。', '咸鲜醇厚');
 SET @r = LAST_INSERT_ID();
 INSERT INTO recipe_ingredient (recipe_id, name, amount, unit, is_essential, sort_order, image_url) VALUES
   (@r, '甲鱼裙边', '500', 'g', TRUE, 1, '/api/ingredients/jiayuqunbian.jpg'),
@@ -189,7 +189,7 @@ INSERT INTO recipe_step (recipe_id, step_number, content, duration) VALUES
   (@r, 5, '下枸杞，补黄酒和盐再滚5分钟即成', 4);
 
 -- ========== 10. 苞芦馃 ==========
-INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('苞芦馃', '徽州山民的玉米饼，苞芦粉沸水烫面作皮，包香干腊肉蒜叶馅煎制。外皮酥香带沙感，馅料咸香有嚼头，是山村旧岁月的待客点心。', NULL, 40, 20, 60, 2, 4, '徽菜', '家常,小吃,粗粮,徽州特色', 1, TRUE, 185, 370, 11, 18, 40, '一定要沸水烫面才黏得住；馅要炒凉再包，煎后淋水加盖焖透，芯才不夹生。', '咸香粗粝');
+INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('苞芦馃', '徽州山民的玉米饼，苞芦粉沸水烫面作皮，包香干腊肉蒜叶馅煎制。外皮酥香带沙感，馅料咸香有嚼头，是山村旧岁月的待客点心。', 'https://7072-prod-d7g3zal0655a67232-1496875399.cos.ap-shanghai.myqcloud.com/po/covers/hui-baoluguo.jpg', 40, 20, 60, 2, 4, '徽菜', '家常,小吃,粗粮,徽州特色', 1, TRUE, 185, 370, 11, 18, 40, '一定要沸水烫面才黏得住；馅要炒凉再包，煎后淋水加盖焖透，芯才不夹生。', '咸香粗粝');
 SET @r = LAST_INSERT_ID();
 INSERT INTO recipe_ingredient (recipe_id, name, amount, unit, is_essential, sort_order, image_url) VALUES
   (@r, '玉米面', '200', 'g', TRUE, 1, '/api/ingredients/mianfen.jpg'),
@@ -209,7 +209,7 @@ INSERT INTO recipe_step (recipe_id, step_number, content, duration) VALUES
   (@r, 6, '沿锅边淋20ml水，加盖小火焖3分钟至内芯熟透', 4);
 
 -- ========== 11. 笋干老鸭煲 ==========
-INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('笋干老鸭煲', '徽州人把春笋晒成笋干留住山味，最金贵的吃法是炖老鸭。鸭油被干笋吸得饱满，汤鲜笋韧，一煲尽见徽州人家的山货家底。', NULL, 45, 140, 185, 2, 6, '徽菜', '家常,汤羹,山珍,徽州特色', 1, TRUE, 99, 270, 22, 18, 3, '笋干泡透后一定要炒干水汽再下锅，吸油更足；煲汤一次加足开水，中途不添水。', '咸鲜笋香');
+INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('笋干老鸭煲', '徽州人把春笋晒成笋干留住山味，最金贵的吃法是炖老鸭。鸭油被干笋吸得饱满，汤鲜笋韧，一煲尽见徽州人家的山货家底。', 'https://7072-prod-d7g3zal0655a67232-1496875399.cos.ap-shanghai.myqcloud.com/po/covers/hui-sunganyaobao.jpg', 45, 140, 185, 2, 6, '徽菜', '家常,汤羹,山珍,徽州特色', 1, TRUE, 99, 270, 22, 18, 3, '笋干泡透后一定要炒干水汽再下锅，吸油更足；煲汤一次加足开水，中途不添水。', '咸鲜笋香');
 SET @r = LAST_INSERT_ID();
 INSERT INTO recipe_ingredient (recipe_id, name, amount, unit, is_essential, sort_order, image_url) VALUES
   (@r, '土鸭', '1', '只(约1200g)', TRUE, 1, '/api/ingredients/ya.jpg'),
@@ -229,7 +229,7 @@ INSERT INTO recipe_step (recipe_id, step_number, content, duration) VALUES
   (@r, 6, '下枸杞加盐调味，再滚5分钟连煲上桌', 6);
 
 -- ========== 12. 黄山烧饼 ==========
-INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('黄山烧饼', '又名梅城干馃，徽州茶商千里在途的干粮。薄酥皮裹梅干菜与肥肉丁，烤到焦香，凉了咬一口掉渣，咸中带甜越嚼越香。', NULL, 60, 25, 85, 3, 8, '徽菜', '小吃,干粮,徽菜名菜', 1, TRUE, 303, 250, 4, 14, 24, '馅要炒透晾凉再包；烤至酥壳硬透才存得住，放凉了再动才不会碎。', '干香咸甜');
+INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('黄山烧饼', '又名梅城干馃，徽州茶商千里在途的干粮。薄酥皮裹梅干菜与肥肉丁，烤到焦香，凉了咬一口掉渣，咸中带甜越嚼越香。', 'https://7072-prod-d7g3zal0655a67232-1496875399.cos.ap-shanghai.myqcloud.com/po/covers/hui-huangshanshaobing.jpg', 60, 25, 85, 3, 8, '徽菜', '小吃,干粮,徽菜名菜', 1, TRUE, 303, 250, 4, 14, 24, '馅要炒透晾凉再包；烤至酥壳硬透才存得住，放凉了再动才不会碎。', '干香咸甜');
 SET @r = LAST_INSERT_ID();
 INSERT INTO recipe_ingredient (recipe_id, name, amount, unit, is_essential, sort_order, image_url) VALUES
   (@r, '中筋面粉', '200', 'g', TRUE, 1, '/api/ingredients/mianfen.jpg'),
@@ -249,7 +249,7 @@ INSERT INTO recipe_step (recipe_id, step_number, content, duration) VALUES
   (@r, 6, '烤箱上下火200度预热，烤18分钟至表面焦黄酥壳硬', 18);
 
 -- ========== 13. 冬笋炒腊肉 ==========
-INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('冬笋炒腊肉', '徽州冬日的一盘鲜：自家腌的腊肉对上肉厚的冬笋。笋片吸透腊猪油，咸香里带清甜脆嫩，一盘下肚山野的年气全在饭桌上。', NULL, 15, 12, 27, 1, 3, '徽菜', '家常,时令,下饭,徽州特色', 1, TRUE, 92, 255, 12, 20, 5, '冬笋必焯水去涩；腊肉先蒸后煸至出油透明，转大火快炒才脆嫩不软塌。', '咸鲜脆嫩');
+INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('冬笋炒腊肉', '徽州冬日的一盘鲜：自家腌的腊肉对上肉厚的冬笋。笋片吸透腊猪油，咸香里带清甜脆嫩，一盘下肚山野的年气全在饭桌上。', 'https://7072-prod-d7g3zal0655a67232-1496875399.cos.ap-shanghai.myqcloud.com/po/covers/hui-dongsunlarou.jpg', 15, 12, 27, 1, 3, '徽菜', '家常,时令,下饭,徽州特色', 1, TRUE, 92, 255, 12, 20, 5, '冬笋必焯水去涩；腊肉先蒸后煸至出油透明，转大火快炒才脆嫩不软塌。', '咸鲜脆嫩');
 SET @r = LAST_INSERT_ID();
 INSERT INTO recipe_ingredient (recipe_id, name, amount, unit, is_essential, sort_order, image_url) VALUES
   (@r, '冬笋', '300', 'g', TRUE, 1, '/api/ingredients/dongsun.jpg'),
@@ -268,7 +268,7 @@ INSERT INTO recipe_step (recipe_id, step_number, content, duration) VALUES
   (@r, 6, '撒蒜苗段炒至断生，尝味补盐出锅', 2);
 
 -- ========== 14. 中和汤 ==========
-INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('中和汤', '徽州人家年三十的头一道汤，取中和二字，愿家道中和、岁岁平安。豆腐、冬笋、火腿、虾皮同烩一碗清汤，诸味调和，清鲜妥帖。', NULL, 15, 20, 35, 1, 4, '徽菜', '家常,汤羹,年节,徽州特色', 1, TRUE, 156, 120, 10, 6, 5, '豆腐下锅后用勺背轻推不可搅；小火养味、薄芡收住，汤才清鲜豆方完整。', '清鲜和醇');
+INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('中和汤', '徽州人家年三十的头一道汤，取中和二字，愿家道中和、岁岁平安。豆腐、冬笋、火腿、虾皮同烩一碗清汤，诸味调和，清鲜妥帖。', 'https://7072-prod-d7g3zal0655a67232-1496875399.cos.ap-shanghai.myqcloud.com/po/covers/hui-zhonghetang.jpg', 15, 20, 35, 1, 4, '徽菜', '家常,汤羹,年节,徽州特色', 1, TRUE, 156, 120, 10, 6, 5, '豆腐下锅后用勺背轻推不可搅；小火养味、薄芡收住，汤才清鲜豆方完整。', '清鲜和醇');
 SET @r = LAST_INSERT_ID();
 INSERT INTO recipe_ingredient (recipe_id, name, amount, unit, is_essential, sort_order, image_url) VALUES
   (@r, '豆腐', '300', 'g', TRUE, 1, '/api/ingredients/doufu.jpg'),
@@ -289,7 +289,7 @@ INSERT INTO recipe_step (recipe_id, step_number, content, duration) VALUES
   (@r, 6, '盛碗撒葱花即成', 2);
 
 -- ========== 15. 梅干菜烧排骨 ==========
-INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('梅干菜烧排骨', '徽州干菜一蒸三晒，腌出岁月的陈香。同排骨烧焖，干菜吃透肉油黑亮滋润，排骨酥软酱香浓郁，浓汤拌饭一碗不剩。', NULL, 20, 60, 80, 2, 4, '徽菜', '家常,下饭,肉类,徽州特色', 1, TRUE, 144, 290, 16, 22, 6, '干菜要反复淘净沙土、挤干再炒透；焖足四十五分钟，菜吃透肉油才黑亮回甜。', '咸甜浓香');
+INSERT INTO recipe (title, description, cover_image_url, prep_time, cook_time, total_time, difficulty, servings, category, tags, author_id, is_public, likes_count, calories, protein, fat, carbs, tips, flavor_profile) VALUES ('梅干菜烧排骨', '徽州干菜一蒸三晒，腌出岁月的陈香。同排骨烧焖，干菜吃透肉油黑亮滋润，排骨酥软酱香浓郁，浓汤拌饭一碗不剩。', 'https://7072-prod-d7g3zal0655a67232-1496875399.cos.ap-shanghai.myqcloud.com/po/covers/hui-meigancaipaigu.jpg', 20, 60, 80, 2, 4, '徽菜', '家常,下饭,肉类,徽州特色', 1, TRUE, 144, 290, 16, 22, 6, '干菜要反复淘净沙土、挤干再炒透；焖足四十五分钟，菜吃透肉油才黑亮回甜。', '咸甜浓香');
 SET @r = LAST_INSERT_ID();
 INSERT INTO recipe_ingredient (recipe_id, name, amount, unit, is_essential, sort_order, image_url) VALUES
   (@r, '猪肋排', '500', 'g', TRUE, 1, '/api/ingredients/zhupaigu.jpg'),

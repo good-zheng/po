@@ -35,6 +35,16 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.goodzheng</groupId>
+            <artifactId>po-talk</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.goodzheng</groupId>
+            <artifactId>po-novel</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-spring-boot4-starter</artifactId>
         </dependency>
