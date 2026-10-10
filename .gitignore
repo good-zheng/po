@@ -30,6 +30,10 @@ services/agent-cooking/**/__pycache__/
 .env
 .env.*
 !.env.example
+# 前端两个站点（novel-web / admin-web）的生产域名档必须入库（镜像构建时要读，值烘进 JS 产物），
+# 本机开发档 .env.local 仍不入库
+!apps/novel-web/.env
+!apps/admin-web/.env
 services/api/src/main/resources/application-local.yaml
 services/api/api-bootstrap/src/main/resources/application-local.yaml
 # 生产密钥不入库：profile 文件与备忘 json 一律忽略
