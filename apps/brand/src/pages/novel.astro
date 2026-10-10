@@ -1,0 +1,499 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+import { LIVE } from '~/links';
+
+import Hero from '~/components/widgets/Hero.astro';
+import SocialProof from '~/components/widgets/SocialProof.astro';
+import Note from '~/components/widgets/Note.astro';
+import Content from '~/components/widgets/Content.astro';
+import Comparison from '~/components/widgets/Comparison.astro';
+import Steps from '~/components/widgets/Steps.astro';
+import Features from '~/components/widgets/Features.astro';
+import Bento from '~/components/widgets/Bento.astro';
+import Timeline from '~/components/widgets/Timeline.astro';
+import FAQs from '~/components/widgets/FAQs.astro';
+import CallToAction from '~/components/widgets/CallToAction.astro';
+
+const metadata = {
+  title: '言外书斋 — 让第 27 章还记得第 3 章',
+  description:
+    '言外书斋是一条反幻觉的长篇小说创作链路：设定存进数据库成为带出处的正典，单章注入预算恒定，计划与正文各过一道闸门，只有过了闸门的抽取才写回记忆。',
+  ignoreTitleTemplate: true,
+};
+---
+
+<Layout metadata={metadata}>
+  <!-- Hero Widget ******************* -->
+
+  <Hero
+    id="top"
+    tagline="第三件作品 · 长文本一致性"
+    badge="阅读端已上线"
+    image={{
+      src: '~/assets/images/novel.svg',
+      alt: '插画：中间是一页正在写的章节稿，左侧是三层带预算刻度的上下文注入，右侧是两道闸门与一张待裁定的冲突卡，下方是一条只接受闸门通过内容的正典台账',
+      format: 'svg',
+    }}
+    actions={[
+      {
+        variant: 'primary',
+        text: '打开阅读端',
+        href: LIVE.novel,
+        icon: 'tabler:external-link',
+        target: '_blank',
+      },
+      { variant: 'secondary', text: '进工作台（需登录）', href: LIVE.admin, target: '_blank' },
+      { text: '看这条链路', href: '#pipeline', icon: 'tabler:route-2' },
+      { text: '正典长什么样', href: '#canon' },
+      { text: '关键取舍', href: '#decisions' },
+    ]}
+  >
+    <Fragment slot="title">
+      言外书斋：<span class="text-accent dark:text-white">让第 27 章</span>还记得第 3 章说过的话
+    </Fragment>
+
+    <Fragment slot="subtitle">
+      让模型连写五十章，难的不是写，是它写第 27 章时并不真的知道第 3 章定了什么。
+      这个项目把「设定」从提示词里搬进数据库：每条事实都是带出处、带生效区间的断言， 写完先过闸门，过了才允许写回记忆。
+    </Fragment>
+
+    <Fragment slot="content">
+      <p class="max-w-2xl mx-auto mt-6 text-sm text-muted">
+        一条十一节点的生成链路、两道闸门、十五张正典与台账表、305 个测试用例， 和一个坐在管理端里的三栏创作工作台。
+        <br />
+        别和第二件作品「言外 EchoTalk」读混：那一个把听出来的意思变成卡片，这一个把写过的事实变成可引用的正典。
+      </p>
+    </Fragment>
+  </Hero>
+
+  <!-- SocialProof Widget ************ -->
+
+  <SocialProof
+    id="proof"
+    classes={{ container: '!pb-14 md:!pb-20' }}
+    items={[
+      { value: '305', label: '个测试用例，含一致性黄金集', icon: 'tabler:test-pipe', color: 'text-emerald-500' },
+      {
+        value: '11',
+        label: '条确定性规则：7 条判正文，4 条判计划',
+        icon: 'tabler:filter-check',
+        color: 'text-amber-500',
+      },
+      { value: '4k', label: 'tokens 单章注入上限，不随章数增长', icon: 'tabler:ruler-2', color: 'text-sky-500' },
+      { value: '0', label: '条模型抽取的内容绕过闸门入库', icon: 'tabler:shield-lock', color: 'text-rose-500' },
+    ]}
+  />
+
+  <!-- Note Widget ******************* -->
+
+  <Note
+    variant="info"
+    title="说明"
+    description="这一页只写已经进仓库、能被指认的东西：节点、规则、表结构、测试与一次真实跑通的结果。退出一期的验收线是「连写 50 章、人工盲读每十章不超过一处冲突」，那条还没测出来，所以这一页不给文学质量结论。"
+  />
+
+  <!-- Features Widget *************** -->
+
+  <Features
+    id="why"
+    tagline="问题"
+    title="长篇小说的「前后不一致」有六种长相"
+    subtitle="它们都不是模型不够聪明，而是没人给它一份可信、可引用、随章节演进的设定真相。"
+    columns={2}
+    items={[
+      {
+        title: '属性漂移',
+        icon: 'tabler:arrows-exchange',
+        description:
+          '第 3 章主角是左撇子，第 27 章用右手签字。眼睛颜色、伤疤、年龄同样会漂，而且漂得很自然，读起来毫不违和。',
+      },
+      {
+        title: '生死与在场',
+        icon: 'tabler:ghost',
+        description: '已经写死的角色在第 40 章开口说话；不在场的人「私下」知道了只有在场的人才可能知道的信息。',
+      },
+      {
+        title: '称谓与别名',
+        icon: 'tabler:users-group',
+        description: '同一个人被叫「沈青」「青儿」「沈姑娘」，模型把他当成三个人；反过来也可能把两个角色合并成一个。',
+      },
+      {
+        title: '时间线倒错',
+        icon: 'tabler:clock-off',
+        description: '第 40 章回忆第 55 章才发生的事；角色「三天后」到达一个单程需要十天的地方。',
+      },
+      {
+        title: '世界规则违反',
+        icon: 'tabler:ban',
+        description: '前期立下「此地不能使用灵力」，后期无代价地使用。货币、距离、科技水平也一样越界。',
+      },
+      {
+        title: '伏笔烂尾与文风漂移',
+        icon: 'tabler:scissors',
+        description: '契诃夫之枪没响；性格突变无因；人称与时态悄悄换掉，章节字数失控。这一类只能靠语义判断。',
+      },
+      {
+        title: '换个大上下文窗口为什么救不了',
+        icon: 'tabler:zoom-exclamation',
+        description:
+          '五十万字全灌既贵又触发 lost-in-the-middle，中部信息实际不可用；模型偏好最近出现的设定，早期设定在场也被弱化；一致性本身没有梯度信号；多层摘要套娃之后细节失真。',
+      },
+      {
+        title: '真正的风险是记忆污染',
+        icon: 'tabler:bug',
+        description:
+          '模型在第 20 章编了一个设定，被抽取写回记忆，第 21 章起它就被当成既定事实注入——幻觉从此不可逆。所以写入记忆的通道必须比读取记忆的通道更严格。',
+      },
+    ]}
+  >
+    <Fragment slot="bg">
+      <div class="absolute inset-0 bg-amber-50/60 dark:bg-transparent"></div>
+    </Fragment>
+  </Features>
+
+  <Note
+    variant="warning"
+    title="这个项目的全部设计从一句话出发"
+    description="<strong>写入记忆的通道必须比读取记忆的通道更严格。</strong>读取可以模糊、可以截断、可以降级；写入不行——每一条要进正典的断言都得先证明自己来自这一章的原文，且不与既有事实冲突。"
+  />
+
+  <!-- Comparison Widget ************* -->
+
+  <Comparison
+    id="versus"
+    tagline="做法对比"
+    title="同样是用大模型写长文，差别在真相放哪"
+    subtitle="同一个维度往下比，就能看出「上下文」和「记忆」是两个不同的东西。"
+    mode="versus"
+    firstColumnLabel="比什么"
+    columns={[
+      { title: '直接续写', subtitle: '把前情贴进提示词' },
+      { title: '长上下文 + 检索', subtitle: '窗口变大，top-k 召回' },
+      { title: '本项目', subtitle: '正典 + 双闸门 + 人在环', highlight: true },
+    ]}
+    rows={[
+      {
+        label: '设定存在哪',
+        values: ['提示词里的一段描述', '向量库里的相似度', '数据库里的断言：主体 · 属性 · 值 · 出处章节 · 生效区间'],
+        group: '真相',
+      },
+      { label: '单章注入量', values: ['越写越长', '靠召回碰运气', '恒定 4k tokens，超限当场砍'], group: '成本' },
+      {
+        label: '冲突谁发现',
+        values: ['读者发现', '没人发现', '正文之前先判计划卡，正文之后规则与裁判各判一遍'],
+        group: '检测',
+      },
+      {
+        label: '模型编的设定',
+        values: ['会被当成事实续写', '会被检索回来', '没过闸门的抽取写不回正典'],
+        group: '真相',
+      },
+      {
+        label: '作者的意见',
+        values: ['只能改提示词', '只能改检索词', '裁定压过模型声明，且永久生效'],
+        group: '人机',
+      },
+      {
+        label: '能不能回溯',
+        values: ['不能', '不能', '每条指控带逐字证据与原文区间，可撤销可重放'],
+        group: '人机',
+      },
+    ]}
+  />
+
+  <!-- Steps Widget ****************** -->
+
+  <Steps
+    id="pipeline"
+    tagline="链路"
+    title="一章要走过十一个节点才进得了记忆"
+    subtitle="链路的形状不是为了让 AI 多写点，是为了让它每一次越界都留下可指认的记录。"
+    items={[
+      {
+        title: '立意与世界观',
+        description: '产出书级圣经：世界规则、时间锚点、实体登记、文风契约。先有能被判定的约束，才谈得上后面的一致性。',
+        icon: 'tabler:bulb',
+      },
+      {
+        title: '大纲与场景卡',
+        description: '每章一张卡：出场实体、本章目标、要收的伏笔、字数区间。卡片是计划的验收对象，不是给人看的备忘。',
+        icon: 'tabler:layout-board',
+      },
+      {
+        title: '闸门 A · 先判计划',
+        description:
+          '四条确定性规则在正文写下第一个字之前，判掉「必然冲突的计划」：让已死角色出场、收没登记的伏笔、字数越界、实体未注册。',
+        icon: 'tabler:filter-check',
+      },
+      {
+        title: '装配上下文',
+        description:
+          '四层预算（常驻 800 / 检索 1500 / 近因 1000 / 任务 700）按 as-of 当前章过滤，每条事实带编号注入，提示词里能引用「canon#7」。三百章也是这一份量。',
+        icon: 'tabler:packages',
+      },
+      {
+        title: '写正文',
+        description: '只写这一章，按文风契约的人称、时态与句式约束生成；前情靠编号事实，不靠模型的记忆力。',
+        icon: 'tabler:pencil',
+      },
+      {
+        title: '抽取断言',
+        description:
+          '把这一章新确立的事实、状态变化、别名与伏笔抽成候选条目，每条必须逐字引原文，并标出落在正文的哪个区间。',
+        icon: 'tabler:scan',
+      },
+      {
+        title: '闸门 B · 再判正文',
+        description:
+          '七条确定性规则加一个独立裁判模型。引不到原文的指控直接作废；阻断级冲突不放行，退回定向修补而不是整章重写。',
+        icon: 'tabler:shield-check',
+      },
+      {
+        title: '写回正典与归档',
+        description: '只有过了闸门的抽取才进正典；归档是全书唯一的写库点，中途失败就整本退回，库里不会留下半本书。',
+        icon: 'tabler:database-import',
+      },
+    ]}
+  />
+
+  <!-- Content Widget **************** -->
+
+  <Content
+    id="canon"
+    tagline="交付物"
+    title="一条设定长这样，一条指控也长这样"
+    subtitle="两边都是结构化记录，不是一段自由文本——能被查询、能被撤销、能被别的章节引用，才叫被记住。"
+    content={`<p class="text-muted">正典条目是 append-only 加状态列：改一条设定不覆盖历史，而是让它旧的那条失效。每条都带出处（哪一章确立、原文区间）、生效区间与权威级；作者裁定的条目权威级最高，模型不能自报。冲突记录同构：编码、严重度、逐字证据、指向的原文区间，加一个处置状态。</p>
+    <p class="mt-4 text-muted">事实按编号注入提示词，所以正文里的每一次引用都能倒查到具体条目；模型说「他抬起右手」而正典记着「惯用手＝左」，规则引擎当场就能判死，不需要任何人读出来。</p>`}
+    image={`<div class="rounded-2xl border border-amber-200 bg-white p-6 shadow-lg dark:border-amber-900 dark:bg-slate-900">
+      <p class="text-xs font-semibold uppercase tracking-wide text-amber-600 dark:text-amber-300">正典断言</p>
+      <p class="mt-2 font-medium text-heading">沈青 · 惯用手 · 左</p>
+      <ul class="mt-3 space-y-1.5 text-sm text-muted">
+        <li><strong class="text-heading">出处</strong> — 第 3 章，原文区间逐字可取，注入时编号为 canon#7</li>
+        <li><strong class="text-heading">生效</strong> — 自第 3 章起，直到被作者裁定的新条目取代</li>
+        <li><strong class="text-heading">权威级</strong> — 作者裁定，模型不得覆盖</li>
+      </ul>
+      <p class="mt-6 text-xs font-semibold uppercase tracking-wide text-rose-600 dark:text-rose-300">冲突记录</p>
+      <p class="mt-2 font-medium text-heading">第 27 章 · attribute_conflict · 阻断级</p>
+      <ul class="mt-3 space-y-1.5 text-sm text-muted">
+        <li><strong class="text-heading">证据</strong> — 「他抬起右手，把契书推了过去」（逐字命中才成立）</li>
+        <li><strong class="text-heading">处置</strong> — 本章不放行，退回定向修补那一句</li>
+      </ul>
+      <p class="mt-4 text-xs text-muted">示例用来说明数据结构，取自产品文档，不是任何一本在写的书的内容。</p>
+    </div>`}
+  />
+
+  <!-- Bento Widget ****************** -->
+
+  <Bento
+    id="decisions"
+    tagline="关键取舍"
+    title="每一条都有一条更省事的走法，以及它为省事付出的代价"
+    subtitle="这个项目的规则不在「怎么写得好看」，在「哪一步绝对不能由模型自己决定」。"
+    columns={3}
+    items={[
+      {
+        title: '设定进数据库，不进提示词',
+        description: '每条事实都是带出处的断言。把设定写成一段长提示词更省事，但它不可查询、不可撤销、也不可回归测试。',
+        icon: 'tabler:book',
+        span: 2,
+      },
+      {
+        title: '写入比读取更严',
+        description: '读取允许截断和降级；写入必须先过闸门。这是防记忆污染的唯一硬防线。',
+        icon: 'tabler:lock-check',
+      },
+      {
+        title: '作者裁定压过模型声明',
+        description: '权威级由服务端在作者采纳之后判定，模型侧连一个字段都自报不了——对话窗不该是提权入口。',
+        icon: 'tabler:gavel',
+      },
+      {
+        title: '预算恒定，不随章数膨胀',
+        description:
+          '层级摘要（场景 / 章 / 故事弧）加超限当场砍。「三百章也不膨胀」是一条能被测试核验的上限，不是愿景。',
+        icon: 'tabler:ruler-2',
+      },
+      {
+        title: '能确定性查的绝不交给模型',
+        description:
+          '属性、生死、别名、区间、引用都用规则判；模型只做语义裁判，而裁判的每条指控都必须逐字引原文，引不到就整条作废——查出的冲突越多，越不能让它蒙。',
+        icon: 'tabler:filter-check',
+        span: 2,
+      },
+      {
+        title: '两道闸门共用同一个验收口',
+        description: '计划闸门与正文闸门产同一种记录、同一份证据标准。松紧不一致，就是假冲突混进台账的入口。',
+        icon: 'tabler:scale',
+      },
+      {
+        title: '严格在服务端，归一在写入侧',
+        description:
+          '实测事故：三章全过闸门，死在最后一步「无效的小说类型」。宽容匹配等于让脏值继续在库里漂，所以归一放在客户端写入边界，再用一条测试钉住两侧字典逐条一致。',
+        icon: 'tabler:alert-triangle',
+        span: 2,
+      },
+      {
+        title: '坏掉要坏得看得见',
+        description: '裁判返回类型异常时整轮按失败处置，不猜、不静默放行；归档失败就退回整本，不留半本书。',
+        icon: 'tabler:eye',
+      },
+    ]}
+  />
+
+  <!-- Content Widget **************** -->
+
+  <Content
+    id="reuse"
+    tagline="工程复用"
+    title="第三个项目，才知道那套底座值不值"
+    subtitle="言外书斋不是从零起步的：它坐在已经跑通的两件作品的底座上，省下来的力气全部投进了一致性。"
+    isReversed
+    image={{
+      src: '~/assets/images/projects/novel-agent.svg',
+      alt: '插画：左侧是一章正文，中间是规则与裁判两道闸门，右侧是带出处的正典断言台账，一条虚线把未通过的稿子退回重写',
+      format: 'svg',
+    }}
+    items={[
+      {
+        title: '后端只是多了一个模块',
+        description:
+          '业务侧长在同一个 Spring Boot 服务里，同一个响应信封、同一份由建表语句掌管的表结构；对外一套书本接口，另有一条只给 Agent 用的内部写回通道。',
+      },
+      {
+        title: 'Agent 只是多插了一个插槽',
+        description:
+          '编排器、意图路由、会话检查点与事件流翻译全是现成的，链路挂进已有的流式服务；没有新增容器，部署形态一点没变。',
+      },
+      {
+        title: '两端共用同一份契约',
+        description:
+          '创作工作台长在管理端的小说模块里（书架、新建、详情、改稿、冲突台账、三栏工作台共六条路由）；阅读端另起一个移动优先的小应用，两端与后端读的是同一个类型包。',
+      },
+      {
+        title: '工作台里，对话只谈不写',
+        description:
+          '三栏工作台左栏查旧章与设定，中栏写与改，右栏议。对话面板产出的是「提议卡」，采纳由作者点下去——模型永远不能通过聊天窗直接改正典。',
+      },
+    ]}
+  />
+
+  <!-- Timeline Widget *************** -->
+
+  <Timeline
+    id="status"
+    tagline="进展"
+    title="做到哪一步了，按仓库现状说"
+    subtitle="状态以代码里已经存在的节点、表、页面与测试为准；没测出来的指标不写成结论。"
+    layout="alternate"
+    items={[
+      {
+        date: '已完成',
+        title: '正典层与业务后端',
+        description:
+          '十五张正典与台账表由建表语句掌管；书本、章节、角色三套对外接口，加一条 Agent 专用的内部写回通道。',
+        icon: 'tabler:database',
+      },
+      {
+        date: '已完成',
+        title: '生成链路重建',
+        description:
+          '十一节点的 LangGraph 链路：立意、世界观、大纲、场景卡、计划闸门、正文、抽取、正文闸门、定向修补、写回、归档。旧骨架只留了立意与大纲两个节点。',
+        icon: 'tabler:route',
+      },
+      {
+        date: '已完成',
+        title: '上下文编译器',
+        description: '四层预算、逐条编号、按当前章过滤，场景 / 章 / 故事弧三级摘要树；超限是硬裁剪，不是祈祷。',
+        icon: 'tabler:packages',
+      },
+      {
+        date: '已完成',
+        title: '黄金集进 CI',
+        description: '一致性用例单独一道门禁，换模型或改提示词不再靠感觉；长测指标另有监控脚本，零模型消耗。',
+        icon: 'tabler:test-pipe',
+      },
+      {
+        date: '已完成',
+        title: '工作台与阅读端',
+        description:
+          '管理端六条小说路由成形，三栏工作台含正典面板、冲突裁定与改稿快照；移动优先的阅读端三页加登录接通。',
+        icon: 'tabler:layout-sidebar',
+      },
+      {
+        date: '2026-10-10 实测',
+        title: '第一次端到端跑通，用了五轮',
+        description:
+          '前四轮各死在一个真缺陷上：抽取载荷超限、生产检查点把结构化对象退化成字典、结构化输出的响应格式不被模型支持、类型字典在写入边界被打回——四者全部修掉并各留一条回归。第五轮跑了五分钟出头、42 次结构化调用，三章各约一千八百字过了正文闸门入库（计划闸门每章都升级到作者拍板），正典层同时落下 103 条断言、17 条别名、13 条未收伏笔与 12 条待作者裁定的冲突。',
+        icon: 'tabler:flask',
+        highlight: true,
+      },
+      {
+        date: '下一步',
+        title: '五十章长测与成本口径',
+        description:
+          '盲读冲突率要真测出来才算数。三章实测里计划闸门每章都升级到人工拍板，「每章签一次卡」到底是缺陷还是产品形态，要在长测里定。',
+        icon: 'tabler:rocket',
+        ghost: true,
+      },
+    ]}
+  />
+
+  <!-- FAQs Widget ******************* -->
+
+  <FAQs
+    id="faqs"
+    tagline="常见疑问"
+    title="关于这个项目，别人会怎么问"
+    subtitle="答案里不写还没做到的事。"
+    schema
+    collapsible={false}
+    columns={2}
+    items={[
+      {
+        title: '现在能试用吗？',
+        description:
+          '能逛阅读端：书架、目录、正文三页游客可读，不用登录（页头「打开阅读端」或页脚「线上入口」进）。创作工作台在管理后台里，需要管理员登录，这一页也不放体验账号，因为它随时会失效。',
+      },
+      {
+        title: '它写得好看吗？',
+        description:
+          '这一期做的是「不矛盾」，不是「写得好」。人称、时态、字数与文风契约已被闸门管住，但文学质量只能靠人读，页面上不给这条结论。',
+      },
+      {
+        title: '为什么不直接把前情全塞进上下文？',
+        description:
+          '五十万字全灌既贵又会触发中部信息丢失；模型偏好最近出现的设定，早期设定即使在场也被弱化；一致性对自由生成没有梯度信号；多层摘要套娃后细节失真。窗口大小解决的是容量问题，不解决真相问题。',
+      },
+      {
+        title: '作者要花多少精力？',
+        description:
+          '三件事：把设定写进正典（权威级最高）、裁定冲突台账里的批准与驳回、对每章的计划卡拍一次板。对话面板只谈不写，它给的是提议卡，采纳由人点。',
+      },
+      {
+        title: '一致性的验收线达到了吗？',
+        description:
+          '还没有。目标线是连写五十章、人工盲读每十章不超过一处冲突，长测还没跑完。目前能给的只是三章实测的入库形状和 305 个测试用例。',
+      },
+      {
+        title: '和前两件作品是什么关系？',
+        description:
+          '同一套底座上的第三个项目。信封、契约、插槽、部署形态都是白拿的；也正因为它坐在同一仓库里，服务端与客户端的类型字典才能被一条测试逐条钉住。',
+      },
+    ]}
+  />
+
+  <!-- CallToAction Widget *********** -->
+
+  <CallToAction
+    id="cta"
+    layout="banner"
+    tagline="联系"
+    title="想看某一道闸门怎么把一条幻觉判死，或者想聊聊长文本一致性"
+    subtitle="每条规则都有对应的事故与回归测试，乐意逐条讲。"
+    actions={[
+      { variant: 'primary', text: '给我写信', href: '/contact', icon: 'tabler:mail' },
+      { text: '回作品集', href: '/#products' },
+    ]}
+  />
+</Layout>

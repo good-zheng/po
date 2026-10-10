@@ -40,3 +40,16 @@ for (const job of jobs) {
   const { size } = await stat(to);
   console.log(`${job.in} -> ${job.out}  ${info.width}x${info.height}  ${(size / 1024).toFixed(1)} KB`);
 }
+
+// 录屏的 poster。竖屏录屏不走 Video 组件（它写死 aspect-video，会把 9:19 的手机屏压扁），
+// 首页那一屏改用页面里的原生 <video>，poster 烘进 public/demo/，与 mp4 同目录。
+const poster = {
+  from: path.join(appRoot, 'src', 'assets', 'images', 'screenshots', 'dingdingchu-home.png'),
+  to: path.join(appRoot, 'public', 'demo', 'dingdingchu-home-poster.webp'),
+  width: 560,
+};
+await mkdir(path.dirname(poster.to), { recursive: true });
+const posterInfo = await sharp(poster.from).resize({ width: poster.width }).webp({ quality: 78 }).toFile(poster.to);
+console.log(
+  `screenshots/dingdingchu-home.png -> public/demo/${path.basename(poster.to)}  ${posterInfo.width}x${posterInfo.height}  ${((await stat(poster.to)).size / 1024).toFixed(1)} KB`
+);

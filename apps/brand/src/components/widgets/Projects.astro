@@ -34,10 +34,12 @@ const columnsClass = getColumnsClass(columns, '');
     {
       items.map(({ title: itemTitle, description, image, tags, href, result, linkText }) => {
         const Card = href ? 'a' : 'div';
+        const external = !!href && /^https?:\/\//.test(href);
         return (
           <li class="intersect-once intersect-quarter motion-safe:md:opacity-0 motion-safe:md:intersect:animate-fade">
             <Card
               href={href}
+              {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
               class:list={[
                 'group flex h-full flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-slate-700 dark:bg-slate-900 shadow-sm',
                 href ? 'transition hover:-translate-y-0.5 hover:shadow-lg hover:border-primary/40' : '',

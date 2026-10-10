@@ -2,7 +2,8 @@
 import Layout from '~/layouts/PageLayout.astro';
 
 import Hero from '~/components/widgets/Hero.astro';
-import Content from '~/components/widgets/Content.astro';
+import Features from '~/components/widgets/Features.astro';
+import Note from '~/components/widgets/Note.astro';
 import Steps2 from '~/components/widgets/Steps2.astro';
 import Features3 from '~/components/widgets/Features3.astro';
 import CallToAction from '~/components/widgets/CallToAction.astro';
@@ -36,41 +37,48 @@ const metadata = {
     </Fragment>
   </Hero>
 
-  <!-- Content Widget **************** -->
+  <!-- Features Widget *************** -->
 
-  <Content
+  <Features
     tagline="我做什么"
     title="一份需求过来，我需要负责到哪一步"
+    columns={2}
     items={[
       {
         title: '前后端不是两个工种，是一条链路',
+        icon: 'tabler:route-2',
         description:
           '叮叮厨里我从表结构写到小程序输入框。跨端联调时最容易甩锅的那段——字段叫什么、分页怎么算、错误怎么包——在我这里不存在，因为只有一处定义。',
       },
       {
         title: 'AI 功能要能上线，不能只会演示',
+        icon: 'tabler:shield-check',
         description:
           '模型会限流、向量服务会不通、Redis 会挂。所以每个环节都写了退化路径，演示环境和生产的表现差别可控。',
       },
       {
         title: '平台限制先摸清再设计',
+        icon: 'tabler:alert-triangle',
         description:
           '微信小程序不支持 flex-wrap、不支持 calc、WebSocket 不走云调用、上传要按需注入。这些不是抱怨清单，是设计前提，知道之后方案才不会返工。',
       },
       {
         title: '文档是给人复用的，包括三个月后的我',
+        icon: 'tabler:writing',
         description: '部署台账、知识手册、脚本入口都留在仓库里。密钥值永远不进仓库，平台常量永远从控制台逐字复制。',
       },
     ]}
   >
-    <Fragment slot="content">
-      <h3 class="text-2xl font-bold tracking-tight sm:text-3xl mb-2 text-heading">工作方式</h3>
-      <p class="text-muted">先跑起来，再跑对，最后跑稳。每一步都要有能验证的东西：一个测试、一条日志、一次真机截图。</p>
-    </Fragment>
     <Fragment slot="bg">
       <div class="absolute inset-0 bg-orange-50 dark:bg-transparent"></div>
     </Fragment>
-  </Content>
+  </Features>
+
+  <Note
+    variant="warning"
+    title="工作方式"
+    description="先跑起来，再跑对，最后跑稳。每一步都要有能验证的东西：一个测试、一条日志、一次真机截图。"
+  />
 
   <!-- Steps2 Widget ***************** -->
 
@@ -149,6 +157,7 @@ const metadata = {
     actions={[
       { variant: 'primary', text: '回项目介绍', href: '/#projects', icon: 'tabler:arrow-left' },
       { text: '看开发手记', href: '/blog' },
+      { text: '看简历', href: '/resume' },
     ]}
   />
 </Layout>

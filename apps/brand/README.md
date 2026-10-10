@@ -1,6 +1,6 @@
 # 叮叮厨 · 项目与个人介绍站
 
-`po` monorepo 里的一个应用：静态站点，介绍「叮叮厨」这个菜谱 + AI 做菜助手项目，以及做它的人。
+`po` monorepo 里的一个应用：静态站点，介绍「叮叮厨」（菜谱 + AI 做菜助手）、「言外 EchoTalk」（实时沟通洞察）与「言外书斋」（长文本一致性链路）三个项目，以及做它们的人。
 
 ## 来源与许可
 
@@ -29,20 +29,31 @@
 
 - `src/config.yaml`：站名、URL、SEO 元数据、博客路由与主题。
 - `src/navigation.ts`：页头与页脚链接。
-- `src/pages/index.astro`：首页由 widget 组合而成，锚点 `#projects` / `#architecture` / `#quick-start` / `#decisions` / `#story` / `#faqs` / `#cta` 与导航、页脚对应。
+- `src/links.ts`：已上线项目的真实地址（言外书斋阅读端、管理后台）。首页作品卡、「叮叮厨的构成」里的管理后台卡、`novel.astro` 的页头按钮与页脚「线上入口」组都从这里取，换域名或补 TLS 只改这一处。地址一律从云托管控制台抄，别按规律推。阅读端现在只有 http 通（`curl https://novel.dingdingchu.site/` 拿不到响应，证书配好就把 scheme 改成 https）；管理后台 http 会被平台 308 回 https，所以直接写 https。外链由 `Projects.astro` 按 `^https?://` 自动补 `target="_blank" rel="noopener noreferrer"`，页脚靠链接上的 `target` 字段。
+- `src/pages/index.astro`：首页由 widget 组合而成，锚点 `#products` / `#projects` / `#screens` / `#architecture` / `#quick-start` / `#decisions` / `#story` / `#faqs` / `#cta` 与导航、页脚对应。`#products` 是三件作品的入口卡，`#projects` 往下仍是叮叮厨的构成，`#screens` 是叮叮厨的真机截图，`#quick-start` 与 `#decisions` 同样只讲叮叮厨；`Stats` 那块的标题已限定为「叮叮厨的数字」，别把它读成整仓库的总数。
+- `src/pages/yanwai.astro`：言外 EchoTalk 的产品页，锚点 `#why` / `#versus` / `#pipeline` / `#insight` / `#sample` / `#shot` / `#decisions` / `#reuse` / `#status` / `#faqs`。内容以 `apps/echo-talk` 与 `services/api/talk`、`services/agent-talk` 的现有代码为准；性能目标值一律标注为「未实测」，不写成结论。
+- `src/pages/novel.astro`：言外书斋（长文本一致性链路）的项目页，路由仍是 `/novel`，锚点 `#why` / `#versus` / `#pipeline` / `#canon` / `#decisions` / `#reuse` / `#status` / `#faqs`。内容以 `services/agent-novel`、`services/api/novel`、`apps/admin-web/src/pages/novel`、`apps/novel-web` 的现有代码为准；节点数、规则数、注入预算、表数与 2026-10-10 那次三章实测的入库形状都取自仓库与 `NOVEL_AGENT_PRD.md` §15.19，「50 章盲读冲突率」这条验收线尚未测出，页面上只写「还没测」。这一页的强调色是琥珀 `#F59E0B` 加正典蓝 `#60A5FA`（言外页用靛蓝与青），与叮叮厨的橙紫并行，别混用。
+- `src/pages/resume.astro`：简历页。可核查部分（概述、能力、代表项目）已填实，`#career` 时间线里三条标「待补充」的条目是**占位**（工作经历两段、教育经历一段），源码顶部有 TODO 注释指明替换位置；填完去掉条目的 `ghost` 字段即恢复实心节点。PDF 附件位当前不放链接，避免指向 404。
 - `src/data/post/*.md`：开发手记。front matter 的 `category` 与 `tags` 会生成分类页与标签页，值请写 ASCII——中文会被罗马化成带调号的拼音 slug。
 - `~/` 是 `src/` 的别名。
 - 图片走 `src/components/common/Image.astro`：远程 CDN 地址由 unpic 改写，本地图片由 Astro 内置 Sharp 处理。
 - 插画全是手写 SVG：源文件在 `src/assets/illustrations/`（只作生成源，不参与打包）和 `src/assets/images/`（被页面直接引用）。配色跟着主题走——蓝 `#0161EF`、紫 `#6D28D9`、橙 `#FB923C`、深蓝底 `#0B1220`。
 - Astro 默认拒绝栅格化 SVG 源（`UnsupportedImageFormat`，构建直接失败）。所以页面直接引用的 SVG 必须带 `format: 'svg'` 直通；而博客封面与 OG 图所在的模板组件写死了 `format="webp"`，只能先用 `scripts/gen-rasters.mjs` 转成位图。改完 `src/assets/illustrations/` 下的任何 SVG，跑 `pnpm brand:assets` 再把产物一起提交。
-- 画面里不放可读文字（OG 图除外），避免被误读成真实产品截图。
+- 画面里不放可读文字（OG 图与 `src/assets/images/screenshots/` 下的真机截图除外），避免被误读成真实产品截图。
+- widget 的 `icon` 必须存在于 `@iconify-json/tabler`，否则 `astro build` 在渲染阶段直接报 `Unable to locate "tabler:xxx" icon!`（`tabler:captions`、`tabler:zigzag` 就没有）。拿不准时读 `node_modules/@iconify-json/tabler/icons.json` 的 `icons` 与 `aliases` 键名核对。
+- `Content` 只用于「文字 + 配图」的两栏版式：它把文字列写死成 `md:basis-1/2`，右列无论有没有 `image` 都占掉一半宽度。没有配图的清单段落要用 `Features`（整宽网格，`columns` 控列数），否则正文会被挤进左半边、右半留白，长描述的中文条目在窄栏里还会撑出大片空隙。段落式的收尾陈述放不进 `Features`（它没有 `content` 插槽），用紧随其后的 `Note` 色带承载。
 
 ## 有意留下的占位
 
 页面里的 `TODO` 不是遗漏：
 
 - `src/config.yaml` 的站点域名与社交账号。**部署前必须换成真实域名**，sitemap、Open Graph 与 RSS 的绝对链接都由它生成。镜像构建可以不脏仓库：`SITE_URL=https://真实域名 pnpm brand:deploy` 会在容器里改写 `src/config.yaml`（域名烘进产物，换域名要重新构建）。
-- 真实产品截图。首页与项目卡片区现在是示意插画；等三端有公网访问后换成真机截图（直接替换 `src/assets/images/` 下的同名文件，比例已按 16:9 与 16:10 对齐）。
+- 真机截图与录屏：`src/assets/images/screenshots/`（叮叮厨首页与 AI 助手、言外会话页）和 `public/demo/`（首页滚动录屏 + 它的 poster）。截图必须放在 `src/assets/images/` 下面——`Image` 的字符串路径由 `src/utils/images.ts` 里的 `import.meta.glob('~/assets/images/**')` 解析，放在别的目录会被当成远程 URL 直接交给 Sharp，构建时报 `LocalImageUsedWrongly`。竖屏素材不放进 `Gallery`——那个组件写死 `aspect-[4/3] object-cover`，一张 9:20 的手机屏会被裁掉八成；录屏也不走 `Video` 组件，它把画面框死成 `aspect-video`，竖屏会被压扁。两处都改用页面里的原生元素（`Content` 的 `image` 插槽套 `Image`；`<video preload="none">` 配 poster，点了才下载）。poster 由 `pnpm brand:assets` 从首页截图烘出来，换截图后重跑。
+- 项目卡片区与插画仍是示意 SVG，等三端有公网访问后可替换（直接换 `src/assets/images/` 下的同名文件，比例已按 16:9 与 16:10 对齐）。
+- 另一段录屏（首页切「最多点赞」排序）没有放上来：那几帧里扬州三丁包、镇江肴肉显示的是无封面占位图，等缺封面的菜谱补齐之后再替换，否则等于把未完成的数据摆到门面里。
+- 言外的公开体验入口与录屏。产品页只写仓库里已存在的页面、接口与表；提审通过后再放入口，体验码会失效所以不写。
+- 简历页 `#career` 的三条「待补充」条目（工作经历两段、教育经历一段）与 PDF 附件位，等本人填写。
+- 站名仍是「叮叮厨」。`src/config.yaml` 的 `site.name` 会同时影响页头 Logo、OG 站点名与 Organization 结构化数据，页头那个 🍳 硬编码在 `src/components/Logo.astro`；若要改成个人品牌名，这三处一起动。言外页与简历页都设了 `ignoreTitleTemplate: true`，避免标题被拼成「言外 · 叮叮厨」。
 
 联系方式（手机 / 邮箱 / 微信）集中在 `src/contact.ts`，联系页、关于页与页脚图标都从这里取，改一处即可。注意 `mailto` 在静态站上会被爬虫直接抓到，垃圾邮件会变多；需要时可改成图片或被 JS 拼装的形式。
 

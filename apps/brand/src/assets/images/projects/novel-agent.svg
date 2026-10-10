@@ -1,0 +1,144 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 800" role="img" aria-label="插画：左侧是一章正文，中间是规则与裁判两道闸门，右侧是带出处的正典断言台账，一条虚线从未通过的稿子退回重写">
+  <defs>
+    <linearGradient id="nvp-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0B1220"/>
+      <stop offset="0.55" stop-color="#151222"/>
+      <stop offset="1" stop-color="#1E1611"/>
+    </linearGradient>
+    <radialGradient id="nvp-amber" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#F59E0B" stop-opacity=".36"/>
+      <stop offset="1" stop-color="#F59E0B" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="nvp-emerald" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#34D399" stop-opacity=".3"/>
+      <stop offset="1" stop-color="#10B981" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="nvp-blue" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#60A5FA" stop-opacity=".28"/>
+      <stop offset="1" stop-color="#2563EB" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="nvp-p" width="34" height="34" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.6" fill="#3E3A4E" fill-opacity=".5"/>
+    </pattern>
+  </defs>
+
+  <rect width="1280" height="800" fill="url(#nvp-bg)"/>
+  <rect width="1280" height="800" fill="url(#nvp-p)"/>
+  <ellipse cx="220" cy="220" rx="320" ry="240" fill="url(#nvp-amber)"/>
+  <ellipse cx="680" cy="420" rx="300" ry="240" fill="url(#nvp-emerald)"/>
+  <ellipse cx="1120" cy="620" rx="300" ry="220" fill="url(#nvp-blue)"/>
+
+  <!-- 左：一章正文 -->
+  <g transform="rotate(-3 300 400)">
+    <rect x="132" y="176" width="336" height="452" rx="34" fill="#1A1714" stroke="#4B4034" stroke-width="3"/>
+    <rect x="164" y="212" width="150" height="14" rx="7" fill="#F59E0B"/>
+    <rect x="164" y="240" width="86" height="9" rx="4.5" fill="#6B5F4D"/>
+    <g fill="#4B5563">
+      <rect x="164" y="282" width="272" height="10" rx="5"/>
+      <rect x="164" y="308" width="252" height="10" rx="5"/>
+      <rect x="164" y="334" width="272" height="10" rx="5"/>
+      <rect x="164" y="360" width="212" height="10" rx="5"/>
+    </g>
+    <rect x="164" y="392" width="272" height="10" rx="5" fill="#4B5563"/>
+    <rect x="230" y="388" width="88" height="18" rx="9" fill="#F59E0B" opacity=".22"/>
+    <rect x="230" y="404" width="88" height="4" rx="2" fill="#F59E0B"/>
+    <g fill="#4B5563">
+      <rect x="164" y="430" width="256" height="10" rx="5"/>
+      <rect x="164" y="456" width="232" height="10" rx="5"/>
+      <rect x="164" y="482" width="272" height="10" rx="5"/>
+    </g>
+    <g fill="#334155">
+      <rect x="164" y="530" width="78" height="28" rx="14"/>
+      <rect x="254" y="530" width="62" height="28" rx="14"/>
+      <rect x="328" y="530" width="72" height="28" rx="14"/>
+    </g>
+    <circle cx="422" cy="544" r="10" fill="#34D399" opacity=".8"/>
+  </g>
+
+  <!-- 中：两道闸门 -->
+  <g transform="translate(556 216)">
+    <rect width="252" height="132" rx="26" fill="#16213A" stroke="#34D399" stroke-width="4"/>
+    <g fill="#34D399">
+      <rect x="32" y="34" width="10" height="64" rx="5"/>
+      <rect x="56" y="46" width="10" height="52" rx="5" opacity=".8"/>
+      <rect x="80" y="26" width="10" height="72" rx="5" opacity=".6"/>
+      <rect x="104" y="52" width="10" height="46" rx="5" opacity=".85"/>
+    </g>
+    <circle cx="196" cy="66" r="28" fill="#052E22" stroke="#34D399" stroke-width="4"/>
+    <path d="M184 66 l8 9 l18 -19" fill="none" stroke="#34D399" stroke-width="5" stroke-linecap="round"/>
+    <rect x="32" y="106" width="120" height="10" rx="5" fill="#1F2A44"/>
+  </g>
+  <g transform="translate(556 404)">
+    <rect width="252" height="132" rx="26" fill="#111A2C" stroke="#60A5FA" stroke-width="4"/>
+    <path d="M68 38 v56 M40 56 h56" stroke="#93C5FD" stroke-width="5" stroke-linecap="round"/>
+    <path d="M40 56 l-14 26 h28 z" fill="#60A5FA" opacity=".7"/>
+    <path d="M82 56 l-14 26 h28 z" fill="#60A5FA" opacity=".7"/>
+    <rect x="136" y="48" width="80" height="12" rx="6" fill="#93C5FD"/>
+    <rect x="136" y="72" width="56" height="10" rx="5" fill="#334155"/>
+    <circle cx="60" cy="104" r="8" fill="#60A5FA" opacity=".8"/>
+  </g>
+
+  <!-- 稿子进闸门 / 未通过退回 -->
+  <g stroke="#F59E0B" stroke-width="4" fill="none">
+    <path d="M478 300 C 520 300 522 282 552 282"/>
+    <path d="M478 470 C 522 470 524 470 552 470"/>
+  </g>
+  <g stroke="#FB7185" stroke-width="4" fill="none" stroke-dasharray="10 10">
+    <path d="M682 196 C 682 118 470 100 330 154"/>
+  </g>
+  <path d="M338 140 l-18 20 l24 8 z" fill="#FB7185"/>
+
+  <!-- 右：正典断言台账 -->
+  <g transform="translate(852 150)">
+    <rect width="352" height="500" rx="30" fill="#0F1729" stroke="#2A3A5C" stroke-width="3"/>
+    <rect x="28" y="34" width="140" height="14" rx="7" fill="#93C5FD"/>
+    <g transform="translate(28 82)">
+      <rect width="296" height="84" rx="18" fill="#16213A" stroke="#2A3A5C" stroke-width="2"/>
+      <circle cx="28" cy="28" r="9" fill="#60A5FA"/>
+      <rect x="48" y="20" width="150" height="12" rx="6" fill="#BFDBFE"/>
+      <rect x="48" y="44" width="112" height="9" rx="4.5" fill="#334155"/>
+      <rect x="212" y="42" width="60" height="16" rx="8" fill="#1B283F"/>
+    </g>
+    <g transform="translate(28 186)">
+      <rect width="296" height="84" rx="18" fill="#16213A" stroke="#F59E0B" stroke-width="3"/>
+      <circle cx="28" cy="28" r="9" fill="#F59E0B"/>
+      <rect x="48" y="20" width="168" height="12" rx="6" fill="#FCD34D"/>
+      <rect x="48" y="44" width="96" height="9" rx="4.5" fill="#334155"/>
+      <rect x="212" y="42" width="60" height="16" rx="8" fill="#2A2113"/>
+    </g>
+    <g transform="translate(28 290)">
+      <rect width="296" height="84" rx="18" fill="#111A2C" stroke="#243252" stroke-width="2"/>
+      <circle cx="28" cy="28" r="9" fill="#34D399"/>
+      <rect x="48" y="20" width="132" height="12" rx="6" fill="#6EE7B7"/>
+      <rect x="48" y="44" width="124" height="9" rx="4.5" fill="#1F2A44"/>
+      <rect x="212" y="42" width="60" height="16" rx="8" fill="#1B283F"/>
+    </g>
+    <g transform="translate(28 394)">
+      <rect width="296" height="84" rx="18" fill="#0F1729" stroke="#243252" stroke-width="2" stroke-dasharray="9 9"/>
+      <circle cx="28" cy="28" r="9" fill="none" stroke="#F59E0B" stroke-width="3" stroke-dasharray="6 5"/>
+      <rect x="48" y="20" width="144" height="12" rx="6" fill="#1F2A44"/>
+      <rect x="48" y="44" width="88" height="9" rx="4.5" fill="#16213A"/>
+    </g>
+  </g>
+
+  <!-- 闸门通过才写回台账（带锁通道） -->
+  <g stroke="#34D399" stroke-width="4" fill="none">
+    <path d="M812 470 C 838 470 838 400 850 400"/>
+  </g>
+  <g transform="translate(828 300)">
+    <path d="M0 -20 l18 9 v16 q0 14 -18 20 q-18 -6 -18 -20 v-16 z" fill="#052E22" stroke="#34D399" stroke-width="3"/>
+    <path d="M-6 2 l5 6 l10 -11" fill="none" stroke="#34D399" stroke-width="3" stroke-linecap="round"/>
+  </g>
+
+  <!-- 台账读回生成（as-of） -->
+  <g stroke="#60A5FA" stroke-width="4" fill="none" stroke-dasharray="12 10" opacity=".85">
+    <path d="M1028 660 C 1028 740 640 754 300 690"/>
+  </g>
+  <path d="M312 674 l-24 14 l22 12 z" fill="#60A5FA" opacity=".85"/>
+
+  <g fill="#FCD34D">
+    <circle cx="1216" cy="92" r="7" opacity=".7"/>
+    <circle cx="70" cy="620" r="6" opacity=".6"/>
+    <circle cx="624" cy="96" r="5" opacity=".5"/>
+  </g>
+</svg>

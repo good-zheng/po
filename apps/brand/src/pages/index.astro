@@ -5,6 +5,8 @@ import Hero from '~/components/widgets/Hero.astro';
 import Note from '~/components/widgets/Note.astro';
 import SocialProof from '~/components/widgets/SocialProof.astro';
 import Projects from '~/components/widgets/Projects.astro';
+import Content from '~/components/widgets/Content.astro';
+import Image from '~/components/common/Image.astro';
 import Bento from '~/components/widgets/Bento.astro';
 import QuickStart from '~/components/widgets/QuickStart.astro';
 import Features from '~/components/widgets/Features.astro';
@@ -16,11 +18,12 @@ import CallToAction from '~/components/widgets/CallToAction.astro';
 import StructuredData from '~/components/common/StructuredData.astro';
 import { SITE, I18N } from 'astrowind:config';
 import favIconSvg from '~/assets/favicons/favicon.svg';
+import { LIVE } from '~/links';
 
 const metadata = {
   title: '叮叮厨 — 菜谱平台与 AI 做菜助手',
   description:
-    '叮叮厨：菜谱内容平台 + AI 做菜助手。微信小程序、Expo App、管理后台三端，Java 与 Python 双后端，一套跨端契约，部署在微信云托管。',
+    '叮叮厨：菜谱内容平台 + AI 做菜助手。微信小程序、Expo App、管理后台三端，Java 与 Python 双后端，一套跨端契约，部署在微信云托管。同一条底座上还长出了言外 EchoTalk 与言外书斋。',
   ignoreTitleTemplate: true,
 };
 
@@ -59,8 +62,9 @@ const structuredData = [
       format: 'svg',
     }}
     actions={[
-      { variant: 'primary', text: '看项目', href: '#projects', icon: 'tabler:chef-hat' },
-      { text: '开发手记', href: '/blog' },
+      { variant: 'primary', text: '看作品', href: '#products', icon: 'tabler:chef-hat' },
+      { text: '言外 EchoTalk', href: '/yanwai' },
+      { text: '言外书斋', href: '/novel' },
     ]}
   >
     <Fragment slot="title">
@@ -75,6 +79,7 @@ const structuredData = [
     <Fragment slot="content">
       <p class="max-w-2xl mx-auto mt-6 text-sm text-muted">
         三端客户端、两个后端服务、一条 AI 链路，全部由我一个人设计与实现，跑在微信云托管上。
+        同一条底座上还长出了第二件作品（言外 EchoTalk）与第三件（言外书斋）。
       </p>
     </Fragment>
   </Hero>
@@ -86,7 +91,7 @@ const structuredData = [
     classes={{ container: '!pb-14 md:!pb-20' }}
     items={[
       { value: '3', label: '端：小程序 / App / 管理后台', icon: 'tabler:devices', color: 'text-orange-500' },
-      { value: '190+', label: '自动化测试用例', icon: 'tabler:test-pipe', color: 'text-emerald-500' },
+      { value: '146', label: '自动化测试用例', icon: 'tabler:test-pipe', color: 'text-emerald-500' },
       { value: '4', label: '层 AI 降级路径', icon: 'tabler:layers-intersect', color: 'text-sky-500' },
       { value: '0', label: '个入库密钥', icon: 'tabler:key-off', color: 'text-rose-500' },
     ]}
@@ -97,14 +102,66 @@ const structuredData = [
   <Note
     variant="info"
     title="说明"
-    description="这是项目与个人的介绍站，不是线上产品官网。页面里的图都是示意插画，不是产品截图；真实截图与公开访问地址会在部署完成后补上。"
+    description="这是项目与个人的介绍站，不是线上产品官网。带手机外框的两屏是真机截图，架构与流程图仍是示意插画；对外公开访问地址在配置完域名之后开放。"
+  />
+
+  <!-- Products Widget *************** -->
+
+  <Projects
+    id="products"
+    tagline="作品"
+    title="三件作品，一套底座"
+    subtitle="第一个把多端与 AI 链路走通，第二个坐在同一套底座上再走一遍，第三个把这套底座逼向了它原本没打算撑的东西：长文本的一致性。"
+    columns={2}
+    items={[
+      {
+        title: '叮叮厨 · 会说话的菜谱与 AI 做菜助手',
+        description:
+          '菜谱内容平台加做菜全程语音。三端客户端、Java 与 Python 双后端、一条四层降级的 AI 链路；手上沾着油时，它替你读步骤、盯计时、答问题。',
+        tags: ['Taro', 'Expo', 'Spring Boot', 'FastAPI', 'LangGraph'],
+        image: {
+          src: '~/assets/images/hero.svg',
+          alt: '插画：手机立在厨房台面上，屏幕里是分步的做菜界面与计时环',
+          format: 'svg',
+        },
+        href: '#projects',
+        linkText: '看它的构成',
+      },
+      {
+        title: '言外 EchoTalk · 听懂弦外之音的实时沟通助手',
+        description:
+          '录下对方的话，实时转写成字，再给出意图、潜台词、情绪、风险与三句可照读的回复。从声音进来，到话术出去，是一条不断头的链路。',
+        tags: ['实时 ASR', '垂直 Agent', '结构化输出', '隐私前置'],
+        image: {
+          src: '~/assets/images/projects/echo-talk.svg',
+          alt: '插画：手机里是转写气泡与洞察卡，右侧分出三张回复卡，左侧有一串声波',
+          format: 'svg',
+        },
+        href: '/yanwai',
+        linkText: '看这个产品',
+      },
+      {
+        title: '言外书斋 · 让第 27 章还记得第 3 章',
+        description:
+          '反幻觉的长篇小说链路：设定不再是提示词里的一段描述，而是数据库里带出处、带生效区间的正典断言；单章注入预算恒定，计划与正文各过一道闸门，只有过了闸门的抽取才写得回记忆。',
+        tags: ['LangGraph', 'FastAPI', 'Spring Boot', 'MySQL', '人在环'],
+        image: {
+          src: '~/assets/images/projects/novel-agent.svg',
+          alt: '插画：左侧是一章正文，中间是规则与裁判两道闸门，右侧是带出处的正典断言台账，一条虚线把未通过的稿子退回重写',
+          format: 'svg',
+        },
+        href: LIVE.novel,
+        linkText: '打开阅读端',
+        result: '305 个测试用例；实测三章过正文闸门入库，计划闸门每章都要作者拍板',
+      },
+    ]}
   />
 
   <!-- Projects Widget *************** -->
 
   <Projects
     id="projects"
-    tagline="项目构成"
+    tagline="叮叮厨的构成"
     title="六个部分，一条链路"
     subtitle="从用户手指点下去的那一下，到服务器把音频合成好返回来，中间每一段都是自己写的。"
     columns={2}
@@ -157,13 +214,15 @@ const structuredData = [
       {
         title: '管理后台',
         description:
-          'Umi Max 4 + React 19 + Ant Design 6。菜谱与分类维护、封面上传、用户注册审批流；表单和列表都直接吃同一份跨端类型。',
+          'Umi Max 4 + React 19 + Ant Design 6。菜谱与分类维护、封面上传、用户注册审批流；表单和列表都直接吃同一份跨端类型。小说创作工作台也在这里。',
         tags: ['Ant Design Pro', 'React Query', 'Biome'],
         image: {
           src: '~/assets/images/projects/admin-console.svg',
           alt: '插画：管理后台的列表与表单，右侧是封面上传和审批通过标记',
           format: 'svg',
         },
+        href: LIVE.admin,
+        linkText: '打开管理后台',
       },
       {
         title: '契约与工程化',
@@ -178,6 +237,46 @@ const structuredData = [
       },
     ]}
   />
+
+  <!-- Content Widget **************** -->
+
+  <Content
+    id="screens"
+    tagline="真机截图"
+    title="小程序里实际跑着的是这两屏"
+    subtitle="左边是每个人都能逛的首页，是一段真机录屏，点开即播；右边是只有开口才要登录的 AI 助手。两屏都来自真机，不是设计稿。"
+    content={`<ul class="space-y-5 text-base text-muted">
+      <li><strong class="text-heading">首页 · 菜谱流对游客完全开放</strong> — 搜索、推荐 / 最多点赞 / 最新发布三种排序，难度与分类两组筛选，双列菜谱卡带难度、耗时与点赞数。封面走对象存储，链接进数据库，端上只管渲染。左边那一屏是真机录屏，点开就能看滚动时的吸顶筛选栏。</li>
+      <li><strong class="text-heading">AI 助手 · 会推荐也会讲为什么</strong> — 一句「推荐几道快手菜」，回来的不是菜谱列表，是三道带耗时与难度的选择、每道一句做法要点，末尾还能横滑直接跳进对应菜谱。回答沿 WebSocket 逐字流出，不是转圈等整段。</li>
+      <li><strong class="text-heading">两屏之间只隔一次登录</strong> — 逛菜谱不要账号；只有按下「开始做菜」和真正按下发送那一刻才要，且从不把你硬推进登录页，页面上留的是提示和一个「去登录」。</li>
+    </ul>`}
+  >
+    <Fragment slot="image">
+      <div class="mx-auto grid max-w-[560px] grid-cols-2 gap-4 md:gap-6">
+        <video
+          class="w-full rounded-[26px] bg-white shadow-xl ring-1 ring-slate-900/10 dark:ring-white/10"
+          src="/demo/dingdingchu-home-scroll.mp4"
+          poster="/demo/dingdingchu-home-poster.webp"
+          width="552"
+          height="1192"
+          controls
+          playsinline
+          preload="none"
+          aria-label="真机录屏：叮叮厨小程序首页向下滚动，筛选栏吸顶，双列菜谱卡的封面依次进入视野"></video>
+        <Image
+          src="~/assets/images/screenshots/dingdingchu-ai-chat.png"
+          width={549}
+          height={1192}
+          widths={[220, 320, 440]}
+          sizes="(max-width: 767px) 44vw, 260px"
+          format="webp"
+          layout="constrained"
+          class="w-full rounded-[26px] shadow-xl ring-1 ring-slate-900/10 dark:ring-white/10"
+          alt="真机截图：叮叮厨小程序 AI 助手页，用户问「推荐几道快手菜」，助手回答里列出辣椒炒肉、长沙凉面、蒜薹炒腊肉三道并各附做法要点，下方是可横滑的菜谱跳转卡"
+        />
+      </div>
+    </Fragment>
+  </Content>
 
   <!-- Bento Widget ****************** -->
 
@@ -245,6 +344,12 @@ const structuredData = [
           '<code>pnpm api:verify</code>、<code>chat:test</code>、<code>admin:test</code>、<code>mini:build</code> 全绿才算改完。改契约字段先看类型包报不报错。',
         icon: 'tabler:circle-check',
       },
+      {
+        title: '菜谱语料当工程件管',
+        description:
+          '<code>seed/*.json</code> 是唯一真源，导入用的 <code>data-*.sql</code> 全部由脚本生成，批次清单集中在一个文件里。生成侧 296 道，重跑一条命令。',
+        icon: 'tabler:database-import',
+      },
     ]}
   >
     <Fragment slot="bg">
@@ -295,9 +400,9 @@ const structuredData = [
         icon: 'tabler:terminal-2',
       },
       {
-        title: '删掉不做的业务线',
+        title: '先把撑不住的那条线删干净',
         description:
-          '这个项目最初还带着一条小说业务线。确认它不会做之后整块删掉，只留烹饪 Agent——半途而废的功能比没有功能更贵。',
+          '这个项目最初带着一条小说业务线。确认按当时的做法它撑不住之后整块删掉，只留烹饪 Agent——半途而废的功能比没有功能更贵。后来它以「言外书斋」的形态回来了，但换了做法：设定不再塞进提示词，而是进数据库当正典。',
         icon: 'tabler:eraser',
       },
     ]}
@@ -306,12 +411,12 @@ const structuredData = [
   <!-- Stats Widget ****************** -->
 
   <Stats
-    title="数字"
+    title="叮叮厨的数字"
     countUp
     stats={[
       { title: '客户端形态', amount: '3' },
       { title: '后端服务', amount: '2' },
-      { title: '自动化测试用例', amount: '190+' },
+      { title: '自动化测试用例', amount: '146' },
       { title: '未提交的密钥', amount: '0' },
     ]}
   />
@@ -322,7 +427,7 @@ const structuredData = [
     id="story"
     tagline="时间线"
     title="十天，从空仓库到能下锅"
-    subtitle="日期取自仓库提交记录，没有倒推美化。"
+    subtitle="里程碑按开发顺序标注；提交历史压过一次，日期不是逐条 commit 的时间戳。"
     layout="alternate"
     items={[
       {
@@ -347,16 +452,23 @@ const structuredData = [
         date: '2026-09-24',
         title: '砍掉一条业务线，接上烹饪 Agent',
         description:
-          '删掉不再会做的小说业务线，新增烹饪 Agent 并把 AI 聊天接进 App。项目从「什么都能做」变成「只做一件事」。',
+          '删掉当时撑不住的小说业务线，新增烹饪 Agent 并把 AI 聊天接进 App。项目从「什么都能做」变成「只做一件事」。',
         icon: 'tabler:sparkles',
         highlight: true,
       },
       {
-        date: '2026-09-25 起',
+        date: '2026-09-25 ~ 09-30',
         title: '小程序、语音与上云',
         description:
           'Taro 小程序逐屏对齐 App；讯飞 TTS 加对象存储做步骤播报与预热；微信 OpenID 登录与注册审批；api / chat / redis 部署到微信云托管，踩完合法域名这一课。',
         icon: 'tabler:cloud',
+      },
+      {
+        date: '2026-10',
+        title: '那条线换了做法回来',
+        description:
+          '小说业务线以独立项目重建，叫「言外书斋」：设定进数据库成为带出处的正典，计划与正文各过一道闸门，过了闸门才写得回记忆。当初删它是因为做法不对，不是因为问题不存在。',
+        icon: 'tabler:book',
       },
       {
         date: '现在',
@@ -416,7 +528,7 @@ const structuredData = [
       {
         title: '现在能用吗？',
         description:
-          '微信小程序已构建为体验版；对外公开访问地址在配置完域名之后开放。这个介绍站目前是本地版本，域名还是占位符。',
+          '言外书斋的阅读端与管理后台已部署上线，页脚「线上入口」里可直接访问（阅读端游客可读，管理端需登录）。微信小程序已构建为体验版；这个介绍站本身仍是本地版本，域名还是占位符。',
       },
       {
         title: '下一个版本做什么？',

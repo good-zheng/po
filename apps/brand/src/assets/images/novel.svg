@@ -1,0 +1,208 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-label="插画：中间是一页正在写的章节稿，左侧是三层带预算刻度的上下文注入，右侧是两道闸门与一张待裁定的冲突卡，下方是一条只接受闸门通过内容的正典台账">
+  <defs>
+    <linearGradient id="nv-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0B1220"/>
+      <stop offset="0.5" stop-color="#141221"/>
+      <stop offset="1" stop-color="#1D1512"/>
+    </linearGradient>
+    <radialGradient id="nv-amber" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#F59E0B" stop-opacity=".4"/>
+      <stop offset="1" stop-color="#F59E0B" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="nv-emerald" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#34D399" stop-opacity=".3"/>
+      <stop offset="1" stop-color="#10B981" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="nv-rose" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#FB7185" stop-opacity=".3"/>
+      <stop offset="1" stop-color="#E11D48" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="nv-p" width="34" height="34" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.6" fill="#3E3A4E" fill-opacity=".5"/>
+    </pattern>
+    <linearGradient id="nv-page" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1C1A17"/>
+      <stop offset="1" stop-color="#141C2C"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1280" height="720" fill="url(#nv-bg)"/>
+  <rect width="1280" height="720" fill="url(#nv-p)"/>
+  <ellipse cx="170" cy="180" rx="300" ry="220" fill="url(#nv-amber)"/>
+  <ellipse cx="980" cy="230" rx="300" ry="210" fill="url(#nv-emerald)"/>
+  <ellipse cx="1080" cy="560" rx="260" ry="200" fill="url(#nv-rose)"/>
+
+  <!-- 左侧：三层注入 + 恒定预算刻度 -->
+  <g transform="translate(88 132)">
+    <rect width="230" height="66" rx="18" fill="#16213A" stroke="#2A3A5C" stroke-width="2"/>
+    <circle cx="30" cy="33" r="10" fill="#60A5FA"/>
+    <rect x="52" y="20" width="126" height="10" rx="5" fill="#93C5FD"/>
+    <rect x="52" y="40" width="84" height="8" rx="4" fill="#334155"/>
+  </g>
+  <g transform="translate(88 210)">
+    <rect width="230" height="66" rx="18" fill="#16213A" stroke="#2A3A5C" stroke-width="2"/>
+    <circle cx="30" cy="33" r="10" fill="#34D399"/>
+    <rect x="52" y="20" width="104" height="10" rx="5" fill="#6EE7B7"/>
+    <rect x="52" y="40" width="128" height="8" rx="4" fill="#334155"/>
+  </g>
+  <g transform="translate(88 288)">
+    <rect width="230" height="66" rx="18" fill="#111A2C" stroke="#243252" stroke-width="2"/>
+    <circle cx="30" cy="33" r="10" fill="#F59E0B"/>
+    <rect x="52" y="20" width="118" height="10" rx="5" fill="#FCD34D"/>
+    <rect x="52" y="40" width="72" height="8" rx="4" fill="#1F2A44"/>
+  </g>
+  <g transform="translate(88 372)">
+    <rect width="230" height="12" rx="6" fill="#1B283F"/>
+    <rect x="0" y="0" width="184" height="12" rx="6" fill="#60A5FA" opacity=".85"/>
+    <path d="M196 -8 v28" stroke="#F59E0B" stroke-width="4" stroke-linecap="round"/>
+    <rect x="0" y="26" width="96" height="8" rx="4" fill="#334155"/>
+  </g>
+  <g stroke="#60A5FA" stroke-width="3" fill="none" opacity=".7">
+    <path d="M322 165 C 392 165 400 220 452 226"/>
+    <path d="M322 243 C 396 243 404 268 452 288"/>
+    <path d="M322 321 C 396 321 404 400 452 402"/>
+  </g>
+
+  <!-- 中间：正在写的一章 -->
+  <g transform="rotate(-2 640 320)">
+    <rect x="470" y="96" width="300" height="452" rx="34" fill="url(#nv-page)" stroke="#3E3A4E" stroke-width="3"/>
+    <rect x="498" y="128" width="132" height="12" rx="6" fill="#F59E0B"/>
+    <rect x="498" y="152" width="76" height="8" rx="4" fill="#57534E"/>
+    <g fill="#4B5563">
+      <rect x="498" y="186" width="244" height="9" rx="4.5"/>
+      <rect x="498" y="208" width="228" height="9" rx="4.5"/>
+      <rect x="498" y="230" width="244" height="9" rx="4.5"/>
+      <rect x="498" y="252" width="196" height="9" rx="4.5"/>
+    </g>
+    <!-- 被断言盯住的实体 -->
+    <rect x="498" y="278" width="244" height="9" rx="4.5" fill="#4B5563"/>
+    <rect x="560" y="274" width="72" height="18" rx="9" fill="#F59E0B" opacity=".22"/>
+    <rect x="560" y="290" width="72" height="4" rx="2" fill="#F59E0B"/>
+    <g fill="#4B5563">
+      <rect x="498" y="316" width="236" height="9" rx="4.5"/>
+      <rect x="498" y="338" width="212" height="9" rx="4.5"/>
+      <rect x="498" y="360" width="244" height="9" rx="4.5"/>
+      <rect x="498" y="382" width="168" height="9" rx="4.5"/>
+    </g>
+    <rect x="498" y="422" width="244" height="70" rx="18" fill="#121A2A" stroke="#243252" stroke-width="2"/>
+    <g fill="#334155">
+      <rect x="516" y="442" width="70" height="26" rx="13"/>
+      <rect x="596" y="442" width="54" height="26" rx="13"/>
+      <rect x="660" y="442" width="66" height="26" rx="13"/>
+    </g>
+    <circle cx="726" cy="455" r="9" fill="#34D399" opacity=".8"/>
+  </g>
+
+  <!-- 正文闸门：确定性规则 -->
+  <g transform="translate(824 140)">
+    <rect width="212" height="104" rx="22" fill="#16213A" stroke="#34D399" stroke-width="3"/>
+    <g fill="#34D399">
+      <rect x="26" y="26" width="9" height="52" rx="4.5"/>
+      <rect x="46" y="34" width="9" height="44" rx="4.5" opacity=".8"/>
+      <rect x="66" y="20" width="9" height="58" rx="4.5" opacity=".6"/>
+      <rect x="86" y="38" width="9" height="40" rx="4.5" opacity=".85"/>
+    </g>
+    <circle cx="166" cy="52" r="22" fill="#052E22" stroke="#34D399" stroke-width="3"/>
+    <path d="M156 52 l7 8 l15 -16" fill="none" stroke="#34D399" stroke-width="4" stroke-linecap="round"/>
+  </g>
+
+  <!-- 语义裁判 -->
+  <g transform="translate(824 268)">
+    <rect width="212" height="104" rx="22" fill="#111A2C" stroke="#60A5FA" stroke-width="3"/>
+    <path d="M60 30 v44 M36 44 h48" stroke="#93C5FD" stroke-width="4" stroke-linecap="round"/>
+    <path d="M36 44 l-12 22 h24 z" fill="#60A5FA" opacity=".7"/>
+    <path d="M84 44 l-12 22 h24 z" fill="#60A5FA" opacity=".7"/>
+    <rect x="124" y="38" width="64" height="10" rx="5" fill="#93C5FD"/>
+    <rect x="124" y="58" width="46" height="8" rx="4" fill="#334155"/>
+    <circle cx="52" cy="74" r="6" fill="#60A5FA"/>
+  </g>
+
+  <!-- 稿子进闸门 -->
+  <g stroke="#F59E0B" stroke-width="3" fill="none" opacity=".8">
+    <path d="M772 210 C 800 210 800 192 822 192"/>
+    <path d="M772 300 C 802 300 800 320 822 320"/>
+  </g>
+
+  <!-- 未过闸门：退回定向修补 -->
+  <g stroke="#FB7185" stroke-width="3" fill="none" stroke-dasharray="9 9" opacity=".9">
+    <path d="M930 128 C 930 76 800 60 700 92"/>
+  </g>
+  <path d="M706 78 l-14 16 l20 6 z" fill="#FB7185" opacity=".9"/>
+
+  <!-- 过闸门：写入正典（带锁的通道） -->
+  <g stroke="#34D399" stroke-width="3" fill="none">
+    <path d="M930 372 C 930 470 760 512 620 546"/>
+  </g>
+  <g transform="translate(770 470)">
+    <path d="M0 -18 l16 8 v14 q0 12 -16 18 q-16 -6 -16 -18 v-14 z" fill="#052E22" stroke="#34D399" stroke-width="3"/>
+    <path d="M-5 2 l4 5 l8 -9" fill="none" stroke="#34D399" stroke-width="3" stroke-linecap="round"/>
+  </g>
+
+  <!-- 右上：待裁定的冲突卡（作者意见最高） -->
+  <g transform="translate(1056 150)">
+    <rect width="188" height="132" rx="22" fill="#16213A" stroke="#FB7185" stroke-width="3"/>
+    <circle cx="30" cy="34" r="9" fill="#FB7185"/>
+    <rect x="50" y="26" width="104" height="10" rx="5" fill="#FDA4AF"/>
+    <rect x="30" y="52" width="128" height="8" rx="4" fill="#334155"/>
+    <rect x="30" y="70" width="96" height="8" rx="4" fill="#1F2A44"/>
+    <rect x="30" y="94" width="58" height="24" rx="12" fill="#052E22" stroke="#34D399" stroke-width="2"/>
+    <path d="M46 106 l5 5 l10 -11" fill="none" stroke="#34D399" stroke-width="3" stroke-linecap="round"/>
+    <rect x="100" y="94" width="58" height="24" rx="12" fill="#2A1220" stroke="#FB7185" stroke-width="2"/>
+    <path d="M122 102 l14 12 M136 102 l-14 12" stroke="#FB7185" stroke-width="3" stroke-linecap="round"/>
+  </g>
+
+  <!-- 下方：正典台账（append-only，带出处） -->
+  <g transform="translate(88 560)">
+    <rect width="1104" height="118" rx="26" fill="#0F1729" stroke="#2A3A5C" stroke-width="3"/>
+    <g transform="translate(28 22)">
+      <rect width="176" height="74" rx="16" fill="#16213A" stroke="#2A3A5C" stroke-width="2"/>
+      <circle cx="22" cy="24" r="7" fill="#60A5FA"/>
+      <rect x="38" y="18" width="100" height="10" rx="5" fill="#93C5FD"/>
+      <rect x="38" y="38" width="76" height="8" rx="4" fill="#334155"/>
+      <rect x="38" y="54" width="46" height="10" rx="5" fill="#1B283F"/>
+    </g>
+    <g transform="translate(220 22)">
+      <rect width="176" height="74" rx="16" fill="#16213A" stroke="#F59E0B" stroke-width="3"/>
+      <circle cx="22" cy="24" r="7" fill="#F59E0B"/>
+      <rect x="38" y="18" width="112" height="10" rx="5" fill="#FCD34D"/>
+      <rect x="38" y="38" width="64" height="8" rx="4" fill="#334155"/>
+      <rect x="38" y="54" width="52" height="10" rx="5" fill="#2A2113"/>
+    </g>
+    <g transform="translate(412 22)">
+      <rect width="176" height="74" rx="16" fill="#111A2C" stroke="#243252" stroke-width="2"/>
+      <circle cx="22" cy="24" r="7" fill="#34D399"/>
+      <rect x="38" y="18" width="88" height="10" rx="5" fill="#6EE7B7"/>
+      <rect x="38" y="38" width="104" height="8" rx="4" fill="#1F2A44"/>
+      <rect x="38" y="54" width="40" height="10" rx="5" fill="#1B283F"/>
+    </g>
+    <g transform="translate(604 22)">
+      <rect width="176" height="74" rx="16" fill="#111A2C" stroke="#243252" stroke-width="2"/>
+      <circle cx="22" cy="24" r="7" fill="#C084FC"/>
+      <rect x="38" y="18" width="108" height="10" rx="5" fill="#D8B4FE"/>
+      <rect x="38" y="38" width="72" height="8" rx="4" fill="#1F2A44"/>
+      <rect x="38" y="54" width="48" height="10" rx="5" fill="#1B283F"/>
+    </g>
+    <g transform="translate(796 22)">
+      <rect width="140" height="74" rx="16" fill="#0F1729" stroke="#243252" stroke-width="2" stroke-dasharray="8 8"/>
+      <rect x="24" y="20" width="92" height="10" rx="5" fill="#1F2A44"/>
+      <rect x="24" y="42" width="60" height="8" rx="4" fill="#16213A"/>
+    </g>
+    <g transform="translate(952 22)">
+      <circle cx="42" cy="20" r="12" fill="none" stroke="#F59E0B" stroke-width="3" stroke-dasharray="6 5"/>
+      <rect x="18" y="46" width="72" height="10" rx="5" fill="#334155"/>
+      <rect x="18" y="62" width="46" height="8" rx="4" fill="#1F2A44"/>
+    </g>
+  </g>
+
+  <!-- 台账读回注入层：as-of 当前章 -->
+  <g stroke="#60A5FA" stroke-width="3" fill="none" stroke-dasharray="10 8" opacity=".8">
+    <path d="M124 552 C 40 470 40 300 74 252"/>
+  </g>
+  <path d="M64 266 l18 -16 l4 22 z" fill="#60A5FA" opacity=".85"/>
+
+  <g fill="#FCD34D">
+    <circle cx="1224" cy="86" r="6" opacity=".7"/>
+    <circle cx="60" cy="470" r="5" opacity=".6"/>
+    <circle cx="742" cy="620" r="4" opacity=".5"/>
+  </g>
+</svg>

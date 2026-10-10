@@ -1,0 +1,514 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+
+import Hero from '~/components/widgets/Hero.astro';
+import SocialProof from '~/components/widgets/SocialProof.astro';
+import Note from '~/components/widgets/Note.astro';
+import Content from '~/components/widgets/Content.astro';
+import Comparison from '~/components/widgets/Comparison.astro';
+import Steps from '~/components/widgets/Steps.astro';
+import Features from '~/components/widgets/Features.astro';
+import Bento from '~/components/widgets/Bento.astro';
+import Timeline from '~/components/widgets/Timeline.astro';
+import FAQs from '~/components/widgets/FAQs.astro';
+import CallToAction from '~/components/widgets/CallToAction.astro';
+import Image from '~/components/common/Image.astro';
+
+const metadata = {
+  title: '言外 EchoTalk — 听懂对方没说出口的那一句',
+  description:
+    '言外：把实时语音转写、语义洞察与可照读的回复建议连成一条链路。按下录音到建议出声，中间每一段都是自己写的。',
+  ignoreTitleTemplate: true,
+};
+---
+
+<Layout metadata={metadata}>
+  <!-- Hero Widget ******************* -->
+
+  <Hero
+    id="top"
+    tagline="第二件作品 · 实时沟通洞察"
+    badge="开发中"
+    image={{
+      src: '~/assets/images/yanwai.svg',
+      alt: '插画：手机横放在桌面上，屏幕里是转写气泡与洞察卡片，左侧飘来一串声波，右侧是三张可以照着说的回复卡',
+      format: 'svg',
+    }}
+    actions={[
+      { variant: 'primary', text: '看这条链路', href: '#pipeline', icon: 'tabler:route-2' },
+      { text: '真机截图', href: '#shot' },
+      { text: '关键取舍', href: '#decisions' },
+    ]}
+  >
+    <Fragment slot="title">
+      言外：<span class="text-accent dark:text-white">听懂</span>对方没说出口的那一句
+    </Fragment>
+
+    <Fragment slot="subtitle">
+      手机搁在桌上听对方说话，字实时浮上屏幕；紧接着说清他真正想要什么、话里的潜台词、此刻的情绪与风险，
+      再递上三句能直接照着说的话。从声音进来，到话术出去，中间是一条不断头的链路。
+    </Fragment>
+
+    <Fragment slot="content">
+      <p class="max-w-2xl mx-auto mt-6 text-sm text-muted">
+        一个独立 AppID 的微信小程序，五张页面，八个接口加两条 WebSocket，三张业务表，
+        和一条刻意做成「服务全断也能出卡片」的 Agent 链路。
+      </p>
+    </Fragment>
+  </Hero>
+
+  <!-- SocialProof Widget ************ -->
+
+  <SocialProof
+    id="proof"
+    classes={{ container: '!pb-14 md:!pb-20' }}
+    items={[
+      { value: '5', label: '张页面：会话 / 历史 / 登录 / 资料 / 我的', icon: 'tabler:apps', color: 'text-indigo-500' },
+      { value: '10', label: '条通道：8 个 REST 接口 + 2 个 WebSocket', icon: 'tabler:route', color: 'text-cyan-500' },
+      { value: '3', label: '张业务表：会话 / 话语 / 建议', icon: 'tabler:database', color: 'text-violet-500' },
+      { value: '0', label: '段原始音频落盘', icon: 'tabler:shield-lock', color: 'text-rose-500' },
+    ]}
+  />
+
+  <!-- Note Widget ******************* -->
+
+  <Note
+    variant="info"
+    title="说明"
+    description="这一页只写已经落进代码仓库、能被指认的东西：页面、接口、表结构、降级路径。性能数字是目标值，实测出来之前不写结论；下面的手机屏是真机实拍，公开体验入口要等提审通过。"
+  />
+
+  <!-- Features Widget *************** -->
+
+  <Features
+    id="why"
+    tagline="问题"
+    title="让人卡住的，从来不是听不清"
+    subtitle="把「沟通不顺利」拆开，里面是三个各自独立的问题，而市面上的工具只解决了第四个都没有的那半个。"
+    columns={2}
+    items={[
+      {
+        title: '弦外之音',
+        icon: 'tabler:quote',
+        description:
+          '「你看着办吧」有两种完全相反的意思：授权，或者不满。听懂靠的是语境和胆量，不是听力。转写工具把这句话一个字不差地交给你，然后把最难的部分原样退回来。',
+      },
+      {
+        title: '当场接不住',
+        icon: 'tabler:brain',
+        description: '情绪上头时脱口而出的，往往是事后最后悔的那句。缺的不是词汇量，而是在三秒之内能挑一个的三个选项。',
+      },
+      {
+        title: '说完就忘',
+        icon: 'tabler:history',
+        description: '没有留档就没有复盘。所谓沟通能力提升慢，慢在场子散了、素材根本没留下，下一次遇到同样的话照样懵。',
+      },
+      {
+        title: '方案各切一半',
+        icon: 'tabler:arrows-split-2',
+        description:
+          '录音笔和听见类产品只解决「记下来」；把聊天记录贴给大模型只解决「怎么回」，还得事后手动补。从声音进来，到话术出去，中间那一段长期没人接。',
+      },
+    ]}
+  >
+    <Fragment slot="bg">
+      <div class="absolute inset-0 bg-indigo-50 dark:bg-transparent"></div>
+    </Fragment>
+  </Features>
+
+  <Note
+    variant="info"
+    title="言外的立场"
+    description="转写只是入口，<strong>洞察才是产品</strong>。真正的竞争力不在识别率上，而在能不能在对方话音刚落的那两三秒里，把「他什么意思」和「我可以怎么说」同时摆到屏幕上。"
+  />
+
+  <!-- Comparison Widget ************* -->
+
+  <Comparison
+    id="versus"
+    tagline="内容分析"
+    title="同类产品各做了一半，缺的是衔接"
+    subtitle="同一个衡量维度往下比，就能看出「实时」和「闭环」这两个词不是形容词。"
+    mode="versus"
+    firstColumnLabel="比什么"
+    columns={[
+      { title: '转写工具', subtitle: '录音笔 / 听见类' },
+      { title: '对话式 AI', subtitle: '事后把记录贴给模型' },
+      { title: '言外 EchoTalk', subtitle: '本项目', highlight: true },
+    ]}
+    rows={[
+      { label: '输入是什么', values: ['自己说的话', '事后手打的记录', '对方的原话，边说边转'], group: '输入' },
+      {
+        label: '输出是什么',
+        values: ['一份文字稿', '一段通用建议', '意图 · 潜台词 · 情绪 · 风险，加三句可照说的话'],
+        group: '输出',
+      },
+      { label: '时机', values: ['聊完之后', '聊完之后', '对话进行中'], group: '输出' },
+      {
+        label: '说话人归属',
+        values: ['不区分', '靠上下文猜', '手动切换「对方 / 我」，判断权交给人'],
+        group: '准确性',
+      },
+      { label: '原始音频', values: ['留存', '不涉及', '不落盘，只存文本'], group: '边界' },
+      {
+        label: '服务不可用时',
+        values: ['转写失败', '无法回答', '退到本地规则，卡片照常出'],
+        group: '边界',
+      },
+    ]}
+  />
+
+  <!-- Steps Widget ****************** -->
+
+  <Steps
+    id="pipeline"
+    tagline="链路"
+    title="一次对话走过的六步"
+    subtitle="六步里只有一步是别人的服务，其余全在自己手里；这也正是它能被优化的原因。"
+    items={[
+      {
+        title: '收音',
+        description:
+          '进入会话页不录音，按住才开麦克风。16k / 16bit / 单声道，每 40ms 发 1280 字节——这是讯飞官方推荐的发包节奏，也是首包延迟的下限。',
+        icon: 'tabler:microphone',
+      },
+      {
+        title: '上行',
+        description:
+          '音频帧走 WebSocket 进自建的 ASR 网关。微信的 WebSocket 带不了自定义请求头，所以先用一次性 ticket 换连接资格，密钥和 JWT 都不落到端上与访问日志里。',
+        icon: 'tabler:upload',
+      },
+      {
+        title: '转写',
+        description:
+          '开启动态修正，未定稿的那一句整句替换，定稿并入正文，用户手改的内容不动。单次会话 60 秒到点主动收尾重连，录音 10 分钟上限到点自动续录，文本按分段顺序拼接。',
+        icon: 'tabler:subtitles',
+      },
+      {
+        title: '提交',
+        description:
+          '「发送」才是这一轮的提交点：先落库，再触发分析。看着转写发现错字，改完再发；不方便录音时直接手打，文字与语音走同一条分析链路，功能不打折。',
+        icon: 'tabler:send',
+      },
+      {
+        title: '洞察',
+        description:
+          '垂直 Agent 拿到最近若干轮对话、说话人角色与场景视角，产出严格 JSON：意图、潜台词、情绪、风险，外加三条不同风格的回复建议。字段结构由 schema 固定，端上不需要容错猜测。',
+        icon: 'tabler:sparkles',
+      },
+      {
+        title: '出声',
+        description:
+          '建议卡右侧的朗读直接复用已有的语音合成与对象存储链路——同一条 TTS 服务，零新增后端成本，手机上能听，也能照着念给对方。',
+        icon: 'tabler:volume',
+      },
+    ]}
+  />
+
+  <!-- Features Widget *************** -->
+
+  <Features
+    id="insight"
+    tagline="交付物"
+    title="AI 交回来的不是文字，是四个判断和三种立场"
+    subtitle="四个判断负责把话听懂，三种立场负责把话说出去。少了任何一边，都只是另一个转写工具。"
+    columns={2}
+    items={[
+      {
+        title: '意图：他真正想要什么',
+        description: '把字面意思翻译成诉求。一句话背后通常只有一个动作诉求，找出来，对话就有了落点。',
+        icon: 'tabler:target-arrow',
+      },
+      {
+        title: '潜台词：他为什么这么说不',
+        description: '同一句「你看着办」，绕开正面回答本身就是信息。这一栏专门写他没好意思直说的那层。',
+        icon: 'tabler:message-off',
+      },
+      {
+        title: '情绪：现在该先接住什么',
+        description: '回避、防御、急躁、敷衍。情绪标签决定下一句该先讲道理还是先接住人。',
+        icon: 'tabler:mood-smile',
+      },
+      {
+        title: '风险：照字面接会踩什么坑',
+        description: '把「答应了就是背锅」「沉默就是默认」这类后果提前摊开，让人在开口之前就知道代价。',
+        icon: 'tabler:alert-triangle',
+      },
+      {
+        title: '稳妥 · 共情 · 推进',
+        description:
+          '每轮给三条，各自注明适用理由：稳妥版保留对方的决策权，共情版先接住情绪，推进版给一条默认路径。三张卡并列，人选一个，而不是 AI 替人说。',
+        icon: 'tabler:layout-list',
+      },
+      {
+        title: '朗读与留档',
+        description:
+          '建议可以当场念出来，也可以照着说；整场对话落到会话与话语两张表里，下一轮分析带得上文，事后也还有素材可看。',
+        icon: 'tabler:archive',
+      },
+    ]}
+  />
+
+  <!-- Content Widget **************** -->
+
+  <Content
+    id="sample"
+    tagline="输出形态"
+    title="一轮对话交付的东西，长这样"
+    subtitle="四个判断负责把话听懂，三张卡负责把话说出去；用户挑一句，而不是 AI 代答。"
+    content={`<p class="text-muted">洞察与建议都是严格 JSON，字段形状在建表语句与共享契约里定死：意图、潜台词、情绪（标签与强度）、风险，加上带风格标签与适用理由的建议列表。端上不需要猜结构，模型换型也不改界面。服务不可用时，本地规则会填出同样形状的 JSON，卡片照常渲染——降级改变的是内容来源，不是界面完整度。</p>`}
+    image={`<div class="rounded-2xl border border-indigo-200 bg-white p-6 shadow-lg dark:border-indigo-900 dark:bg-slate-900">
+      <p class="text-xs font-semibold uppercase tracking-wide text-indigo-600 dark:text-indigo-300">示例语料</p>
+      <p class="mt-2 font-medium text-heading">对方说：「那这个事你看着办吧。」</p>
+      <ul class="mt-4 space-y-1.5 text-sm text-muted">
+        <li><strong class="text-heading">意图</strong> — 要你给一个明确答复，而不是把决定权推回来。</li>
+        <li><strong class="text-heading">潜台词</strong> — 「我不想担责，你定。」</li>
+        <li><strong class="text-heading">情绪</strong> — 回避，略带不满。</li>
+        <li><strong class="text-heading">风险</strong> — 真自己拍板，出了问题会背锅。</li>
+      </ul>
+      <ul class="mt-4 space-y-1.5 text-sm">
+        <li><span class="font-semibold text-cyan-700 dark:text-cyan-300">稳妥</span> — 我先梳理两个方案，下午三点前发你定夺，可以吗？</li>
+        <li><span class="font-semibold text-indigo-700 dark:text-indigo-300">共情</span> — 我知道这事不好拍板，咱们一起定，我先出个草案。</li>
+        <li><span class="font-semibold text-orange-700 dark:text-orange-300">推进</span> — 那我按 A 方案推进，有异议你随时叫停。</li>
+      </ul>
+      <p class="mt-4 text-xs text-muted">取自产品文档的演示语料，用来说明输出形态，不是真实用户对话，也不代表线上效果。</p>
+    </div>`}
+  />
+
+  <!-- Content Widget **************** -->
+
+  <Content
+    id="shot"
+    tagline="真机截图"
+    title="跑在手机上，就是这一屏"
+    subtitle="会话页实拍。上面是刚分析完的一句话，下面是下一句的收音入口，一屏之内听完、看懂、说出去。"
+    content={`<ul class="space-y-5 text-base text-muted">
+      <li><strong class="text-heading">状态与视角常驻</strong> — 顶部是「未录音」与计时，右上角「对方 / 我」切换说话人，下面挂着这场的场景标签。字是谁说的、对谁说，端上不猜，由人一键定。</li>
+      <li><strong class="text-heading">四个判断落在气泡下方</strong> — 真正想要、潜台词、情绪、风险各占一行；风险那行是暖色，它是这一屏里唯一想拦住你的话。</li>
+      <li><strong class="text-heading">回复是候选，不是代答</strong> — 「可以这样回」下面按风格分卡，每张带一句适用理由和一个朗读按钮。挑一张照着说，或者自己改一句再说。</li>
+      <li><strong class="text-heading">收音只有一个动作</strong> — 中间那枚麦克风按住才录，松手自动发送；转写先进上方那个可修改的输入框，左边结束保存，右边发送。整场对话进右上角的会话记录，随时翻得回来。</li>
+    </ul>
+    <p class="mt-6 text-xs text-muted">屏里的这句是开发期打进去的测试语料，不是真实用户记录；这一屏来自真机当前构建，界面还会随提审反馈继续改。</p>`}
+  >
+    <Fragment slot="image">
+      <div class="mx-auto w-full max-w-[300px]">
+        <Image
+          src="~/assets/images/screenshots/yanwai-session.png"
+          width={548}
+          height={1191}
+          widths={[274, 412, 548]}
+          sizes="(max-width: 767px) 88vw, 300px"
+          format="webp"
+          layout="constrained"
+          class="w-full rounded-[30px] shadow-2xl ring-1 ring-slate-900/10 dark:ring-white/10"
+          alt="真机截图：言外小程序会话页。顶部「未录音」状态与对方/我说话人切换，场景标签为亲密；对方说「肚子有点饿了」，下方洞察卡列出真正想要、潜台词、情绪、风险；再下方「可以这样回」给出稳妥与共情两条建议，各带朗读按钮；底部是按住录音的麦克风与结束保存、发送"
+        />
+      </div>
+    </Fragment>
+  </Content>
+
+  <!-- Bento Widget ****************** -->
+
+  <Bento
+    id="decisions"
+    tagline="关键取舍"
+    title="难的不是接上 API，是决定哪一段不能接"
+    subtitle="每一条都有一次更省事的走法，以及它为省事付出的代价。"
+    columns={3}
+    items={[
+      {
+        title: '段级触发，不做逐字流式',
+        description:
+          '半句话语境不完整，洞察会被拖垮；等全部说完再分析又丧失实时感。静音断句后触发，是体验与成本的最优点。',
+        icon: 'tabler:scissors',
+        span: 2,
+      },
+      {
+        title: '密钥绝不下端',
+        description: '小程序直连讯飞最省事，也是最贵的一次事故。因此自建网关，签名逻辑与已有的语音合成共用一份实现。',
+        icon: 'tabler:key-off',
+      },
+      {
+        title: 'PCM 直喂，不转码',
+        description:
+          '实测确认录音回调恒定给出未压缩 PCM，与落盘格式参数无关。这一条成立，延迟才从分钟级降到秒级，也省掉整条转码链路。',
+        icon: 'tabler:bolt',
+      },
+      {
+        title: '说话人手动切换，不做声纹',
+        description:
+          '标准听写不支持说话人分离，换服务成本陡增；而「这句是谁说的」人一眼就判对。用一次点击换 100% 准确，划算。',
+        icon: 'tabler:switch-horizontal',
+      },
+      {
+        title: '一次性 ticket，而不是 JWT',
+        description:
+          '微信的 WebSocket 带不了请求头，把令牌塞进 query 就会落进访问日志。改成 60 秒有效、用后即焚的票据。',
+        icon: 'tabler:ticket',
+      },
+      {
+        title: '不留原始音频',
+        description:
+          '复盘只需要文本。音频落盘换来的只是合规风险与审核阻力，这条线写在设计前提里，不是上线后再补的说明。',
+        icon: 'tabler:file-off',
+      },
+      {
+        title: '坏掉也要出卡片',
+        description:
+          '没有密钥、模型不可用时，退到关键词情绪规则加通用话术模板，界面照样出三张卡。在这个项目里，降级不是异常处理，而是产品形态。',
+        icon: 'tabler:plug-connected',
+        span: 2,
+      },
+    ]}
+  />
+
+  <!-- Content Widget **************** -->
+
+  <Content
+    id="reuse"
+    tagline="工程复用"
+    title="第二个产品，才知道第一个产品的架构值不值"
+    subtitle="言外不是从零起步的：它坐在叮叮厨已经跑通的底座上，因此省下来的力气全部投到了实时链路和洞察质量上。"
+    isReversed
+    image={{
+      src: '~/assets/images/projects/echo-talk.svg',
+      alt: '插画：手机里的转写气泡与洞察卡，右侧分出三张回复卡，底部是网关、Agent 与落库的服务链条',
+      format: 'svg',
+    }}
+    items={[
+      {
+        title: '复用脚手架，不复用业务包',
+        description:
+          '独立小程序、独立 AppID。接口封装、登录态、游客占位、登录后回跳、语音播放这些同名同行为的部件从第一个产品移植过来，只把配色换成靛蓝。',
+      },
+      {
+        title: '后端只是多了一个模块',
+        description:
+          '业务侧长在同一个 Spring Boot 服务里；AI 侧按已有的插槽契约登记一个垂直 Agent，编排路由、会话检查点与事件流翻译全是白拿的。',
+      },
+      {
+        title: '部署形态一点没变',
+        description:
+          '没有新增容器。言外坐进已有的两个镜像里，网关反代、健康检查与云托管那套台账原样复用——多一个产品的边际成本接近于零。',
+      },
+      {
+        title: '同一套原则，而不是同一套代码',
+        description:
+          '会话页对游客开放，只有按下录音或点发送才要求登录，tab 页永不自动跳登录；跨端字段仍然只有一处定义。原则被第二个产品验证了一遍。',
+      },
+    ]}
+  />
+
+  <!-- Note Widget ******************* -->
+
+  <Note
+    variant="warning"
+    title="隐私与合规是设计前提"
+    description="按住才收音、页面常驻录音状态提示、拒绝授权降级为文字输入而不是空白页、不保存原始音频、整场会话可删除；类目与《用户隐私保护指引》按平台要求配置。录音类产品若过不了审核，产品本身就没有意义，所以这条线排在功能前面。"
+  />
+
+  <!-- Timeline Widget *************** -->
+
+  <Timeline
+    id="status"
+    tagline="进展"
+    title="做到哪一步了，按仓库现状说"
+    subtitle="里程碑沿用产品文档里的 M0–M3 划分；下面的状态以代码仓库中已存在的页面、接口与表为准。"
+    layout="alternate"
+    items={[
+      {
+        date: '已完成',
+        title: '骨架与登录',
+        description: 'Taro 工程成型，微信 OpenID 登录、密码登录与注册、个人中心与资料编辑全部接通。',
+        icon: 'tabler:layout-sidebar',
+      },
+      {
+        date: 'M0 听得见',
+        title: '实时转写链路跑通',
+        description:
+          '按住录音 → 自建 ASR 网关 → 讯飞流式听写 → 转写实时上屏 → 说话人切换；60 秒重连与 10 分钟自动续录已实现，上面那一屏就是真机上的当前构建。',
+        icon: 'tabler:microphone',
+        highlight: true,
+      },
+      {
+        date: 'M1 看得懂',
+        title: '洞察与建议成形',
+        description:
+          '垂直 Agent 上线，输出严格 JSON；洞察卡与建议卡渲染，朗读复用既有语音合成链路；无密钥时的本地规则兜底同样接通。',
+        icon: 'tabler:sparkles',
+      },
+      {
+        date: 'M2 留得住',
+        title: '会话落库',
+        description: '会话 / 话语 / 建议三张表由建表语句掌管；会话列表、继续这场、删除可用。',
+        icon: 'tabler:database',
+      },
+      {
+        date: '下一步',
+        title: 'M3 打磨上线',
+        description:
+          '隐私指引文案、类目与提审材料、内容安全检测，以及把目标指标真正测出来。这一段没做完，所以这一页不写线上入口。',
+        icon: 'tabler:rocket',
+        ghost: true,
+      },
+    ]}
+  />
+
+  <!-- FAQs Widget ******************* -->
+
+  <FAQs
+    id="faqs"
+    tagline="常见疑问"
+    title="关于言外，别人会怎么问"
+    subtitle="答案里不写还没做到的事。"
+    schema
+    collapsible={false}
+    columns={2}
+    items={[
+      {
+        title: '现在能试用吗？',
+        description:
+          '有独立 AppID，产物已构建，但还没走完提审流程。体验入口会在这页更新；不写体验码，因为它随时会失效。',
+      },
+      {
+        title: '那些性能指标达成了吗？',
+        description:
+          '首字上屏、转写字准、建议出屏时间，都还是产品文档里的目标值，尚无实测数据。这一页只说明目标值的来源，不写结论。',
+      },
+      {
+        title: '这不算窃听工具吗？',
+        description:
+          '边界写在设计里而不是说明里：只有按住才收音，页面上常驻录音状态，不保存原始音频，拒绝授权退到文字输入，整场会话可随时删除，且不做通话录音。越线的功能不是「暂时不做」，是明确不做。',
+      },
+      {
+        title: 'AI 给了糟糕的建议怎么办？',
+        description:
+          '回复建议是候选项，不是代答，最终开口的是用户。医疗、法律、财务等高敏场景在系统提示词里有边界要求，会输出免责提示并建议咨询专业人士。',
+      },
+      {
+        title: '为什么不做声纹分离和多人会议？',
+        description:
+          '一个是对方的话，一个是纪要，是两个产品。混在一起做，两头都做不深；这一期只把一对一的高难度对话打透。',
+      },
+      {
+        title: '和叮叮厨是什么关系？',
+        description:
+          '同一个作者，同一套工程底座。第一个产品证明这套架构撑得住多端与 AI 链路，第二个产品用它再走一遍，才算真的验证。',
+      },
+    ]}
+  />
+
+  <!-- CallToAction Widget *********** -->
+
+  <CallToAction
+    id="cta"
+    layout="banner"
+    tagline="联系"
+    title="对这个方向有兴趣，或者想看看代码是怎么组织的"
+    subtitle="链路里的每个决定都有代价，乐意把代价讲清楚。"
+    actions={[
+      { variant: 'primary', text: '给我写信', href: '/contact', icon: 'tabler:mail' },
+      { text: '回作品集', href: '/#products' },
+    ]}
+  />
+</Layout>

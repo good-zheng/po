@@ -1,19 +1,28 @@
 import { getPermalink, getBlogPermalink, getAsset } from './utils/permalinks';
 import { CONTACT } from './contact';
+import { LIVE } from './links';
 
 export const headerData = {
   links: [
     {
-      text: '项目',
-      href: getPermalink('/#projects'),
+      text: '作品',
+      href: getPermalink('/#products'),
     },
     {
-      text: '架构',
-      href: getPermalink('/#architecture'),
+      text: '言外 EchoTalk',
+      href: getPermalink('/yanwai'),
+    },
+    {
+      text: '言外书斋',
+      href: getPermalink('/novel'),
     },
     {
       text: '开发手记',
       href: getBlogPermalink(),
+    },
+    {
+      text: '简历',
+      href: getPermalink('/resume'),
     },
     {
       text: '关于',
@@ -28,7 +37,10 @@ export const footerData = {
     {
       title: '产品',
       links: [
-        { text: '项目介绍', href: getPermalink('/#projects') },
+        { text: '作品集', href: getPermalink('/#products') },
+        { text: '叮叮厨的构成', href: getPermalink('/#projects') },
+        { text: '言外 EchoTalk', href: getPermalink('/yanwai') },
+        { text: '言外书斋', href: getPermalink('/novel') },
         { text: '架构', href: getPermalink('/#architecture') },
         { text: '关键决策', href: getPermalink('/#decisions') },
       ],
@@ -38,7 +50,15 @@ export const footerData = {
       links: [
         { text: '开发手记', href: getBlogPermalink() },
         { text: '关于我', href: getPermalink('/about') },
+        { text: '简历', href: getPermalink('/resume') },
         { text: '联系', href: getPermalink('/contact') },
+      ],
+    },
+    {
+      title: '线上入口',
+      links: [
+        { text: '言外书斋（阅读端）', href: LIVE.novel, target: '_blank' },
+        { text: '管理后台', href: LIVE.admin, target: '_blank' },
       ],
     },
   ],

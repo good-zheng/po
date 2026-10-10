@@ -1,0 +1,150 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-label="插画：手机横放在桌面上，屏幕上是对话转写气泡与洞察卡片，左侧飘来一串声波，右侧是三张可以直接照着说的回复卡">
+  <defs>
+    <linearGradient id="yw-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0B1220"/>
+      <stop offset="0.55" stop-color="#111528"/>
+      <stop offset="1" stop-color="#170F2B"/>
+    </linearGradient>
+    <radialGradient id="yw-indigo" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#4F46E5" stop-opacity=".5"/>
+      <stop offset="1" stop-color="#4F46E5" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="yw-cyan" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#22D3EE" stop-opacity=".34"/>
+      <stop offset="1" stop-color="#22D3EE" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="yw-violet" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#8B5CF6" stop-opacity=".42"/>
+      <stop offset="1" stop-color="#6D28D9" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="yw-p" width="34" height="34" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.6" fill="#334155" fill-opacity=".5"/>
+    </pattern>
+    <linearGradient id="yw-phone" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1B2436"/>
+      <stop offset="1" stop-color="#141C2C"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1280" height="720" fill="url(#yw-bg)"/>
+  <rect width="1280" height="720" fill="url(#yw-p)"/>
+  <ellipse cx="150" cy="120" rx="330" ry="240" fill="url(#yw-indigo)"/>
+  <ellipse cx="1150" cy="560" rx="300" ry="230" fill="url(#yw-cyan)"/>
+  <ellipse cx="640" cy="700" rx="360" ry="180" fill="url(#yw-violet)"/>
+
+  <!-- 声波：对方的话进来 -->
+  <g fill="#22D3EE" opacity=".9" transform="translate(84 300)">
+    <rect x="0" y="30" width="13" height="30" rx="6.5"/>
+    <rect x="28" y="14" width="13" height="62" rx="6.5"/>
+    <rect x="56" y="0" width="13" height="90" rx="6.5"/>
+    <rect x="84" y="22" width="13" height="46" rx="6.5"/>
+    <rect x="112" y="8" width="13" height="74" rx="6.5"/>
+    <rect x="140" y="32" width="13" height="26" rx="6.5"/>
+    <rect x="168" y="18" width="13" height="54" rx="6.5"/>
+  </g>
+  <g stroke="#22D3EE" stroke-width="3" fill="none" opacity=".45">
+    <path d="M206 345 q34 -22 68 0"/>
+    <path d="M206 345 q34 22 68 0"/>
+  </g>
+
+  <!-- 手机：会话页 -->
+  <g transform="rotate(-4 640 360)">
+    <rect x="470" y="66" width="340" height="600" rx="42" fill="url(#yw-phone)" stroke="#2A3A5C" stroke-width="3"/>
+    <rect x="488" y="84" width="304" height="564" rx="32" fill="#0C1424"/>
+    <rect x="588" y="98" width="74" height="10" rx="5" fill="#1E2B44"/>
+
+    <!-- 录音状态条 + 说话人切换 -->
+    <rect x="506" y="126" width="268" height="44" rx="16" fill="#16213A"/>
+    <circle cx="528" cy="148" r="8" fill="#F43F5E"/>
+    <rect x="546" y="140" width="60" height="9" rx="4.5" fill="#94A3B8"/>
+    <rect x="546" y="156" width="34" height="7" rx="3.5" fill="#334155"/>
+    <rect x="700" y="136" width="34" height="24" rx="12" fill="#4F46E5"/>
+    <rect x="740" y="136" width="28" height="24" rx="12" fill="#1F2A44"/>
+
+    <!-- 未定稿（灰）与定稿（亮）气泡 -->
+    <g>
+      <rect x="506" y="186" width="200" height="52" rx="16" fill="#111A2C"/>
+      <rect x="524" y="204" width="120" height="9" rx="4.5" fill="#243252"/>
+      <rect x="524" y="220" width="78" height="8" rx="4" fill="#1B283F"/>
+    </g>
+    <g>
+      <rect x="506" y="250" width="252" height="66" rx="18" fill="#16213A" stroke="#2A3A5C" stroke-width="2"/>
+      <rect x="524" y="270" width="188" height="10" rx="5" fill="#A5B4FC"/>
+      <rect x="524" y="290" width="132" height="9" rx="4.5" fill="#94A3B8"/>
+    </g>
+
+    <!-- 洞察卡：四行判断 -->
+    <g>
+      <rect x="506" y="332" width="268" height="152" rx="20" fill="#1E1B4B" stroke="#4F46E5" stroke-width="2"/>
+      <rect x="526" y="352" width="86" height="10" rx="5" fill="#C7D2FE"/>
+      <g fill="#818CF8">
+        <rect x="526" y="378" width="164" height="9" rx="4.5"/>
+        <rect x="526" y="398" width="196" height="9" rx="4.5" opacity=".8"/>
+        <rect x="526" y="418" width="120" height="9" rx="4.5" opacity=".66"/>
+        <rect x="526" y="438" width="176" height="9" rx="4.5" opacity=".5"/>
+      </g>
+      <circle cx="748" cy="446" r="14" fill="#22D3EE" opacity=".85"/>
+      <path d="M742 446 h12 M748 440 v12" stroke="#0B1220" stroke-width="3" stroke-linecap="round"/>
+    </g>
+
+    <!-- 输入框 + 发送 -->
+    <rect x="506" y="500" width="204" height="42" rx="16" fill="#111A2C" stroke="#243252" stroke-width="2"/>
+    <rect x="524" y="517" width="96" height="9" rx="4.5" fill="#243252"/>
+    <circle cx="748" cy="521" r="21" fill="#4F46E5"/>
+    <path d="M740 515 l14 6 l-14 6 z" fill="#E0E7FF"/>
+
+    <!-- 底部 tab -->
+    <g fill="#243252">
+      <circle cx="560" cy="590" r="12"/>
+      <circle cx="640" cy="590" r="12" fill="#4F46E5"/>
+      <circle cx="720" cy="590" r="12"/>
+    </g>
+    <rect x="506" y="622" width="268" height="6" rx="3" fill="#1B283F"/>
+  </g>
+
+  <!-- 右侧：三张可照读的回复卡 -->
+  <g>
+    <rect x="880" y="150" width="326" height="88" rx="22" fill="#16213A" stroke="#2A3A5C" stroke-width="2"/>
+    <rect x="902" y="172" width="52" height="10" rx="5" fill="#22D3EE"/>
+    <rect x="902" y="194" width="230" height="9" rx="4.5" fill="#94A3B8"/>
+    <rect x="902" y="212" width="150" height="8" rx="4" fill="#334155"/>
+    <circle cx="1170" cy="194" r="15" fill="#0B1220" stroke="#22D3EE" stroke-width="2"/>
+    <path d="M1164 194 h12 M1170 188 v12" stroke="#22D3EE" stroke-width="2.5" stroke-linecap="round"/>
+  </g>
+  <g>
+    <rect x="900" y="256" width="306" height="88" rx="22" fill="#16213A" stroke="#2A3A5C" stroke-width="2"/>
+    <rect x="922" y="278" width="46" height="10" rx="5" fill="#818CF8"/>
+    <rect x="922" y="300" width="212" height="9" rx="4.5" fill="#94A3B8"/>
+    <rect x="922" y="318" width="128" height="8" rx="4" fill="#334155"/>
+  </g>
+  <g>
+    <rect x="920" y="362" width="286" height="88" rx="22" fill="#16213A" stroke="#2A3A5C" stroke-width="2"/>
+    <rect x="942" y="384" width="40" height="10" rx="5" fill="#FB923C"/>
+    <rect x="942" y="406" width="196" height="9" rx="4.5" fill="#94A3B8"/>
+    <rect x="942" y="424" width="112" height="8" rx="4" fill="#334155"/>
+  </g>
+
+  <!-- 从手机到回复卡的分发线 -->
+  <g stroke="#4F46E5" stroke-width="3" fill="none" opacity=".7">
+    <path d="M812 300 C 852 300 858 194 898 194"/>
+    <path d="M812 320 C 856 320 862 300 898 300"/>
+    <path d="M812 340 C 860 340 866 406 918 406"/>
+  </g>
+
+  <!-- 弦外之音：气泡里的一层暗流 -->
+  <g transform="translate(96 156)">
+    <rect x="0" y="0" width="250" height="76" rx="24" fill="#16213A" stroke="#2A3A5C" stroke-width="2"/>
+    <path d="M56 76 l-10 30 l46 -22 z" fill="#16213A" stroke="#2A3A5C" stroke-width="2"/>
+    <rect x="24" y="24" width="150" height="9" rx="4.5" fill="#A5B4FC"/>
+    <rect x="24" y="44" width="96" height="8" rx="4" fill="#334155"/>
+    <g stroke="#818CF8" stroke-width="2.5" fill="none" stroke-dasharray="7 7" opacity=".8">
+      <path d="M186 52 q20 16 44 4"/>
+    </g>
+  </g>
+
+  <g fill="#A5B4FC">
+    <circle cx="1224" cy="96" r="6" opacity=".7"/>
+    <circle cx="60" cy="520" r="5" opacity=".6"/>
+    <circle cx="240" cy="640" r="4" opacity=".5"/>
+  </g>
+</svg>

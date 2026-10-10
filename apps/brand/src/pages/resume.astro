@@ -1,0 +1,267 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+
+import Hero from '~/components/widgets/Hero.astro';
+import Note from '~/components/widgets/Note.astro';
+import Features from '~/components/widgets/Features.astro';
+import Timeline from '~/components/widgets/Timeline.astro';
+import Features3 from '~/components/widgets/Features3.astro';
+import Projects from '~/components/widgets/Projects.astro';
+import CallToAction from '~/components/widgets/CallToAction.astro';
+import { CONTACT } from '~/contact';
+
+const metadata = {
+  title: '简历 — 郑志泓',
+  description: '独立开发者的简历：能独立把一条链路从表结构写到真机上。技术栈与代表项目可核查；教育与任职经历留位待填。',
+  ignoreTitleTemplate: true,
+};
+---
+
+<Layout metadata={metadata}>
+  <!-- TODO 简历：结构已就位，只需替换文案，不必改组件。
+       待填位置：#career 时间线里三条标着「待补充」的 ghost 条目（工作经历两段、教育经历一段），
+       填好后去掉 ghost 字段即可恢复实心节点；PDF 附件位见下方 Note 与 CallToAction。
+       联系方式统一取自 src/contact.ts，改一处全站生效。 -->
+
+  <!-- Hero Widget ******************* -->
+
+  <Hero
+    id="top"
+    tagline="简历"
+    badge="持续更新"
+    actions={[
+      { variant: 'primary', text: '看作品', href: '/#products', icon: 'tabler:apps' },
+      { text: '给我写信', href: `mailto:${CONTACT.email}` },
+    ]}
+  >
+    <Fragment slot="title">
+      郑志泓<span class="text-accent dark:text-white">，把需求从表结构写到真机上的人</span>
+    </Fragment>
+
+    <Fragment slot="subtitle">
+      一个人做完三件作品：菜谱平台的三端与双后端，一条从录音到话术的实时 AI 链路，
+      以及第三件「言外书斋」——把长篇小说的一致性做成可核验记录的正典链路。
+      不写概念，只写能被代码仓库、构建产物和线上接口验证的东西。
+    </Fragment>
+
+    <Fragment slot="content">
+      <p class="max-w-2xl mx-auto mt-6 text-sm text-muted">
+        邮件
+        <a class="underline" href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a> · 微信
+        <span class="font-medium text-heading">{CONTACT.wechat}</span> · 手机
+        <a class="underline" href={`tel:${CONTACT.phoneE164}`}>{CONTACT.phone}</a>
+      </p>
+    </Fragment>
+  </Hero>
+
+  <!-- Note Widget ******************* -->
+
+  <Note
+    variant="warning"
+    title="简历区块预留"
+    description="教育经历、任职公司、在职时间段与证书由本人补充；下方已按投递场景把结构占好位，替换文案即可。PDF 版暂未挂出下载入口——public/ 下还没有对应文件，需要的话邮件里说，我单独发。"
+  />
+
+  <!-- Features Widget *************** -->
+
+  <Features
+    id="summary"
+    tagline="概述"
+    title="我能在哪里顶上"
+    subtitle="下面每一条都能在这三件作品里指出对应代码，不是自我评价。"
+    columns={2}
+    items={[
+      {
+        title: '端到端负责，不留交接缝',
+        icon: 'tabler:route-2',
+        description:
+          '从建表语句、接口信封、字段契约，到小程序输入框和真机上的合法域名配置。跨端联调最容易甩锅的那一段，在这里不存在，因为只有一处定义。',
+      },
+      {
+        title: 'AI 功能按能上线的标准做',
+        icon: 'tabler:shield-check',
+        description:
+          '模型会限流、向量服务会不通、Redis 会挂。每个环节都写了退化路径，并把它当成产品形态而不是异常处理——演示环境和生产表现的差别因此可控。',
+      },
+      {
+        title: '实时链路与第三方平台',
+        icon: 'tabler:microphone',
+        description:
+          '流式语音识别、WebSocket 双向传输、录音分段续接、鉴权票据；也熟悉平台规则的约束方式：小程序 CSS 支持面、类目与隐私审核、上传与合法域名白名单。',
+      },
+      {
+        title: '把过程留在仓库里',
+        icon: 'tabler:writing',
+        description: '部署台账、脚本入口、知识文档与建表语句都是工程件。密钥值永不进仓库，平台常量永不凭记忆填写。',
+      },
+    ]}
+  >
+    <Fragment slot="bg">
+      <div class="absolute inset-0 bg-indigo-50 dark:bg-transparent"></div>
+    </Fragment>
+  </Features>
+
+  <!-- Timeline Widget *************** -->
+
+  <Timeline
+    id="career"
+    tagline="经历"
+    title="最近一段可核查，更早的留位待填"
+    subtitle="教育与任职经历按倒序补齐即可；填好后去掉条目的 ghost 字段，就会恢复成实心节点。"
+    layout="vertical"
+    items={[
+      {
+        date: '2026-09 ~ 现在',
+        title: '独立开发 · 叮叮厨、言外 EchoTalk 与言外书斋',
+        description:
+          '三件作品共用一条工程底座：TypeScript 三端、Java 业务后端、Python AI 服务，部署在微信云托管。架构设计、实现、测试、部署与文档全部一人完成。',
+        icon: 'tabler:rocket',
+        highlight: true,
+      },
+      {
+        date: '待补充',
+        title: '工作经历 · 第一段',
+        description: '占位：公司 / 职位 / 起止时间 / 负责内容与可量化结果。请只写能被材料佐证的部分。',
+        icon: 'tabler:briefcase',
+        ghost: true,
+      },
+      {
+        date: '待补充',
+        title: '工作经历 · 更早段落',
+        description: '占位：同上，按倒序继续添加条目。',
+        icon: 'tabler:briefcase',
+        ghost: true,
+      },
+      {
+        date: '待补充',
+        title: '教育经历',
+        description: '占位：学校 / 专业 / 学历 / 起止时间；如有奖学金、竞赛或论文，另起一条描述。',
+        icon: 'tabler:school',
+        ghost: true,
+      },
+    ]}
+  />
+
+  <!-- Features3 Widget ************** -->
+
+  <Features3
+    id="capabilities"
+    tagline="能力"
+    title="岗位视角下的能力清单"
+    subtitle="按在这三件作品里真实承担过的程度排列；没做过的不写。"
+    columns={4}
+    items={[
+      {
+        title: '前端 / 多端',
+        description: 'Taro 微信小程序、Expo React Native、Umi Max + Ant Design 管理后台、Astro 静态站。',
+        icon: 'tabler:device-mobile-share',
+      },
+      {
+        title: '后端',
+        description: 'Spring Boot + MyBatis-Plus 的业务 API、认证与审批；FastAPI 的 WebSocket 流式服务。',
+        icon: 'tabler:server-2',
+      },
+      {
+        title: 'AI 应用',
+        description:
+          'Agent 编排、意图路由、结构化输出与检查点式会话记忆；正典式长程记忆（带出处与生效区间）加确定性规则与语义裁判的双闸门，以及各层的降级设计。',
+        icon: 'tabler:sparkles',
+      },
+      {
+        title: '实时音视频',
+        description: '流式语音识别与语音合成、PCM 帧上行、分段续录、鉴权票据与服务端代理。',
+        icon: 'tabler:wave-sine',
+      },
+      {
+        title: '数据',
+        description: 'MySQL 表结构以建表语句掌管；Redis Stack 承载运行时状态；对象存储放产物并回公网 URL。',
+        icon: 'tabler:database',
+      },
+      {
+        title: '工程化',
+        description: 'pnpm workspace monorepo、跨端类型契约、跨平台脚本包装、提交规范与静态检查。',
+        icon: 'tabler:settings',
+      },
+      {
+        title: '部署运维',
+        description: 'Docker 镜像构建、容器编排、Nginx 网关形态、云托管上线与部署台账。',
+        icon: 'tabler:cloud-upload',
+      },
+      {
+        title: '文档与协作',
+        description: '产品需求文档、决策记录、排障手册与知识沉淀，写给三个月后的自己和接手的人。',
+        icon: 'tabler:notebook',
+      },
+    ]}
+  />
+
+  <!-- Projects Widget *************** -->
+
+  <Projects
+    id="portfolio"
+    tagline="代表项目"
+    title="三个可以直接查看的项目"
+    subtitle="不是概念，是能指出文件与接口的东西。"
+    columns={2}
+    items={[
+      {
+        title: '叮叮厨 · 会说话的菜谱与 AI 做菜助手',
+        description:
+          '菜谱内容平台加做菜全程语音：分步播报、计时提示、AI 答疑。三端客户端、双后端服务、四层降级路径，已部署到微信云托管。',
+        tags: ['Taro', 'Expo', 'Spring Boot', 'FastAPI'],
+        image: {
+          src: '~/assets/images/hero.svg',
+          alt: '插画：手机立在厨房台面上，屏幕里是分步的做菜界面与计时环',
+          format: 'svg',
+        },
+        href: '/#projects',
+        linkText: '看构成',
+        result: '三端 + 双后端，全流程独立交付',
+      },
+      {
+        title: '言外 EchoTalk · 听懂弦外之音的实时沟通助手',
+        description:
+          '实时转写加语义洞察：意图、潜台词、情绪、风险，配三句可照读的回复建议。独立小程序、自建 ASR 网关与垂直 Agent。',
+        tags: ['实时 ASR', '垂直 Agent', '隐私前置'],
+        image: {
+          src: '~/assets/images/projects/echo-talk.svg',
+          alt: '插画：手机里是转写气泡与洞察卡，右侧分出三张回复卡，左侧有一串声波',
+          format: 'svg',
+        },
+        href: '/yanwai',
+        linkText: '看这个产品',
+        result: '从录音到话术的完整闭环',
+      },
+      {
+        title: '言外书斋 · 让第 27 章还记得第 3 章',
+        description:
+          '反幻觉长文链路：设定是数据库里带出处与生效区间的正典断言，注入预算恒定，计划与正文各过一道闸门（11 条确定性规则加语义裁判），过了闸门才写得回记忆。',
+        tags: ['LangGraph', 'FastAPI', 'Spring Boot', 'MySQL'],
+        image: {
+          src: '~/assets/images/projects/novel-agent.svg',
+          alt: '插画：左侧是一章正文，中间是规则与裁判两道闸门，右侧是带出处的正典断言台账',
+          format: 'svg',
+        },
+        href: '/novel',
+        linkText: '看这条链路',
+        result: '305 个测试用例，一致性黄金集进 CI 门禁',
+      },
+    ]}
+  />
+
+  <!-- CallToAction Widget *********** -->
+
+  <CallToAction
+    id="contact"
+    layout="card"
+    tagline="联系"
+    title="需要 PDF 版、项目细节或某段代码的走查"
+    subtitle="邮件里说一声，当天回复；也可以直接约一次屏幕共享，边看代码边讲。"
+    actions={[
+      { variant: 'primary', text: '给我写信', href: `mailto:${CONTACT.email}`, icon: 'tabler:mail' },
+      { text: '填写联系表单', href: '/contact' },
+      { text: '看言外 EchoTalk', href: '/yanwai' },
+      { text: '看言外书斋', href: '/novel' },
+    ]}
+  />
+</Layout>
