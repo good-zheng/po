@@ -27,9 +27,11 @@ VIBE = os.path.join(REPO, 'vibe_images')
 LOCAL_YAML = os.path.join(
     REPO, 'services/api/api-bootstrap/src/main/resources/application-local.yaml')
 
-# 与 tools/seed-sql.py 的 cos 分支保持一致
-COS_FILES = ['recipes-yue.json', 'recipes-lu.json', 'recipes-min.json',
-             'recipes-su.json', 'recipes-zhe.json', 'recipes-hui.json']
+# 与 tools/seed-sql.py 的 cos 分支同源，均取自 tools/batches.py
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from batches import BATCHES
+
+COS_FILES = [src for src, _dst, cover in BATCHES if cover == 'cos']
 REGION = os.environ.get('COS_REGION', 'ap-shanghai')
 BUCKET = os.environ.get('COS_BUCKET', '7072-prod-d7g3zal0655a67232-1496875399')
 PREFIX = os.environ.get('COS_KEY_PREFIX', 'po')

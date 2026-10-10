@@ -11,6 +11,8 @@
 | 聊天服务 | Python 3.11 + FastAPI + WebSocket + LangGraph | `services/chat` |
 | Agent 编排 | 纯库 `po-agent-core`（supervisor / 事件流 / semantic-router 意图路由 / 记忆，垂直 Agent 经插槽接入） | `services/agent-core` |
 | 烹饪助手 Agent | 纯库 `po-agent-cooking`（菜谱检索 / 详情 / 分类三个工具 + ReAct 子图，注册进 chat 宿主） | `services/agent-cooking` |
+| 言外 Agent | 纯库 `po-agent-talk`（对话理解与表达建议子图，建议经 `/talk/internal/**` 回写落库），注册进 chat 宿主 | `services/agent-talk` |
+| 小说 Agent | 纯库 `po-agent-novel`（构思 → 大纲 → 逐章生成与审稿 → 正典抽取 → 归档确认），成稿与正典经 `/novel/internal/**` 落库 | `services/agent-novel` |
 | 网关与编排 | Nginx 1.27 + Docker Compose | `infra/nginx`、`docker-compose.yml` |
 
 ## 架构总览
@@ -23,13 +25,18 @@ services/api          Maven 多模块单体
   ├─ shared           公共 DTO / Result / 异常
   ├─ identity         用户、认证、JWT
   ├─ recipe           菜谱与分类
+  ├─ talk             言外对话与表达建议（含 /talk/internal/** 回写）
+  ├─ novel            书架/章节/角色 + L0 正典层（含 /novel/internal/** 写入通道）
   └─ api-bootstrap    启动模块（application.yaml，context-path=/api）
 services/agent-core    编排核心纯库（supervisor / 事件流翻译 / 意图路由 / 会话记忆，
                       垂直 Agent 经插槽接入，不含业务领域知识）
 services/agent-cooking 烹饪助手垂直 Agent（菜谱检索 / 详情 / 分类三个工具 + ReAct 子图，
                       按 cooking 角色取模型，模型或菜谱后端不可用时逐级降级）
+services/agent-talk    言外垂直 Agent（对话理解 + 表达建议子图，建议回写内网端点）
+services/agent-novel   小说垂直 Agent（六节点子图：构思 → 大纲 → 生成 ⇄ 审稿 → 正典抽取 →
+                      归档确认；逐字证据闸门 + 幂等入库，模型缺配置时整体离线降级）
 services/chat          FastAPI 宿主（/api/health、/api/items、/ws/chat 流式编排，
-                      装配 agent-core 与烹饪插槽，LLM 缺配置时离线降级）
+                      装配 agent-core 与 cooking / talk / novel 三个插槽，LLM 缺配置时离线降级）
 infra/nginx/nginx.conf 网关分流规则
 ```
 
@@ -49,9 +56,9 @@ infra/nginx/nginx.conf 网关分流规则
 | 服务 | 镜像 / 构建 | 端口 | 持久化 |
 | --- | --- | --- | --- |
 | `mysql` | `mysql:8.4` | 仅内网 3306 | 命名卷 `mysql_data` |
-| `redis` | `redis:7-alpine` | 仅内网 6379 | 无（缓存用途） |
+| `redis` | `redis/redis-stack-server`（JSON + Search 模块，`chat` 会话持久化依赖） | 仅内网 6379 | 命名卷 `redis_data` |
 | `api` | `services/api/Dockerfile` | 仅内网 8080 | 命名卷 `uploads_data` → `/app/uploads` |
-| `chat` | `services/chat/Dockerfile`（构建上下文为仓库根，随包本地 agent-core / agent-cooking） | 仅内网 5090 | 无 |
+| `chat` | `services/chat/Dockerfile`（构建上下文为仓库根，随包本地 agent-core / agent-cooking / agent-talk / agent-novel） | 仅内网 5090 | 无 |
 | `web` | `apps/admin-web/Dockerfile`（构建上下文为仓库根） | **对外 `${WEB_PORT:-8000}:80`** | 只读挂载 `infra/nginx/nginx.conf` |
 
 只有 `web` 暴露宿主机端口，其余服务仅在 compose 网络内互通；`api` 与 `chat` 都带健康检查，`web` 延迟到二者 healthy 后再启动。
@@ -155,7 +162,7 @@ pnpm api:start
 先在 `services/chat` 创建 `.venv`（`python -m venv .venv`），再从仓库根目录安装本地包并启动：
 
 ```bash
-pnpm chat:install    # 按依赖序安装 agent-core → agent-cooking → chat（可编辑模式）
+pnpm chat:install    # 按依赖序安装 agent-core → agent-cooking → agent-talk → agent-novel → chat（可编辑模式）
 pnpm chat:start
 ```
 
@@ -204,10 +211,12 @@ pnpm mobile:web       # 浏览器
 | `pnpm api:install` | 安装 API 依赖模块到本地 Maven 仓库（一般无需执行，`api:start` 会在 reactor 内构建） |
 | `pnpm api:start` | 在 reactor 内构建依赖模块并启动 `api-bootstrap`（等价于 `services/api` 下 `./mvnw -pl api-bootstrap -am spring-boot:run`） |
 | `pnpm api:verify` | Java 全模块 `mvn verify` |
-| `pnpm chat:install` | 按依赖序安装 agent-core → agent-cooking → chat 到 `services/chat/.venv` |
+| `pnpm chat:install` | 按依赖序安装 agent-core → agent-cooking → agent-talk → agent-novel → chat 到 `services/chat/.venv` |
 | `pnpm chat:start` / `chat:test` | 启动 FastAPI 聊天服务或运行 pytest |
 | `pnpm agentcore:test` | 运行编排核心库的 pytest（复用 chat 的 `.venv`） |
 | `pnpm agentcooking:test` | 运行烹饪垂直 Agent 的 pytest（复用 chat 的 `.venv`） |
+| `pnpm agenttalk:test` | 运行言外垂直 Agent 的 pytest（复用 chat 的 `.venv`） |
+| `pnpm agentnovel:test` | 运行小说垂直 Agent 的 pytest（复用 chat 的 `.venv`，离线零网络） |
 | `pnpm mobile:start` | 启动 Expo 做菜 App 开发服务器 |
 | `pnpm mobile:android` / `mobile:ios` / `mobile:web` | 启动 Android、iOS 或 Web 开发目标 |
 | `pnpm mobile:apk` | 本地编译 Android debug APK（可加 `x86_64` 等架构参数只编单一 ABI） |
@@ -218,12 +227,16 @@ pnpm mobile:web       # 浏览器
 
 ## 持续集成
 
-`.github/workflows/ci.yml` 在 push `main` / PR / 手动触发时运行四个 job：
+`.github/workflows/ci.yml` 在 push `main` / PR / 手动触发时运行六个 job：
 
-- **frontend**：pnpm 10.28.1 + Node 22 → 冻结锁文件安装 → 构建 `@po/types` → lint → vitest → 构建产物
-- **mobile**：pnpm 10.28.1 + Node 22 → 冻结锁文件安装 → Expo App 的 Biome、TypeScript 与 jest-expo 检查
-- **api**：Temurin 17 + Maven 缓存，以 MySQL 8.4 / Redis 7 服务容器 + 环境变量注入（等价 `application-local.yaml`）→ `mvn verify`
-- **chat**：Python 3.11 → 按依赖序安装本地包 `agent-core → agent-cooking → chat` → 依次运行 agent-core、agent-cooking、chat 三套 pytest
+- **frontend**：pnpm 10.28.1 + Node 22 → 冻结锁文件安装 → 构建 `@po/types` → lint → vitest → 构建产物（覆盖 `apps/admin-web`）
+- **mobile**：pnpm 10.28.1 + Node 22 → 冻结锁文件安装 → 构建 `@po/types` → Expo App 的 Biome、TypeScript 与 jest-expo 检查
+- **mini**：pnpm 10.28.1 + Node 22 → 冻结锁文件安装 → 构建 `@po/types` → `taro build --type weapp`（主包限额在此把关）
+- **brand**：pnpm 10.28.1 + Node 22 → 冻结锁文件安装 → `astro check` → `astro build`
+- **api**：Temurin 17 + Maven 缓存，以 MySQL 8.4 / Redis Stack 服务容器 + 环境变量注入（等价 `application-local.yaml`）→ `mvn verify`
+- **chat**：Python 3.11 → 按依赖序安装本地包 `agent-core → agent-cooking → agent-talk → agent-novel → chat` → 依次运行 agent-core、agent-cooking、agent-talk、agent-novel、chat 五套 pytest（四套 Agent 套件全部离线，不需要 Key 与后端）
+
+`@po/types` 的 `exports` 只指向 `dist/`，因此凡是依赖它的 job（frontend / mobile / mini）都必须先跑 `types:build`。
 
 ## 提交规范
 

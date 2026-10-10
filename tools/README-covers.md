@@ -31,7 +31,36 @@ MySQL po.recipe.cover_image_url
 `UPDATE recipe SET cover_image_url = ... WHERE title = ... AND category = ... AND cover_image_url IS NULL`，
 只补空封面，重复执行安全。
 
-## 补齐剩下的 84 张封面
+## 生图水印必须裁掉
+
+ImageGen 出来的源图右下角会烘进「AI生成 / WORKBUDDY」水印，直接上传会带到线上。
+实测 1536x1024 下文本落在 **y 963..1013**（跨 14 张求交集，位置固定），裁到 `y < 945`
+（即去掉底部约 7.7%）即可干净去除；裁剪后 1536x945，两端 `aspectFill` 渲染下肉眼无差别。
+
+```python
+from PIL import Image
+im = Image.open(src)
+im.crop((0, 0, im.width, 945)).save(src)   # CUT=945，别用 1024
+```
+
+注意：**旧的两个批次来源不同**——jar 内 117 张静态封面是干净的；Qoder 时期生成的 COS 封面
+（东北 4 张 + 粤/鲁/闽/苏/浙/徽 16 张）带一层很淡的「Qoder AI 生成」水印，尚未清理。
+
+## 封面补齐进度
+
+**库内 217 道菜封面已全部补齐（2026-10-02，缺失归零）**：
+闽 17 / 鲁 17 / 粤 18 / 苏 17 / 浙 16 / 徽 15 六系 100 张全部走 COS，其余为旧静态批次。
+
+尚未入库、但已在 `seed/` 里准备好的菜系（源图还没生，共 116 张）：
+
+| 菜系 | seed 文件 | 道数 |
+| --- | --- | --- |
+| 东北 | recipes-dongbei.json | 4（源图已传到 COS，待入库） |
+| 西北 / 湖北 / 云南 / 贵州 / 广西 / 山西 / 河南 | recipes-{xibei,hubei,yunnan,guizhou,guangxi,shanxi,henan}.json | 112（源图未生） |
+
+这些菜系入库前先生图 + 传 COS 即可，流程与下面完全一致。
+
+## 补图标准流程
 
 1. 查缺哪些（本地 root 密码见 gitignored 的 `application-local.yaml`，别写进文档或脚本）：
    ```
@@ -39,7 +68,10 @@ MySQL po.recipe.cover_image_url
      "SELECT category, title, id FROM recipe WHERE cover_image_url IS NULL ORDER BY category, id"
    ```
    或直接看 `py tools/cos-upload.py` 打印的 `缺源图 <slug>` 行。
-2. 用 ImageGen 按对应 `cover.visual` 生图（size 1536x1024，name 用 slug 原值），落到 `vibe_images/`。
+2. 用 ImageGen 按对应 `cover.visual` 生图（`size=1536x1024`、`quality=high`、`output_dir=vibe_images/`）。
+   注意 ImageGen 的落盘名由提示词派生（`professional_food_photography__<时间戳>.png`），**不是** slug，
+   生成后必须按 `vibe_images/<slug>_<毫秒时间戳>_<md5前8位>.png` 改名（`cos-upload.py` 靠 `_` 前的前缀认 slug）。
+   然后按上一节裁掉底部水印。
 3. 上传（幂等，桶里已有的自动跳过）：
    ```
    py tools/cos-upload.py            # 全部

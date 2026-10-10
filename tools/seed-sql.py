@@ -5,6 +5,8 @@ import json
 import os
 import sys
 
+from batches import BATCHES as FILES
+
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -18,19 +20,7 @@ COS_BUCKET = os.environ.get('COS_BUCKET', '7072-prod-d7g3zal0655a67232-149687539
 COS_KEY_PREFIX = os.environ.get('COS_KEY_PREFIX', 'po')
 COS_COVERS = 'https://%s.cos.%s.myqcloud.com/%s/covers' % (COS_BUCKET, COS_REGION, COS_KEY_PREFIX)
 
-# (seed 文件名, 输出 sql, 封面来源: static = static/covers/, cos = COS 桶)
-FILES = [
-    ('recipes-xiang-a.json', 'data-xiang-a.sql', 'static'),
-    ('recipes-xiang-b.json', 'data-xiang-b.sql', 'static'),
-    ('recipes-chuan.json', 'data-chuan.sql', 'static'),
-    ('recipes-gan.json', 'data-gan.sql', 'static'),
-    ('recipes-yue.json', 'data-yue.sql', 'cos'),
-    ('recipes-lu.json', 'data-lu.sql', 'cos'),
-    ('recipes-min.json', 'data-min.sql', 'cos'),
-    ('recipes-su.json', 'data-su.sql', 'cos'),
-    ('recipes-zhe.json', 'data-zhe.sql', 'cos'),
-    ('recipes-hui.json', 'data-hui.sql', 'cos'),
-]
+# (seed 文件名, 输出 sql, 封面来源: static = static/covers/, cos = COS 桶) 见 tools/batches.py
 
 
 def cover_url(slug, source):

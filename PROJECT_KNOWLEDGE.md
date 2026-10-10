@@ -12,8 +12,12 @@ pnpm workspace monorepo（Node ≥ 22，pnpm ≥ 10）：
 | `apps/cooking-app/` | 移动端 App | Expo SDK 57、React Native、expo-router、NativeWind、TanStack Query |
 | `apps/cooking-mini/` | 微信小程序 | Taro 4.2.1、React 18、webpack5（webpack 锁 ~5.95.0） |
 | `apps/brand/` | 项目/个人介绍站 | Astro 7 + Tailwind CSS 4，模板 AstroWind（MIT）；静态站点，不与其它端共享组件与路由 |
-| `services/api/` | 主后端 | Java 17、Spring Boot 4.1.1、MyBatis-Plus、MySQL、Redis(Jedis)、jjwt；Maven reactor 多模块：shared/identity/recipe/api-bootstrap |
-| `services/chat/` | AI 聊天服务 | FastAPI + Uvicorn（5090）、LangChain/LangGraph、pyproject 管理依赖 |
+| `services/api/` | 主后端 | Java 17、Spring Boot 4.1.1、MyBatis-Plus、MySQL、Redis(Jedis)、jjwt；Maven reactor 多模块：shared/identity/recipe/talk/novel/api-bootstrap |
+| `services/agent-core/` | 编排核心纯库 | Python：Orchestrator + 事件流翻译 + HybridRouter 意图路由 + CheckpointerManager 记忆；**不含任何业务领域知识**，垂直 Agent 经插槽接入 |
+| `services/agent-cooking/` | 烹饪垂直 Agent | Python：菜谱检索/详情/分类三个工具 + ReAct 子图，按 `cooking` 角色取模型，模型或菜谱后端不可用时逐级降级；注册进 chat 宿主 |
+| `services/agent-talk/` | 言外垂直 Agent | Python：对话理解 + 表达建议子图，建议经 `/talk/internal/**`（`TALK_INTERNAL_TOKEN`）回写落库；注册进 chat 宿主 |
+| `services/agent-novel/` | 小说垂直 Agent | Python：六节点子图（构思→大纲→生成⇄审稿→正典抽取→归档确认），逐字证据闸门 + 幂等入库，成稿与正典经 `/novel/internal/**`（`NOVEL_INTERNAL_TOKEN`）写库；按 `plan`/`write`/`judge` 三角色取模型，任一角色不可用即整体离线降级；注册进 chat 宿主 |
+| `services/chat/` | AI 聊天服务 | FastAPI + Uvicorn（5090）、LangChain/LangGraph、pyproject 管理依赖；装配 agent-core 与 cooking/talk/novel 三个插槽 |
 | `packages/types/` | 跨端契约 `@po/types` | 前后端字段变更先改这里 |
 | `scripts/` | 启动/部署包装器 | run-service.mjs、run-sh.mjs、run-mobile.mjs、deploy-*.sh |
 | `infra/` | Nginx 网关配置 | docker-compose 部署形态 |
@@ -89,8 +93,12 @@ pnpm workspace monorepo（Node ≥ 22，pnpm ≥ 10）：
 | 管理端 开发/构建/检查 | `pnpm admin:dev`、`pnpm admin:build`、`pnpm admin:typecheck` |
 | 后端 启动/验证 | `pnpm api:start`、`pnpm api:verify`（脚本自动定位 JDK 17） |
 | 聊天 启动/测试 | `pnpm chat:start`、`pnpm chat:test` |
+| Agent 库测试 | `pnpm agentcore:test`、`pnpm agentcooking:test`、`pnpm agenttalk:test`、`pnpm agentnovel:test`（全部复用 `services/chat/.venv`，离线无 Key 无后端） |
+| 小说建表迁移 / 接口冒烟 | `node scripts/novel-migrate.mjs`（说明 `scripts/NOVEL_MIGRATE.md`）、`node scripts/novel-smoke.mjs`、`node scripts/novel-internal-smoke.mjs`（说明 `scripts/NOVEL_INTERNAL_SMOKE.md`） |
 | App | `pnpm mobile:start`、`pnpm mobile:apk`、`pnpm mobile:test` |
 | 小程序 | `pnpm mini:dev`、`pnpm mini:build`（H5：`mini:dev:h5`） |
 | 介绍站 | `pnpm brand:dev`、`pnpm brand:build`、`pnpm brand:preview`、`pnpm brand:check`、`pnpm brand:assets`（改完 `src/assets/illustrations/*.svg` 后重新生成 OG 与博客封面位图；Astro 端口 4321） |
 | 介绍站 部署 | `pnpm brand:deploy`（镜像推云托管内置仓库 `tcb-100053273154-byrm/brand`，流程见 `apps/brand/DEPLOY_CLOUDRUN.md`） |
 | 云托管部署 | `pnpm api:deploy`、`pnpm chat:deploy`、`pnpm redis:deploy`（+ `:official` 变体） |
+| 知识库发布 | `pnpm wiki:sync`（本机通用 Skill → 站点 `其他/skills/`，定时任务 `goodzheng-wiki-sync` 每 30 分钟自动跑）、`pnpm wiki:sync:dry`、`pnpm wiki:sync:bootstrap`（换机时首次落地）；人工经验走 `/wiki-capture`。归属与故障排查见 `scripts/WIKI_SYNC.md` |
+| 知识库站点 | `pnpm wiki:site`、`pnpm wiki:site:dev`（nodemon）、`pnpm wiki:site:install`——第三方上游 PowerWiki 的本地副本，目录本身已 gitignore，但仍是 workspace 成员（`node_modules` 软链到根 store，勿排除）；端口 `PORT` > `config.json.port`（本机 80）> 3150 |
