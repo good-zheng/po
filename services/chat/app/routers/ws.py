@@ -56,8 +56,10 @@ interrupt / resume 的时序（前端必须遵守）
 
 from __future__ import annotations
 
+import asyncio
 import logging
 import time
+from typing import Any
 from uuid import uuid4
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
@@ -112,6 +114,42 @@ class _ClientGone(Exception):
     单独立一个类型是为了与真正的服务端异常区分：客户端中途关页/断网属于
     正常结束（外层静默 return），而其他异常需要记日志并上抛。
     """
+
+
+# 入站缓冲的上限：一轮生成期间客户端只该有心跳和少量排队帧，超了这个数就是在灌，
+# 让泵任务在 put 上背压住（等于把 uvicorn 原本的「停读」背压还回来），而不是无限攒。
+_INBOX_LIMIT = 128
+
+InboxItem = tuple[str, Any]
+
+
+async def _pump_inbound(websocket: WebSocket, inbox: "asyncio.Queue[InboxItem]") -> None:
+    """常驻读任务：把入站帧搬进 inbox，异常也搬进去，由主循环归位。
+
+    为什么不能「主循环里直接 receive」：uvicorn 0.54 的 websockets-sansio 实现是
+    **投递一条消息后就 ``transport.pause_reading()``，直到应用下一次 ``receive()``
+    且队列为空才 ``resume_reading()``**（见该模块 ``handle_text`` / ``receive``）。
+    主循环一旦进入 ``async for event in events`` 发帧，就没有人再调用 ``receive()``，
+    读通道于是停在「客户端心跳帧刚进队、还没被消费」的状态上——此时服务端给客户端
+    发的 keepalive ping，其对端的 PONG 连同 TCP 缓冲一起没人读，20 秒后 uvicorn 判定
+    ``keepalive ping timeout`` 并以 1011 直接撕掉这条还在正常生成的连接（关闭码非
+    1000，所以前端只会看到「生成连接已断开」而没有任何 error 帧）。任何超过 30~40 秒
+    的 run 都会撞上它：心跳帧最早在 +30s 进队，断连于是稳定发生在 +60s。
+
+    泵任务把「读」与「发」解耦：它绝大部分时间挂在 ``receive()`` 上，读通道始终开着，
+    控制帧按协议被处理；业务帧仍旧由主循环串行消费，所以「interrupt 之后先把本轮发到
+    done 再发 resume」的时序约束没有被破坏。
+    """
+    while True:
+        try:
+            raw = await websocket.receive_json()
+        except (WebSocketDisconnect, _ClientGone) as exc:
+            await inbox.put(("gone", exc))
+            return
+        except Exception as exc:  # noqa: BLE001 - 非 JSON 文本等解析错误交回主循环按老协议处理
+            await inbox.put(("failed", exc))
+            return
+        await inbox.put(("frame", raw))
 
 
 async def _send_frame(websocket: WebSocket, frame: WSOutFrame) -> None:
@@ -214,10 +252,24 @@ async def _loop(websocket: WebSocket, orchestrator: Orchestrator, actor: WsActor
     ``actor`` 只用于帧级闸门：需要身份的帧（:func:`app.ws_auth.requires_actor`——
     ``novel-chat`` 与带 ``bookId`` 的续写帧）在匿名连接上一律不启动编排——握手没有票据的
     连接读不到任何人的正典，让它跑到 L1 编译那一步等于把校验挪到了事后。
+
+    入站帧来自常驻泵任务而不是这里直接 ``receive``，原因见 :func:`_pump_inbound`。
     """
+    inbox: asyncio.Queue[InboxItem] = asyncio.Queue(maxsize=_INBOX_LIMIT)
+    pump = asyncio.create_task(_pump_inbound(websocket, inbox))
     try:
         while True:
-            raw = await websocket.receive_json()
+            kind, payload = await inbox.get()
+            if kind == "gone":
+                logger.info(
+                    "WS 连接结束：%s code=%s",
+                    type(payload).__name__,
+                    getattr(payload, "code", "-"),
+                )
+                return
+            if kind == "failed":
+                raise payload
+            raw = payload
             try:
                 frame = WSInFrame.model_validate(raw)
             except ValidationError:
@@ -306,3 +358,7 @@ async def _loop(websocket: WebSocket, orchestrator: Orchestrator, actor: WsActor
         # 交给框架关闭连接；不在此处吞掉，避免故障被静默掩盖。
         logger.exception("WS 聊天处理异常")
         raise
+    finally:
+        # 泵任务平时挂在 receive() 上，主循环退出（正常收尾/断连/异常）后必须由
+        # 这里收掉，否则它会一直占着这条连接的读通道，随连接一起泄漏成僵尸任务。
+        pump.cancel()

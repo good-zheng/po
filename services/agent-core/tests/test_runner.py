@@ -363,6 +363,67 @@ async def test_timeout_emits_run_error() -> None:
     assert events[-1].payload["timeout_seconds"] == 0.1
 
 
+async def test_per_run_budget_overrides_the_constructor() -> None:
+    """本轮预算覆盖构造值：宿主按插槽给长批次放宽，而不是抬高全局默认。
+
+    「一次写 3 章」实测 322 秒，构造值 300 秒会在写作中途掐掉它；反过来，
+    一个只该问一句话的插槽不该因为同一个数字被放宽到一小时才见错误帧。
+    所以这个旋钮必须是**每轮**的。
+    """
+
+    async def slow(state: ChatState) -> dict:
+        await asyncio.sleep(0.2)
+        return {"messages": [AIMessage(content="第三章写完了")]}
+
+    graph = compile_graph(("slow", slow))
+    events = [
+        e
+        async for e in AgentRunner(timeout_seconds=0.05).astream(
+            graph, {"messages": [HumanMessage(content="接着写")]}, timeout_seconds=5
+        )
+    ]
+
+    assert EventType.RUN_ERROR not in types_of(events)
+    assert events[-1].type is EventType.RUN_FINISHED
+
+
+async def test_per_run_budget_can_tighten_too() -> None:
+    """覆盖是双向的：本轮传得更小就以更小为准，错误帧回报的也是这一轮的数。
+
+    ``timeout_seconds`` 进 payload 是必须的——作者看到的「运行超时」要能说清
+    掐在哪一档，否则排障时无法区分插槽预算与全局默认。
+    """
+
+    async def slow(state: ChatState) -> dict:
+        await asyncio.sleep(1.0)
+        return {"messages": [AIMessage(content="too late")]}
+
+    graph = compile_graph(("slow", slow))
+    events = [
+        e
+        async for e in AgentRunner(timeout_seconds=30).astream(
+            graph, {"messages": [HumanMessage(content="hi")]}, timeout_seconds=0.05
+        )
+    ]
+
+    assert types_of(events) == [EventType.RUN_STARTED, EventType.RUN_ERROR]
+    assert events[-1].payload["timeout_seconds"] == 0.05
+
+
+async def test_invalid_per_run_budget_rejected() -> None:
+    """本轮预算同样守正数：0 或负数等于「每轮必炸」，开跑之前就该拦住。"""
+
+    async def noop(state: ChatState) -> dict:
+        return {"messages": [AIMessage(content="ok")]}
+
+    graph = compile_graph(("noop", noop))
+    with pytest.raises(ValueError):
+        async for _ in AgentRunner(timeout_seconds=30).astream(
+            graph, {"messages": []}, timeout_seconds=0
+        ):
+            pass
+
+
 async def test_node_exception_emits_run_error() -> None:
     async def boom(state: ChatState) -> dict:
         raise ValueError("节点炸了")

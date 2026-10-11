@@ -264,7 +264,17 @@ class AgentRunner:
         state: dict[str, Any],
         *,
         config: dict[str, Any] | None = None,
+        timeout_seconds: float | None = None,
     ) -> AsyncIterator[AgentEvent]:
+        """驱动一次图运行。
+
+        ``timeout_seconds`` 是**这一轮**的预算，覆盖构造时的默认值：一次「写 3 章」的
+        批次天然比一问一答的插槽长一个数量级，宿主按本轮范围给预算，比把全局默认抬到
+        谁都不会被误伤的大小更诚实。留空即用构造值。
+        """
+        budget = self.timeout_seconds if timeout_seconds is None else timeout_seconds
+        if budget <= 0:
+            raise ValueError("timeout_seconds 必须为正数")
         translator = _RunTranslator()
         config = dict(config or {})
         thread_id = (config.get("configurable") or {}).get("thread_id")
@@ -274,7 +284,7 @@ class AgentRunner:
             payload={"thread_id": thread_id},
         )
         try:
-            async with asyncio.timeout(self.timeout_seconds):
+            async with asyncio.timeout(budget):
                 # 续接线程时父级委派节点的 delta 会带上全部历史消息，先登记
                 # 再开跑，本轮才不会把上一轮的回复与工具卡片重放一遍
                 translator.register_history(
@@ -306,7 +316,7 @@ class AgentRunner:
                 content="运行超时",
                 payload={
                     "error_type": "TimeoutError",
-                    "timeout_seconds": self.timeout_seconds,
+                    "timeout_seconds": budget,
                 },
             )
             return

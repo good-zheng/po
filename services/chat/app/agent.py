@@ -6,7 +6,7 @@
   （与 P0 阶段的 echo 端点行为一致，保持前端/测试零感知）；
 - checkpointer：redis/sqlite 连接失败 → memory（会话记忆退化为进程内，
   服务可用性优先）；
-- 垂直 Agent：``agents=None`` 时装配内置插槽（当前为空，登记点见
+- 垂直 Agent：``agents=None`` 时装配内置插槽（cooking / talk / novel / novel-chat，登记点见
   :func:`_builtin_agents`），包缺失或装配失败逐个跳过；``agents=[]``
   显式不装配；
 - 意图路由：``create_intent_router`` 按 slots 派生语料，embedding 缺失
@@ -81,6 +81,16 @@ RESERVED_CONTEXT_KEYS: frozenset[str] = frozenset(
         "tailChapterId",
     }
 )
+
+# 一轮运行的预算按插槽给，缺键即用构造值（``AGENT_CORE_RUN_TIMEOUT_SECONDS``，默认
+# 300 秒——够一问一答的插槽把一次卡死的模型调用兜住）。
+#
+# novel 是唯一「一轮写好几章」的插槽：实测一条 3 章的线程从发起跑到收尾 322 秒，
+# 已经越过默认预算，会被掐成一条「运行超时」的错误帧；而领域侧对一轮的章数有软上限
+# 20 章（``po_agent_novel.graph._CONTINUE_MAX_CHAPTERS``），按每章约 2 分钟留出 1 小时
+# 才装得下一整批。刻意不把这个数抬成全局默认：那会让 chitchat 这类插槽在真卡死时
+# 也要空等一小时才见到错误帧。
+_RUN_BUDGET_BY_AGENT: dict[str, float] = {"novel": 3600.0}
 
 
 class EchoChatModel(BaseChatModel):
@@ -203,10 +213,16 @@ class Orchestrator:
         # run 走子图、resume 走父图，两边不是同一个 checkpoint，垂直 Agent 的
         # interrupt（novel 的归档确认）就永远确认不了。改为把插槽名塞进
         # forced_agent，由 route 节点跳过语义路由。
-        if agent and agent in self.agents:
-            state["forced_agent"] = agent
+        forced = agent if agent and agent in self.agents else None
+        if forced:
+            state["forced_agent"] = forced
+        # 预算跟着「这一轮到底由哪个插槽来跑」走，与上面点名时同一个判据：
+        # 指定了一个没装配的插槽时，父图会退回普通编排，那就还是默认预算。
         async for event in self.runner.astream(
-            self.graph, state, config=self._config(thread, context)
+            self.graph,
+            state,
+            config=self._config(thread, context),
+            timeout_seconds=self._run_budget(forced),
         ):
             yield event
 
@@ -218,15 +234,49 @@ class Orchestrator:
 
         这里不需要 ``agent`` 参数：:meth:`run` 无论是否点名插槽都在同一个
         ``thread_id`` 上跑父图，挂起点因此总在父图手里这份 checkpoint 里。
+        插槽名同样从那份 checkpoint 里取（见 :meth:`_forced_agent`），恢复轮因此
+        拿到和发起轮一样的预算，而不是退到默认值。
         """
         if not conversation_id:
             # 与路由层的校验重复一次：这里是更内层的守门，避免调用方绕过 WS
             # 直接使用时静默新建线程、把确认丢了。
             raise ValueError("resume 需要 conversation_id（interrupt 挂起的线程）")
+        config = self._config(conversation_id)
         async for event in self.runner.astream(
-            self.graph, Command(resume=value), config=self._config(conversation_id)
+            self.graph,
+            Command(resume=value),
+            config=config,
+            timeout_seconds=self._run_budget(await self._forced_agent(config)),
         ):
             yield event
+
+    def _run_budget(self, agent: str | None) -> float:
+        """这一轮的超时（秒）：插槽在 :data:`_RUN_BUDGET_BY_AGENT` 里有登记就用它的
+        专属预算，否则用 runner 的构造值（一问一答的插槽不需要更久）。"""
+        if agent:
+            budget = _RUN_BUDGET_BY_AGENT.get(agent)
+            if budget is not None:
+                return budget
+        return self.runner.timeout_seconds
+
+    async def _forced_agent(self, config: dict) -> str | None:
+        """从 checkpoint 读回这条线程当初点名的插槽，只为了给恢复轮配同样的预算。
+
+        resume 帧不带 ``agent``：挂起的是同一条线程，插槽名就在 checkpoint 的
+        ``forced_agent`` 里（:meth:`run` 写进去的那个键）。不读出来会漏掉最要紧的一路：
+        「计划闸门挂起、作者拍板之后把剩下几章写完」的全部写作都发生在
+        :meth:`resume` 里，按默认 300 秒跑长批次正好被掐成「运行超时」。
+
+        读失败（没挂 checkpointer、存储抖动）一律返回 ``None`` 走默认预算：这一步只为
+        「别把长跑掐了」，比它更糟的结果是让作者的确认根本发不出去。
+        """
+        try:
+            snapshot = await self.graph.aget_state(config)
+        except Exception:  # noqa: BLE001 - ValueError(无 checkpointer)/存储不可达
+            return None
+        values = getattr(snapshot, "values", None)
+        forced = values.get("forced_agent") if isinstance(values, dict) else None
+        return forced if isinstance(forced, str) and forced else None
 
     async def aclose(self) -> None:
         """释放 checkpointer 持有的外部连接（由 :mod:`app.main` 的关闭阶段调用）。

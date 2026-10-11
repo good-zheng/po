@@ -1429,6 +1429,66 @@ agent-novel——游标退回 `len(rows)` 时 `test_store` 与 `test_graph` 两�
 拿到 `NovelStoreError` 目前只会让这一轮以数据层失败收尾，没有把「第 N 章已有正文」这句原话抬到卡片上）；
 ③ 读者端（`apps/novel-web`）的目录里出现「第 N 章」这种自动命名时的观感。
 
+### 15.24 实现偏差登记（创作台长跑两次被掐：WS 停读 + 全局运行预算，2026-10-12）
+
+**现象**（作者现场：「我自己在管理端要求写第四章内容，没有一次能成功的」）：`/novel/studio` 发一条续写，
+前端稳定停在「这一轮没跑成 / 生成连接已断开：这一轮停在了中断处，重发一次想法会另起一条线程」，
+**连接是 open 之后自己掉的，没有收到任何 `error` 帧**。另有一条独立故障：同样的长跑偶尔收到
+「生成连接出错：运行超时」。两条各自都足以让「没有一次成功」成立，所以分开定位、分开修。
+
+**已核实事实**（每条都要能同时解释「短对话一切正常」）：
+
+| 位置 | 事实 | 证据 |
+|---|---|---|
+| `services/chat/.tmp/logs/chat.log` | 四条失败连接都是 open 之后**恰好 60 秒**一条 `WebSocketDisconnect code=1006`，中间没有任何服务端日志 | §15.23 之后补的日志落盘 sink（`.tmp/logs/chat.log`）；对照 Redis checkpoint 时间轴，最后一跳落在断连前 2 秒 → 图确实在跑 |
+| 纯空闲连接 | 直连 5090 与经管理端 dev 的 `/ws` 代理都能挂满 150 秒不死 | 一次性探针（现收为 `services/chat/scripts/probe_ws_keepalive_backpressure.py`） |
+| uvicorn 0.54 `websockets_sansio_impl.py:290-300, 551-556` | `handle_text()` 把一条消息投进 ASGI 队列后立刻 `transport.pause_reading()`，只有应用**再次 `receive()` 且队列为空**才 `resume_reading()` | 读源码；`_loop` 一旦进入 `async for event in events` 发帧就再没人 `receive()` |
+| 时序推导 | 客户端 30 秒一帧的应用层心跳（`useNovelRun.ts`）进队即被停读 → 服务端 keepalive ping 等不到 PONG（PONG 也要靠读通道进来）→ `ws_ping_timeout`（默认 20 秒）到期 → `conn.fail(1011, "keepalive ping timeout")`，没有关闭握手，前端只看到 1006 | 探针实测：HEAD 上 `+60.1s 1011 keepalive ping timeout`；任何 run 只要跨过 30~40 秒就必然命中 |
+| `po_agent_core/config.py` | `run_timeout_seconds=300.0` 是**整轮**预算，与插槽无关；实测一条 3 章线程从发起跑到收尾 322 秒 | 领域侧 `_CONTINUE_MAX_CHAPTERS=20` 的软上限按每章约 2 分钟算需要 40 分钟，300 秒连一小批都装不下 |
+
+**两条修复**：
+
+- **读通道常驻**（`app/routers/ws.py`）：新增 `_pump_inbound()` 任务专司 `receive_json()`，把入站帧
+  （含「连接已断」与解析失败）投进 `asyncio.Queue(maxsize=_INBOX_LIMIT=128)`，主循环改从 inbox 取帧，
+  `finally` 里 `pump.cancel()`。读与发解耦后读通道始终开着，控制帧按协议被处理；业务帧仍旧串行消费，
+  所以「interrupt 之后先把本轮发到 done 再发 resume」的既有时序约束没有被破坏。上限 128 是刻意保留的
+  背压：超了就让泵停在 `put` 上，等于把 uvicorn 原本的「停读」还给疯狂灌帧的客户端。
+- **预算按插槽给**（`po_agent_core/runner/runner.py` + `app/agent.py`）：`AgentRunner.astream()` 增加
+  逐轮参数 `timeout_seconds`（留空即用构造值，`<=0` 直接 `ValueError`），错误帧 payload 里的
+  `timeout_seconds` 同步改成本轮实际预算；宿主侧 `_RUN_BUDGET_BY_AGENT = {"novel": 3600.0}`，
+  `run` 用点名的插槽取预算，**`resume` 从 checkpoint 的 `forced_agent` 读回同一个插槽**——
+  「作者拍板之后把剩下几章写完」的全部写作都发生在 `resume` 里，不读回来正好在最长的那一腿退回 300 秒。
+  读回失败（没挂 checkpointer、存储抖动）一律返回 `None` 走默认预算：这一步只为「别把长跑掐了」，
+  比它更糟的是让作者的确认发不出去。
+
+**否决的三种做法**：内存里按 `thread_id` 记预算（云托管缩容/重启即丢，恢复轮照样退回默认值）；
+让客户端在 resume 帧自带超时（把上限交给调用方）；换成纯静默看门狗（抓不到一直在吐事件的空转环路，
+而那正是需要被掐的那一类）。nginx 侧 `/ws/chat` 的 `proxy_read_timeout` 早就是 3600 秒，与新上限一致，
+不改。
+
+**验收（2026-10-12，全部为真机/真模型实测）**：
+
+| 通道 | 结果 |
+|---|---|
+| 离线探针（`probe_ws_keepalive_backpressure.py`，桩编排器全程静默） | HEAD：`+60.1s` 被 `1011 keepalive ping timeout` 撕掉；修复后：按节拍发到 `done` 收尾 |
+| 真模型长跑（`probe_ws_long_run.py`，3 章 / `auto=true` / `NOVEL_PERSIST_ENABLED=false`） | **361.8 秒、57,300 帧、最长静默间隔 1.1 秒、以 `done` 收尾，无 `error` 帧**；+15.6s 书级圣经一次校验失败由领域侧重试恢复，第 1/3 章计划闸门 escalate 后按 auto 放行，第 3 章修补 2 轮仍有 3 条 blocker → `freeze` 入库（闸门按设计冻结，不是连接层故障），+361.6s 归档 |
+| 真模型恢复轮（`scripts/run_novel_generation.py --chapters 1`，`auto=false`） | 归档确认 interrupt 如期挂起 → `yes` 恢复 → `已归档：book-83725ff03677` → `run_finished`，确认轮数 1，无 `error` 帧 |
+| 真实 Redis 检查点上的读回（`scripts/verify_resume_budget_redis.py`，全离线装配、零额度） | `checkpointer=AsyncRedisSaver`、读回 `forced_agent='novel'` → 恢复轮预算 **3600.0s**；反向对照：陌生线程读回 `None` → 默认 300.0s（否则「读回」是恒真而非真读） |
+| 全量测试 | `pnpm chat:test` **65 绿**（新增 `test_run_budget.py` 7 例、`test_ws_inbound_pump.py` 3 例）；`pnpm agentcore:test` **96 绿 / 3 跳**（`test_runner.py` 新增 3 例）；`pnpm agentnovel:test` **312 绿** |
+
+**证伪**（每条新用例都要能在旧行为下转红）：agent-core 三例在 HEAD 上是
+`TypeError: astream() got an unexpected keyword argument 'timeout_seconds'`；chat 那七例如果只是把 HEAD 补上
+`_RUN_BUDGET_BY_AGENT` 常量而不改 `run`/`resume`，**6 例同时转红**（`At index 0 diff: None != 300.0`——
+刻意用「常量回填」而不是整体切 HEAD，因为直接切 HEAD 只会得到 `ImportError`，那是装配失败而不是行为失败）；
+`test_loop_exit_cancels_the_pump` 在删掉 `finally: pump.cancel()` 后以 `parked=1` 转红；整个 pump 退回
+HEAD 的直接 `receive` 时，入站泵用例与探针同时转红。四处临时补丁均已还原并按全量绿复验。
+
+**仍未验**：① 浏览器 → Umi dev `/ws` 代理 → 服务端的完整链路（本轮所有 WS 证据都是脚本级客户端，形状与
+`useNovelRun.ts` 一致但不是同一个实现），线上还差云托管网关自己的空闲剪枝；② 3 章以上**走 interrupt**
+的恢复轮总时长（真额度那次恢复轮只跑到 1 章，长跑那一次是 `auto` 不挂起）；③ `_INBOX_LIMIT` 的背压在
+客户端狂发业务帧时的实际表现（没有压力用例）；④ 公网匿名 `/ws/chat` 的收口（§15.22 遗留，仍未决）；
+⑤ `freeze` 章的人工裁定在管理端的呈现（与 §15.23 遗留 #2 同一处缺口）。
+
 ---
 
 ## 16. 一期不做（范围外）
