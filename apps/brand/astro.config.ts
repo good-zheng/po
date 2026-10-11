@@ -12,7 +12,6 @@ import partytown from '@astrojs/partytown';
 import icon from 'astro-icon';
 import compress from 'astro-compress';
 import type { AstroIntegration } from 'astro';
-import type { Plugin as VitePlugin } from 'vite';
 
 import astrowind from './vendor/integration';
 
@@ -42,7 +41,24 @@ function sanitizeWatchPath(p: string): string {
   return m ? m[2] + '\\' + p.slice(m[0].length) : p;
 }
 
-function windowsWatchSafety(): VitePlugin {
+// `import type { Plugin } from 'vite'` 在这里用不了：vite 不是本包的依赖，pnpm 的
+// 隔离 node_modules 里没有它，CI 的 `astro check` 会报 TS2307。只声明用到的那一小片
+// 结构，Vite 的 ViteDevServer 天然满足它，插件本身仍是标准对象。
+type WatchServer = {
+  watcher: {
+    add: (paths: string | string[], ...rest: unknown[]) => unknown;
+    on: (event: 'error', listener: (error: Error) => unknown) => unknown;
+  };
+  config: { logger: { warn: (message: string) => void } };
+};
+
+type WatchSafetyPlugin = {
+  name: string;
+  enforce?: 'pre' | 'post';
+  configureServer?: (server: WatchServer) => void;
+};
+
+function windowsWatchSafety(): WatchSafetyPlugin {
   return {
     name: 'po:windows-watch-safety',
     enforce: 'pre',
@@ -50,12 +66,10 @@ function windowsWatchSafety(): VitePlugin {
       const watcher = server.watcher;
       const originalAdd = watcher.add.bind(watcher);
 
-      watcher.add = ((paths: string | readonly string[], ...rest: unknown[]) => {
-        const fixed = Array.isArray(paths) ? paths.map(sanitizeWatchPath) : sanitizeWatchPath(paths as string);
-        return (originalAdd as (...args: unknown[]) => unknown)(fixed, ...rest);
-      }) as typeof watcher.add;
+      watcher.add = (paths, ...rest) =>
+        originalAdd(Array.isArray(paths) ? paths.map(sanitizeWatchPath) : sanitizeWatchPath(paths), ...rest);
 
-      watcher.on('error', (error: Error) => {
+      watcher.on('error', (error) => {
         server.config.logger.warn(`[watch] 忽略文件监视错误：${error?.message ?? error}`);
       });
     },
