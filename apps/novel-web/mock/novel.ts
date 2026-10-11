@@ -54,7 +54,7 @@ const books = [
     genre: 'other',
     status: 'ongoing',
     wordCount: 128_400,
-    author: '郑志泓',
+    author: '示例作者',
     createdAt: '2026-08-01T09:00:00.000Z',
     updatedAt: '2026-09-20T09:00:00.000Z',
   },

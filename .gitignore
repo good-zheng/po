@@ -5,7 +5,10 @@ package-lock.json
 
 # Build output
 apps/*/dist/
-apps/*/.umi*/
+# Umi 把临时产物生成在 src/.umi*/ 下（不是 app 根），所以必须用不带路径前缀的模式匹配任意层级；
+# 写成 apps/*/.umi*/ 会漏掉 novel-web 那 68 个文件，其中 appData.json 还带本机局域网 IP。
+.umi/
+.umi-production/
 packages/*/dist/
 services/api/**/target/
 services/chat/.pytest_cache/
@@ -47,10 +50,15 @@ services/chat/agent_*.json
 # Google OAuth 控制台下载的 client_secret_*.json（曾落在 apps/cooking-mini/）
 client_secret_*.json
 **/logs/
+# 自动生成的仓库知识卡：含内网服务地址与私有模块结构，只留本机。
+# 规则出处见 scripts/WIKI_SYNC.md（repowiki 与 auto-memory 一律不上站）。
+.qoder/repowiki/
 
 # Scratch and generated asset sources
 vibe_images/
 .tmp/
+# 本地项目记忆（含内部标识与未发布决策），与 repowiki 同级，一律不上公开仓库
+.workbuddy/
 /covers-list.tsv
 /ingredients-count.txt
 /ingredients-image-list.tsv
