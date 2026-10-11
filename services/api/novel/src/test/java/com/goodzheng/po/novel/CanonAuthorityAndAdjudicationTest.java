@@ -236,6 +236,31 @@ class CanonAuthorityAndAdjudicationTest {
         verify(canonMapper, never()).insert(any(CanonEntry.class));
     }
 
+    // ── 单条读取与撞车预览 ────────────────────────────────
+
+    /** 中栏按 id 取「被点中的那一条」：查不到要报出是哪个 id，作者才知道是台账里的旧引用 */
+    @Test
+    void canonLookupFailureNamesTheId() {
+        when(canonMapper.selectById(9L)).thenReturn(null);
+
+        RuntimeException error = assertThrows(RuntimeException.class, () -> studioService.canonById(9L));
+        assertTrue(error.getMessage().contains("断言不存在：9"), error.getMessage());
+    }
+
+    /** 实体键或谓词没填就没有「同主同谓」可判，一次查询都不该发出去：发了等于把全书设定报成撞车 */
+    @Test
+    void previewWithoutSubjectOrPredicateSkipsTheQuery() {
+        CanonRequest noSubject = canonRequest("灰蓝色");
+        noSubject.setSubjectKey(" ");
+        assertTrue(studioService.previewConflicts(1L, noSubject, 3, null).isEmpty());
+
+        CanonRequest noPredicate = canonRequest("灰蓝色");
+        noPredicate.setPredicate(null);
+        assertTrue(studioService.previewConflicts(1L, noPredicate, 3, 9L).isEmpty());
+
+        verify(canonMapper, never()).selectList(any());
+    }
+
     // ── 夹具 ──────────────────────────────────────────────
 
     private static Set<String> writableProps(Class<?> type) {

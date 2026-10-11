@@ -31,6 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -256,7 +257,8 @@ class CanonProposalAdoptionTest {
     }
 
     private void givenConflicts(CanonEntry... conflicts) {
-        when(studioService.previewConflicts(eq(BOOK_ID), any(), any()))
+        // 提议卡不是既有断言，冲突口径里必须不带 excludeId——带了就等于允许它排除掉一条撞车
+        when(studioService.previewConflicts(eq(BOOK_ID), any(), any(), isNull()))
                 .thenReturn(List.of(conflicts));
     }
 

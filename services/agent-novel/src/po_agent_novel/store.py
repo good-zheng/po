@@ -53,7 +53,14 @@ class NovelStore(Protocol):
 
         返回值是本轮新加的：断言溯源（canon_entry.source_chapter_id）与幂等键
         都要引用章节 id，而章节 id 只在落库之后才存在，不返回就没法给正典标出处。
-        语义仍是「整体写入」而非增量追加。
+
+        语义是「按章号写入」而不是「整本替换」：``HttpNovelStore`` 逐条 POST
+        ``/novel/internal/books/{id}/chapters``，服务端按章号落位——那一行如果还空着
+        （作者在管理端留空标题与正文排下的「待写占位」）就被本轮正文就地填掉，已有正文
+        则整轮报错而不静默覆盖。于是续写模式传进来的第 4-10 章接在已有的 1-3 章之后，
+        既不会把旧章抹掉，也不会在第 4 章留一个永久的空洞。
+        实现方若改成整表覆盖，续写第二轮会连第一轮的行 id 一起丢掉——
+        那些 id 是正典断言的溯源键，丢了等于整本书的事实失去出处。
         """
         ...
 
@@ -92,6 +99,9 @@ class BookSnapshot:
 
     ``chapter`` 为 ``None`` 表示没点到参照章（或那一章不属于这本书）：此时任务区
     只有「这本书还不存在第 N 章」这一种诚实说法，编译器不许拿别的章凑数。
+
+    ``chapter_count`` 是**有正文**的章数，不是章节行数——管理端允许留一行标题与正文都空
+    的「待写占位」，那一章由续写链路填掉，所以它不进游标（见 ``MockNovelStore._written_count``）。
     """
 
     book_id: str
@@ -363,10 +373,33 @@ class MockNovelStore:
 
     async def save_chapters(self, book_id: str, chapters: list[ChapterDraft]) -> list[str]:
         self._require(book_id)
-        # 复制一份入参列表：调用方后续若改动自己的列表，不影响已归档数据。
-        self._chapters[book_id] = list(chapters)
-        ids = [f"chapter-{uuid4().hex[:12]}" for _ in chapters]
-        self._chapter_ids[book_id] = dict(zip(ids, self._chapters[book_id]))
+        # 按章号写入，与 HttpNovelStore 的逐条 insert 同口径：续写模式的入参只有
+        # 「本轮新增的那几章」，整表覆盖等于每续写一次就抹掉一次前一轮的成果。
+        rows = self._chapters[book_id]
+        positions = {row.index: position for position, row in enumerate(rows)}
+        id_by_index = {
+            row.index: chapter_id for chapter_id, row in self._chapter_ids[book_id].items()
+        }
+        ids: list[str] = []
+        for chapter in chapters:
+            position = positions.get(chapter.index)
+            chapter_id = id_by_index.get(chapter.index) or f"chapter-{uuid4().hex[:12]}"
+            if position is None:
+                rows.append(chapter)
+                positions[chapter.index] = len(rows) - 1
+            else:
+                # 占位行（正文为空）就地填掉，其余同号写入一律拒绝：服务端 putByIndex
+                # 对「已有正文的章」是整轮报错，内存实现跟着静默覆盖，测试就会对着一个
+                # 线上不存在的行为报绿。
+                previous = rows[position]
+                if (previous.content or "").strip() and (chapter.content or "").strip():
+                    raise NovelStoreError(
+                        f"第 {chapter.index} 章已有正文，不覆盖已定稿的章节"
+                    )
+                rows[position] = chapter
+            id_by_index[chapter.index] = chapter_id
+            self._chapter_ids[book_id][chapter_id] = chapter
+            ids.append(chapter_id)
         return ids
 
     async def save_characters(
@@ -383,7 +416,7 @@ class MockNovelStore:
                 title=draft.title,
                 genre=draft.genre,
                 summary=draft.summary,
-                chapter_count=len(self._chapters.get(book_id, [])),
+                chapter_count=self._written_count(book_id),
                 character_count=len(self._characters.get(book_id, [])),
             )
             for book_id, draft in self._meta.items()
@@ -398,7 +431,7 @@ class MockNovelStore:
             title=draft.title,
             genre=draft.genre,
             summary=draft.summary,
-            chapter_count=len(self._chapters[book_id]),
+            chapter_count=self._written_count(book_id),
             chapter=None
             if chosen is None
             else ChapterSnapshot(
@@ -408,6 +441,17 @@ class MockNovelStore:
                 content=chosen.content,
             ),
         )
+
+    def _written_count(self, book_id: str) -> int:
+        """有正文的章数，即续写游标。
+
+        正文留空的那一行是作者在管理端排下的「待写占位」，不算写过：计入游标会让续写跳过
+        它往后写，于是那一章永久空着，而衔接用的「上一章结尾」也读成空串。口径与 Java 侧
+        ``countWrittenByBook``（``word_count > 0``）一致——那边的字数是正文去空白后的长度，
+        所以「正文非空」与「字数 > 0」在库侧是同一个判定。内存实现不跟着改，测试就会对着一
+        个线上不存在的行为报绿。
+        """
+        return sum(1 for row in self._chapters.get(book_id, ()) if (row.content or "").strip())
 
     def _require(self, book_id: str) -> None:
         """校验 book_id 已存在：把真实数据层的外键约束在 mock 里显式化。"""

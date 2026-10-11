@@ -76,11 +76,22 @@ public class NovelStudioController {
             @RequestParam(required = false) String kind,
             @RequestParam(required = false) String status,
             @RequestParam(required = false) String authority,
+            @RequestParam(required = false) Long sourceChapterId,
             @RequestParam(required = false) String keyword,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
         return Result.success(studioService.canonPage(bookId, subjectKey, kind, status, authority,
-                keyword, pageRequest(page, size)));
+                sourceChapterId, keyword, pageRequest(page, size)));
+    }
+
+    /** 单条断言：工作台中栏点中某一条时要按 id 取它的出处原句，不该为此摊开整本设定 */
+    @GetMapping("/canon/{id}")
+    public Result<CanonEntry> canon(@PathVariable Long id) {
+        try {
+            return Result.success(studioService.canonById(id));
+        } catch (RuntimeException e) {
+            return Result.error(404, e.getMessage());
+        }
     }
 
     /**
@@ -92,13 +103,14 @@ public class NovelStudioController {
             @RequestParam(required = false) String subjectKey,
             @RequestParam(required = false) String predicate,
             @RequestParam(required = false) String objectText,
-            @RequestParam(required = false) Integer asOfChapter) {
+            @RequestParam(required = false) Integer asOfChapter,
+            @RequestParam(required = false) Long excludeId) {
         CanonRequest probe = new CanonRequest();
         probe.setSubjectKey(subjectKey);
         probe.setPredicate(predicate);
         probe.setObjectText(objectText);
         try {
-            return Result.success(studioService.previewConflicts(bookId, probe, asOfChapter));
+            return Result.success(studioService.previewConflicts(bookId, probe, asOfChapter, excludeId));
         } catch (RuntimeException e) {
             return Result.error(400, e.getMessage());
         }
@@ -305,14 +317,15 @@ public class NovelStudioController {
 
     @GetMapping("/reviews")
     public Result<Page<FindingView>> reviews(@RequestParam(required = false) Long bookId,
+            @RequestParam(required = false) Long chapterId,
             @RequestParam(required = false) String severity,
             @RequestParam(required = false) String status,
             @RequestParam(required = false) String checker,
             @RequestParam(required = false) String code,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
-        return Result.success(studioService.findingPage(bookId, severity, status, checker, code,
-                pageRequest(page, size)));
+        return Result.success(studioService.findingPage(bookId, chapterId, severity, status, checker,
+                code, pageRequest(page, size)));
     }
 
     @PutMapping("/reviews/{findingId}")

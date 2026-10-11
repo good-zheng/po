@@ -200,7 +200,7 @@ public class CanonProposalServiceImpl implements CanonProposalService {
         probe.setSubjectKey(proposal.getSubjectKey());
         probe.setPredicate(proposal.getPredicate());
         probe.setObjectText(proposal.getObjectText());
-        return studioService.previewConflicts(proposal.getBookId(), probe, asOf);
+        return studioService.previewConflicts(proposal.getBookId(), probe, asOf, null);
     }
 
     private CanonEntry toEntry(CanonProposal proposal, ProposalDecisionRequest req, Long userId, Integer from) {

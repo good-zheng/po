@@ -23,6 +23,7 @@ from po_agent_novel.store import (
     ExtractionSource,
     InMemoryCanonStore,
     MockNovelStore,
+    NovelStoreError,
     content_hash,
 )
 
@@ -158,6 +159,50 @@ async def test_load_book_ignores_chapter_of_another_book() -> None:
     await store.save_chapters(second, [ChapterDraft(index=1, title="另一本", content="二")])
     snap = await store.load_book(second, chapter_id=first_ids[0])
     assert snap.chapter is None
+
+
+async def test_blank_placeholder_chapter_is_not_counted_as_written() -> None:
+    """管理端留空的「待写占位」不算写过：游标数的是有正文的章，不是章节行数。
+
+    按行数计游标会让续写跳过这一章往后写，于是它永久空着，而衔接用的「上一章结尾」
+    恰好读成这个空串——两处同时错，且错得很安静。
+    """
+    store = MockNovelStore()
+    book_id = await store.save_book(_draft())
+    ids = await store.save_chapters(
+        book_id,
+        [
+            ChapterDraft(index=1, title="第一章", content="正文一"),
+            ChapterDraft(index=2, title="", content=""),
+        ],
+    )
+    assert (await store.load_book(book_id)).chapter_count == 1
+    assert (await store.list_books())[0].chapter_count == 1
+
+    # 占位行本身仍可被点名读出来——它是排期，不是不存在
+    snap = await store.load_book(book_id, chapter_id=ids[1])
+    assert snap.chapter is not None
+    assert (snap.chapter.index, snap.chapter.content) == (2, "")
+
+    # 续写填掉它：行 id 不变（正典断言按 chapter_id 溯源），计数才往前走
+    [refilled] = await store.save_chapters(
+        book_id, [ChapterDraft(index=2, title="第二章", content="正文二")]
+    )
+    assert refilled == ids[1]
+    assert (await store.load_book(book_id)).chapter_count == 2
+
+
+async def test_refill_of_a_written_chapter_is_refused() -> None:
+    """同号写入只在「那一行还空着」时被允许：已定稿的正文绝不被静默改写。"""
+    store = MockNovelStore()
+    book_id = await store.save_book(_draft())
+    [chapter_id] = await store.save_chapters(
+        book_id, [ChapterDraft(index=1, title="第一章", content="正文一")]
+    )
+    with pytest.raises(NovelStoreError):
+        await store.save_chapters(book_id, [ChapterDraft(index=1, title="改名", content="重写")])
+    snap = await store.load_book(book_id, chapter_id=chapter_id)
+    assert snap.chapter is not None and snap.chapter.content == "正文一"
 
 
 async def test_load_book_of_unknown_book_raises() -> None:

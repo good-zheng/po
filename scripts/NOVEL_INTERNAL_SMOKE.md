@@ -66,8 +66,11 @@ PO_API_BASE=http://127.0.0.1:8080/api node scripts/novel-internal-smoke.mjs
 
 1. 对照组 `GET /api/recipes` —— 通，说明 api 服务在跑；
 2. **缺令牌的内部调用必须 `code=403`** —— 闸门本身；
-3. `POST /novel/internal/books?authorId=3`（带 `summary`）→ 建章 → 建角色 ——
+3. `POST /novel/internal/books?authorId=3`（带 `summary`）→ 写章 → 建角色 ——
    `book.summary` 是 Tier-0 注入用的世界观摘要，`description` 是对外简介，
+   写章端点是**按章号落位**而不是「永远新插一行」：那一行空着（作者排的待写占位）就被填掉且行 id 不变，
+   已有正文则整轮 `code=400 第 N 章已有正文`（PRD §15.23）——所以第 3 步的第 1-5 章只有在**每次都新建一本
+   带时间戳的书**时才互不撞号，指着现成的 bookId 重跑会从第 1 章起全部报错，这是预期而不是通道坏了；
    建书响应回显实体，两者写串或互相覆盖在这里就看得见；
 4. `POST /novel/internal/assertions:append`（断言 + 伏笔 + 称谓 + 状态四路）；
 5. **同一载荷再打一次 → `applied=false`** —— 这就是「重放不重复」；

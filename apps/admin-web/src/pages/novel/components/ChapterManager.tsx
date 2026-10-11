@@ -39,6 +39,11 @@ const ChapterManager: React.FC<{ bookId: number }> = ({ bookId }) => {
   });
   const chapters = data?.data ?? [];
 
+  // 新建时预填「最后一章 + 1」：服务端在序号留空时算的就是这个值，界面先给作者看到
+  // 落点，省一次「填了重号再去改」的来回。
+  const nextIndex =
+    chapters.reduce((max, item) => Math.max(max, item.chapterIndex), 0) + 1;
+
   const invalidate = () => {
     queryClient.invalidateQueries({ queryKey: ['book-chapters', bookId] });
     queryClient.invalidateQueries({ queryKey: ['book', bookId] });
@@ -87,6 +92,12 @@ const ChapterManager: React.FC<{ bookId: number }> = ({ bookId }) => {
       render: (_: unknown, record: BookChapter) => (
         <Typography.Link onClick={() => setEditTarget(record)}>
           {record.title}
+          {/* 正文为空 = 排在那儿的待写占位，续写链路会按章号把它填掉 */}
+          {record.wordCount === 0 ? (
+            <Tag color="orange" style={{ marginLeft: 8 }}>
+              待写
+            </Tag>
+          ) : null}
         </Typography.Link>
       ),
     },
@@ -95,7 +106,7 @@ const ChapterManager: React.FC<{ bookId: number }> = ({ bookId }) => {
       dataIndex: 'wordCount',
       width: 90,
       render: (_: unknown, record: BookChapter) =>
-        record.wordCount.toLocaleString(),
+        record.wordCount === 0 ? '-' : record.wordCount.toLocaleString(),
     },
     {
       title: '状态',
@@ -177,6 +188,7 @@ const ChapterManager: React.FC<{ bookId: number }> = ({ bookId }) => {
           open={modalOpen}
           onOpenChange={setModalOpen}
           modalProps={{ destroyOnClose: true, maskClosable: false }}
+          initialValues={{ chapterIndex: nextIndex }}
           submitter={{
             searchConfig: { submitText: '保存', resetText: '取消' },
           }}
@@ -188,20 +200,20 @@ const ChapterManager: React.FC<{ bookId: number }> = ({ bookId }) => {
           <ProFormText
             name="title"
             label="章节标题"
-            placeholder="请输入章节标题"
-            rules={[{ required: true, message: '请输入章节标题' }]}
+            placeholder={`可留空，空着会自动命名为「第 ${nextIndex} 章」`}
+            tooltip="标题不必填：留空由服务端按章号命名"
           />
           <ProFormDigit
             name="chapterIndex"
             label="章节序号"
             min={1}
-            placeholder="留空则自动排在最后"
+            placeholder={`默认第 ${nextIndex} 章（最后一章的下一章）`}
             tooltip="留空则自动排在最后"
           />
           <ProFormTextArea
             name="content"
             label="正文内容"
-            placeholder="请输入章节正文"
+            placeholder="正文留空即排一个「待写占位」：创作台续写会从这一章开始，按书里已有的设定、大纲与前文自行发挥并把它填掉。要自己写就填在这里，填了就是定稿，续写不会改写。"
             fieldProps={{ rows: 10 }}
           />
         </ModalForm>
@@ -240,14 +252,14 @@ const ChapterManager: React.FC<{ bookId: number }> = ({ bookId }) => {
           <ProFormText
             name="title"
             label="章节标题"
-            placeholder="请输入章节标题"
-            rules={[{ required: true, message: '请输入章节标题' }]}
+            placeholder="可留空，空着会自动按章号命名"
+            tooltip="标题不必填：留空由服务端按章号命名"
           />
           <ProFormDigit name="chapterIndex" label="章节序号" min={1} />
           <ProFormTextArea
             name="content"
             label="正文内容"
-            placeholder="请输入章节正文"
+            placeholder="正文清空即把这一章退回「待写占位」，创作台续写会按章号把它填掉"
             fieldProps={{ rows: 10 }}
           />
         </ModalForm>

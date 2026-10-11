@@ -48,6 +48,22 @@ export type RunPhase =
   | 'finished'
   | 'failed';
 
+/**
+ * 本轮生成的运行控制键（`graph.py` 的 `_RUN_KEYS`，一一对应）。
+ *
+ * `bookId` 一旦存在，链路就从「开一本新书」翻成「给这本书往后追加章」；
+ * `fromChapter`/`chapterCount` 只是作者要的范围，进图后会按库里真实章数收敛；
+ * `auto` 为真时两处人工口（计划闸门、归档确认）都不再挂起；
+ * `tailChapterId` 用来取上一章结尾原文，缺了它续写的第一章会按「本书开篇」来写。
+ */
+export type NovelRunContext = {
+  bookId?: string;
+  fromChapter?: number;
+  chapterCount?: number;
+  auto?: boolean;
+  tailChapterId?: string;
+};
+
 type RunState = {
   phase: RunPhase;
   notes: string[];
@@ -93,6 +109,12 @@ export function useNovelRun(onArchived?: (bookId: number) => void) {
   // interrupt 之后、done 之前点「确认」：先存下来，done 到达时补发（见上面的时序约束）
   const pendingResumeRef = useRef<string | null>(null);
   const awaitingRef = useRef<NovelInterruptValue | null>(null);
+  // 这条连接有没有真正 open 过、以及握手时有没有带票据。两句都是为了让
+  // 「连不上」能落到具体动作上：服务端在 accept 之前关掉握手（票据过期、
+  // chat 验不通票）与「跑了一半实例被回收」在浏览器里都只表现为 error 事件，
+  // 但前者一帧都没发出去、后者带着 checkpoint，作者要做的事完全不同。
+  const openedRef = useRef(false);
+  const ticketedRef = useRef(false);
   const onArchivedRef = useRef(onArchived);
   onArchivedRef.current = onArchived;
 
@@ -235,8 +257,11 @@ export function useNovelRun(onArchived?: (bookId: number) => void) {
       : CHAT_WS_URL;
 
     const ws = new WebSocket(url);
+    openedRef.current = false;
+    ticketedRef.current = Boolean(ticket);
     wsRef.current = ws;
     ws.onopen = () => {
+      openedRef.current = true;
       stopHeartbeat();
       pingRef.current = setInterval(() => {
         if (ws.readyState === WebSocket.OPEN) sendFrame({ type: 'ping' });
@@ -251,19 +276,30 @@ export function useNovelRun(onArchived?: (bookId: number) => void) {
       }
       handleFrame(frame);
     };
+    // 连接层失败的两种形态要说清（见上面 openedRef / ticketedRef 那条注释）：
+    // 从没 open 过 = 握手/反代这一层就没过去，这一轮**没有**任何帧进过编排器，
+    // 也就没有 checkpoint 可续；open 过再断 = 这一轮跑死在中断处。
+    const connectionErrorText = () => {
+      if (openedRef.current) {
+        return '生成连接已断开：这一轮停在了中断处，重发一次想法会另起一条线程';
+      }
+      if (ticketedRef.current) {
+        return '握手被服务端拒绝（连接没建起来，这一轮一帧都没发出）：握手票据只有 60 秒有效期，关掉创作面板重开一次会自动换新票；若持续如此，是 chat 服务验不通 Java 的票据通道（检查其 PY_SERVER_INTERNAL_TOKEN 与实例是否已缩容）';
+      }
+      return '连不上生成服务（连接没建起来，且没取到握手票据）：先确认已登录管理端，再确认 chat 服务在跑——本机是 5090，云上还要管理端容器的 /ws/chat 反代可达（云托管实例无请求会缩容，重开面板点一次即可唤醒）';
+    };
     ws.onclose = () => {
       stopHeartbeat();
       if (wsRef.current === ws) wsRef.current = null;
       // 长任务最常见的中断形态是「服务端实例被回收」而不是收到 error 帧：
       // 不收尾的话按钮会永远停在「生成中」，人只能刷新页面。
-      if (streamingRef.current) {
+      if (streamingRef.current || !openedRef.current) {
         streamingRef.current = false;
         pendingResumeRef.current = null;
         setState((prev) => ({
           ...prev,
           phase: 'failed',
-          errorText:
-            '生成连接已断开：这一轮停在了中断处，重发一次想法会另起一条线程',
+          errorText: connectionErrorText(),
         }));
       }
     };
@@ -273,8 +309,7 @@ export function useNovelRun(onArchived?: (bookId: number) => void) {
       setState((prev) => ({
         ...prev,
         phase: 'failed',
-        errorText:
-          '生成连接出错：长任务中断后同一条会话仍可续跑，重发一次会走 checkpoint',
+        errorText: connectionErrorText(),
       }));
     };
     return ws;
@@ -290,9 +325,16 @@ export function useNovelRun(onArchived?: (bookId: number) => void) {
     [],
   );
 
-  /** 起一轮生成：`content` 是一句话想法，服务端从这里推出构思 → 大纲 → 逐章 → 归档确认。 */
+  /**
+   * 起一轮生成：`content` 是一句话想法，服务端从这里推出构思 → 大纲 → 逐章 → 归档确认。
+   *
+   * `context` 是本轮的运行控制键（续写哪本书、写哪几章、要不要问作者）。它走帧的
+   * `context` 字段而不是拼进文本：服务端把这几个键列为保留键，只进 `configurable.context`
+   * （见 `services/chat/app/agent.py` 的 `RESERVED_CONTEXT_KEYS`），所以「不要问我」这个
+   * 决定不会因为模型在提示词里看见这四个字就被绕过。
+   */
   const start = useCallback(
-    async (idea: string) => {
+    async (idea: string, context?: NovelRunContext) => {
       const content = idea.trim();
       // awaiting 也在拦截之列：图挂在 interrupt 的 checkpoint 上，此时再发 message
       // 不是「新开一本」，是同一条线程上撞开两段执行。要先答上面的拍板卡。
@@ -318,6 +360,9 @@ export function useNovelRun(onArchived?: (bookId: number) => void) {
         type: 'message',
         content,
         agent: 'novel',
+        // 空对象不发：服务端会把非保留键拼进提示词前缀，而这里没有非保留键，
+        // 少发一帧也让「新书」这条路径的帧与历史上线时逐字节一致。
+        ...(context && Object.keys(context).length > 0 ? { context } : {}),
       };
       const write = () => ws.send(JSON.stringify(frame));
       if (ws.readyState === WebSocket.OPEN) write();

@@ -29,6 +29,8 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
+
 from po_agent_novel.schemas import (
     BookIdea,
     ChapterDraft,
@@ -72,24 +74,57 @@ def conceive_prompt(brief: str) -> str:
 按结构化约束返回：title（书名）、genre（题材）、summary（核心梗概）。"""
 
 
-def outline_prompt(idea: BookIdea, chapter_count: int) -> str:
-    """大纲提示词：为已确定的构思规划全书章节。
+def outline_prompt(
+    idea: BookIdea,
+    chapter_count: int,
+    *,
+    start_chapter: int | None = None,
+    author_note: str = "",
+    prior: Sequence[str] = (),
+) -> str:
+    """大纲提示词：为已确定的构思规划章节。
 
     :param idea: 构思结果（书名/题材/梗概），提供主题与基调
     :param chapter_count: 目标章数，由装配参数给出；需与 Outline.chapters 的
         max_length=20 相容（schema 才是最终硬约束，提示词只是引导）
+    :param start_chapter: 续写时本轮第一章的全书章号（1 基）。给出后提示词改说
+        「规划第 N 至 M 章」，并要求承接已写内容而不是重新起一本——续写的失败模式
+        正是模型把这一份大纲当成全书大纲，从第 1 章重写一遍
+    :param author_note: 作者本轮的原话（「开始创作第三至第十章，……」整句）。
+        章号区间由界面解析成参数，但句子里剩下的意见只有原文才不丢信息
+    :param prior: 已写部分的定位行（章号 + 章级摘要），让模型接着写而不是另起
     """
+    range_line = (
+        f"为《{idea.title}》（{idea.genre}）规划第 {start_chapter} 至 "
+        f"{start_chapter + chapter_count - 1} 章大纲（共 {chapter_count} 章，"
+        f"这是已写书的续写部分）"
+        if start_chapter
+        else f"为《{idea.title}》（{idea.genre}）规划 {chapter_count} 章大纲"
+    )
+    prior_block = (
+        "\n".join(prior)
+        + "\n"
+        if prior
+        else ("（本轮之前没有已定稿章节）\n" if start_chapter else "")
+    )
+    note_block = f"\n作者本轮的要求（逐字遵守）：\n{author_note}\n" if author_note else ""
+    continuity = (
+        "- 只规划尚未写出的那几章：不要复述、改写或推翻已经定稿的内容；\n"
+        "- 第一段必须紧接上面已写章节的结尾推进，人物与设定沿用已登记的事实；\n"
+        if start_chapter
+        else ""
+    )
     return f"""# 角色
 你是小说结构师，擅长用章节大纲撑起完整的叙事骨架。
 
 # 目标
-为《{idea.title}》（{idea.genre}）规划 {chapter_count} 章大纲。
+{range_line}。
 
 # 输入
 核心梗概：{idea.summary}
-
+{prior_block}{note_block}
 # 工作要点
-- 每章有明确的剧情推进与至少一个关键场景；
+{continuity}- 每章有明确的剧情推进与至少一个关键场景；
 - 章节间形成因果链：铺垫→发展→高潮→收束；
 - 章节标题风格统一、有画面感；
 - arc 用「一段剧情弧的名字」把章节分组（连续几章写同一个 arc），只有确实换了一段
@@ -145,6 +180,7 @@ def plan_scene_prompt(
     pov: str = "",
     prev_tail: str = "",
     instruction: str = "",
+    author_note: str = "",
 ) -> str:
     """场景卡提示词：写正文之前先交出「这一章打算怎么写」。
 
@@ -157,6 +193,9 @@ def plan_scene_prompt(
         空列表时提示词明说「本章无可选实体」，避免模型以为漏传而自己编一套
     :param foreshadows: 未收伏笔的编号行（``[fsh#N] …``），``payoffs`` 只能引这里的编号
     :param instruction: 计划闸门上一轮的退回意见（replan 回环时非空）
+    :param author_note: 作者本轮对这本书的原话（续写时非空）。它与 instruction 分列两段：
+        前者是「作者想要什么」，后者是「上一版哪里不合格」，混在一句里模型会以为
+        退回意见是作者的偏好，于是只改口径不改问题
     """
     entities = (
         f"已登记实体键（只能从这些里挑）：{'、'.join(registered)}"
@@ -166,6 +205,7 @@ def plan_scene_prompt(
     payoff_lines = "\n".join(foreshadows) if foreshadows else "（当前没有未收的伏笔，payoffs 请留空）"
     tail = f"上一章结尾（衔接参考）：\n{prev_tail}\n" if prev_tail else ""
     rework = f"\n上一版计划的退回意见（必须逐条改掉）：\n{instruction}\n" if instruction else ""
+    note = f"\n作者对本轮的要求：{author_note}\n" if author_note else ""
     style = f"文风契约：{pov}\n" if pov else ""
     return f"""# 角色
 你是这本小说的责任编辑，负责在作者动笔之前把本章要用的设定与场景排清楚。
@@ -178,7 +218,7 @@ def plan_scene_prompt(
 {style}{entities}
 未收伏笔（要收就引这里的编号）：
 {payoff_lines}
-{tail}{rework}
+{tail}{note}{rework}
 # 工作要点
 - entities 只能逐字从上面「已登记实体键」里挑本章真正要用到的（出场、被提及、被对话的都算）；
   大纲里出现了清单之外的人物，写进 newEntities，**不要**替它编设定，也不要把它的名字混进 entities；
@@ -233,6 +273,7 @@ def write_chapter_prompt(
     chapter_words: int,
     context: str | None = None,
     card: SceneCard | None = None,
+    author_note: str = "",
 ) -> str:
     """初稿提示词：index 为 0 基章节序号。
 
@@ -254,10 +295,11 @@ def write_chapter_prompt(
     )
     chapter = chapters[index]
     task = f"\n\n本章场景计划（按它执行）：\n{scene_card_text(card, chapter)}" if card else ""
+    note = f"\n\n作者对本轮的要求：{author_note}" if author_note else ""
     if context:
         # 有 L1 注入时不再贴「全书大纲全文」：那是随书长增长的文本，正是 §6
         # 要把预算与书长解耦的第一号对象；本章大纲已在 context 的任务区里。
-        prev = context + task
+        prev = context + task + note
     else:
         # 空串代表开篇（尚无已定稿章节）：切换为「铺开世界观」的要求，
         # 而非让模型面对一段空的「上一章结尾」。
@@ -266,7 +308,7 @@ def write_chapter_prompt(
             f"题材与梗概：{idea.genre}——{idea.summary}\n"
             f"全书大纲：\n{outline_lines}\n{prev}"
         )
-        prev += task
+        prev += task + note
     return f"""# 角色
 你是小说作者，正在为《{idea.title}》撰写正文。
 

@@ -52,6 +52,18 @@ public class BookChapterServiceImpl implements BookChapterService {
 
     @Override
     @Transactional(readOnly = true)
+    public int countWrittenByBook(Long bookId) {
+        checkBookExists(bookId);
+        // word_count 是正文的派生值（create/update 都重算），所以「字数 > 0」与「有正文」
+        // 在这一张表上是同一个判定，不需要再去看 content 列。
+        return Math.toIntExact(chapterMapper.selectCount(new QueryWrapper<BookChapter>()
+                .eq("book_id", bookId)
+                .isNull("deleted_at")
+                .gt("word_count", 0)));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public BookChapter get(Long bookId, Long chapterId) {
         return findOne(bookId, chapterId)
                 .orElseThrow(() -> new RuntimeException("章节不存在"));
@@ -64,14 +76,39 @@ public class BookChapterServiceImpl implements BookChapterService {
 
         BookChapter chapter = new BookChapter();
         chapter.setBookId(bookId);
-        chapter.setTitle(req.getTitle());
-        chapter.setContent(req.getContent());
         chapter.setChapterIndex(resolveChapterIndex(bookId, req.getChapterIndex()));
+        chapter.setTitle(resolveTitle(req.getTitle(), chapter.getChapterIndex()));
+        chapter.setContent(req.getContent());
         chapter.setWordCount(calculateWordCount(req.getContent()));
 
         chapterMapper.insert(chapter);
         refreshBookWordCount(bookId);
         return chapter;
+    }
+
+    @Override
+    @Transactional
+    public BookChapter putByIndex(Long bookId, ChapterRequest req, Long userId) {
+        checkBookExists(bookId);
+        int index = resolveChapterIndex(bookId, req.getChapterIndex());
+        // 章号定下来交出去：下面两条分支都按它落位，不能让 create 再算一次「最大序号+1」
+        req.setChapterIndex(index);
+
+        BookChapter existing = chapterMapper.selectOne(new QueryWrapper<BookChapter>()
+                .eq("book_id", bookId)
+                .eq("chapter_index", index)
+                .isNull("deleted_at"));
+        if (existing == null) {
+            return create(bookId, req);
+        }
+        if (existing.getWordCount() != null && existing.getWordCount() > 0) {
+            // 只 append 的链路撞上了有正文的章号：说清是哪一章、为什么停，而不是静默换掉正文
+            throw new RuntimeException("第 " + index + " 章已有正文（" + existing.getWordCount()
+                    + " 字），生成链路不改写已写过的章");
+        }
+        // 占位章：走 update 而不是 insert，行 id 保持不变（正典断言按 chapter_id 溯源），
+        // 且正文写入仍然只经过那一条会连带重算的路径
+        return update(bookId, existing.getId(), req, userId);
     }
 
     @Override
@@ -84,11 +121,11 @@ public class BookChapterServiceImpl implements BookChapterService {
         int previousRevision = chapter.getRevision() == null ? 1 : chapter.getRevision();
         boolean contentChanged = !Objects.equals(previousContent, req.getContent());
 
-        chapter.setTitle(req.getTitle());
-        chapter.setContent(req.getContent());
         if (req.getChapterIndex() != null) {
             chapter.setChapterIndex(req.getChapterIndex());
         }
+        chapter.setTitle(resolveTitle(req.getTitle(), chapter.getChapterIndex()));
+        chapter.setContent(req.getContent());
         chapter.setWordCount(calculateWordCount(req.getContent()));
         if (contentChanged) {
             // 版本号只跟着正文走：正典断言的出处与黄金集样本按 (chapterId, revision) 引用，
@@ -146,16 +183,36 @@ public class BookChapterServiceImpl implements BookChapterService {
         return book;
     }
 
+    /**
+     * 缺省章号 = 当前最大章号 + 1（没有章时是 1）。
+     *
+     * <p>同样用列名字符串而不是方法引用，理由见 {@link #findOne}——「留空排到下一章」是
+     * 新建章节那条入口的行为，它得能在纯单测里被验到。
+     */
     private Integer resolveChapterIndex(Long bookId, Integer requested) {
         if (requested != null) {
             return requested;
         }
-        Integer max = chapterMapper.selectObjs(new LambdaQueryWrapper<BookChapter>()
-                        .select(BookChapter::getChapterIndex)
-                        .eq(BookChapter::getBookId, bookId)
-                        .isNull(BookChapter::getDeletedAt))
+        Integer max = chapterMapper.selectObjs(new QueryWrapper<BookChapter>()
+                        .select("chapter_index")
+                        .eq("book_id", bookId)
+                        .isNull("deleted_at"))
                 .stream().map(o -> (Integer) o).max(Integer::compareTo).orElse(null);
         return (max == null ? 0 : max) + 1;
+    }
+
+    /**
+     * 标题留空时的自动命名。
+     *
+     * <p>{@code book_chapter.title} 是 NOT NULL，「留空」必须在服务层落成一个可显示的值，
+     * 而不是让建章请求在数据库层面报错——占位章的存在理由正是「作者还没决定这一章叫什么」，
+     * 等它被生成链路填掉时标题会跟着正文一起换成新章的题。
+     */
+    private static String resolveTitle(String title, Integer chapterIndex) {
+        if (title != null && !title.isBlank()) {
+            return title;
+        }
+        return "第 " + chapterIndex + " 章";
     }
 
     private int calculateWordCount(String content) {

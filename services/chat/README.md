@@ -84,16 +84,17 @@ run 走子图、resume 走父图时两边不是同一份 checkpoint，插槽内�
 `context` 走 `config.configurable`，对模型不可见，只给垂直插槽定位数据层。
 两者都缺省时行为与历史上线一致。
 
-### 握手身份（novel-chat 专用）
+### 握手身份（novel-chat 与续写帧）
 
-`/ws/chat` 的握手 URL 可带一张一次性票据：
+`/ws/chat` 的握手 URL 可带一张短效票据：
 
 ```
 ws://<host>:5090/ws/chat?ticket=<票据>
 ```
 
-票据由 Spring Boot 侧 `GET /api/novel/chat-ticket` 签发（管理端登录态才能取），60 秒有效、
-服务端校验一次即失效。本服务**不加签 JWT、也不持 `jwt.secret`**：验票走内网
+票据由 Spring Boot 侧 `GET /api/novel/chat-ticket` 签发（管理端登录态才能取），有效期 60 秒；
+**同一张票在这 60 秒内可重复校验**（`ChatTicketService.consume()` 只解析签名与过期，不作废），
+所以「重连时复用刚取到的票」是成立的，而过期后必然被拒。本服务**不加签 JWT、也不持 `jwt.secret`**：验票走内网
 `POST /api/novel/internal/chat-ticket/verify`（带 `X-Internal-Token`），验出的 uid 绑进该连接的任务上下文，
 `po-agent-novel` 的 HTTP 数据层据此给正典读口补一个 `X-Actor-Uid`，Java 侧再按 `book.author_id` 判归属。
 
@@ -104,13 +105,21 @@ ws://<host>:5090/ws/chat?ticket=<票据>
 
 | 握手 | 结果 |
 | --- | --- |
-| 不带 `ticket` | 匿名连接：cooking / talk / chitchat 照旧，`agent=novel-chat` 的帧回一帧 `error`（不关连接） |
-| 带票且校验通过 | 连接绑定该作者，novel-chat 可用 |
+| 不带 `ticket` | 匿名连接：cooking / talk / chitchat 照旧，需要身份的帧（见下）回一帧 `error`（不关连接） |
+| 带票且校验通过 | 连接绑定该作者，novel-chat 与续写可用 |
 | 带票但校验失败 | **accept 之前**就 `close(code=4401)`，客户端拿 HTTP 403；收到 4401 表示该重新取票 |
 
 `PY_SERVER_INTERNAL_TOKEN` 未配置即「没有验票通道」，novel-chat 一律拒连（其余插槽不受影响）。
 刻意只强制 novel-chat：已发布小程序没有换票流程，一刀切等于当场断聊；
 cooking / talk 的 `conversation_id` 猜测风险作为遗留项登记在 PRD §15.16。
+
+哪些帧需要身份判在 `app/ws_auth.requires_actor(agent, context)`：`agent=novel-chat` 全要，
+`agent=novel` 只在帧里带 `context.bookId` 时要。后者是续写带来的变化——新书那一轮读的是本轮
+自己刚归档的书，而续写读的是作者从帧里带来的**既有书目**，读完还按章追加写回同一本书；
+Java 的归属校验只在看见 `X-Actor-Uid` 时才跑，匿名连接等于整段跳过，
+于是任何能连上 `/ws/chat` 的对等方都能拿别人的 `bookId` 塞一章进去。生成链路因此不再天然安全，
+闸门从「插槽名单」改成了「插槽 + 定位键」。
+
 帧级闸门判的是帧里的 `agent`（所以报了 `novel-chat` 的 `resume` 帧同样被拦），
 不带 `agent` 的 `resume` 不在它覆盖范围内——收它需要宿主侧记 `thread_id → uid`，同一条遗留项。
 
@@ -126,7 +135,7 @@ cooking / talk 的 `conversation_id` 猜测风险作为遗留项登记在 PRD §
 | `tool_call_start` / `tool_call_args` / `tool_call_end` / `tool_call_result` | 工具调用过程 |
 | `interrupt` | 等待用户确认（需 `resume` 帧继续） |
 | `done` | 运行结束 |
-| `error` | 运行失败 |
+| `error` | 运行失败——编排层的 `RUN_ERROR` 就映射到这里（**没有 `run_error` 这种帧类型**，客户端别按它写分支），帧级闸门的拒绝也走同一类型 |
 | `pong` | 心跳应答 |
 
 ## 测试

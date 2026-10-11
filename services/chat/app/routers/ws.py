@@ -21,9 +21,9 @@ RUN_ERROR              ``error``
 thread_id 实现多轮会话记忆；缺省时每条消息独立会话。
 
 握手身份：URL 可带 ``?ticket=<一次性票据>``（由 Spring Boot ``GET /api/novel/chat-ticket``
-签发，见 :mod:`app.ws_auth`）。带票且校验通过的连接被绑定到那位作者，需要身份的插槽
-（``agent=novel-chat``）才会启动编排；带坏票的连接在 accept 之前就被关掉；不带票的连接
-仍可匿名使用其余插槽（现网小程序没有换票流程，一刀切会直接断掉它们的聊天）。
+签发，见 :mod:`app.ws_auth`）。带票且校验通过的连接被绑定到那位作者，需要身份的帧
+（``agent=novel-chat``，以及带 ``bookId`` 的续写帧）才会启动编排；带坏票的连接在 accept
+之前就被关掉；不带票的连接仍可匿名使用其余插槽（现网小程序没有换票流程，一刀切会直接断掉它们的聊天）。
 
 未来帧（lifecycle 中的 ``tool_approval_request`` 等）由 P3/P5 的
 MCP 工具审批流引入；前端对未知帧类型必须忽略而非报错。
@@ -68,9 +68,10 @@ from app.config import Settings, get_settings
 from app.schemas import WSInFrame, WSOutFrame
 from app.talk import persist_talk_result
 from app.ws_auth import (
-    AUTH_REQUIRED_AGENTS,
+    NOVEL_AGENT,
     WsActor,
     actor_scope,
+    requires_actor,
     resolve_actor,
     ticket_from,
 )
@@ -210,9 +211,9 @@ async def chat(websocket: WebSocket) -> None:
 async def _loop(websocket: WebSocket, orchestrator: Orchestrator, actor: WsActor | None) -> None:
     """入站帧主循环：一连接多轮，串行处理并逐条回帧。
 
-    ``actor`` 只用于帧级闸门：需要身份的插槽（:data:`app.ws_auth.AUTH_REQUIRED_AGENTS`）
-    在匿名连接上一律不启动编排——握手没有票据的连接读不到任何人的正典，
-    让它跑到 L1 编译那一步等于把校验挪到了事后。
+    ``actor`` 只用于帧级闸门：需要身份的帧（:func:`app.ws_auth.requires_actor`——
+    ``novel-chat`` 与带 ``bookId`` 的续写帧）在匿名连接上一律不启动编排——握手没有票据的
+    连接读不到任何人的正典，让它跑到 L1 编译那一步等于把校验挪到了事后。
     """
     try:
         while True:
@@ -230,14 +231,19 @@ async def _loop(websocket: WebSocket, orchestrator: Orchestrator, actor: WsActor
                 await _send_frame(websocket, WSOutFrame(type="pong", content=frame.content))
                 continue
 
-            if frame.agent in AUTH_REQUIRED_AGENTS and actor is None:
+            if requires_actor(frame.agent, frame.context) and actor is None:
                 # 帧级闸门（回 error 而不是关连接）：客户端可能是「先匿名连上、
                 # 登录后忘了换票」，关掉整条连接会把它其它插槽的会话一起打断。
                 await _send_frame(
                     websocket,
                     WSOutFrame(
                         type="error",
-                        content=f"{frame.agent} 需要握手票据：先取 /api/novel/chat-ticket 再带 ?ticket= 连接",
+                        content=(
+                            "续写这本书需要作者身份：先在管理端登录，再重开创作面板"
+                            "（面板会自动去取一张握手票据）"
+                            if frame.agent == NOVEL_AGENT
+                            else f"{frame.agent} 需要握手票据：先取 /api/novel/chat-ticket 再带 ?ticket= 连接"
+                        ),
                     ),
                 )
                 continue

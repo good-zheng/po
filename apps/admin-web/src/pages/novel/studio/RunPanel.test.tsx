@@ -10,6 +10,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 const mocks = vi.hoisted(() => ({
   getChatTicket: vi.fn(),
   historyPush: vi.fn(),
+  drawerClose: vi.fn(),
 }));
 
 vi.mock('@/services/novel', () => ({ getChatTicket: mocks.getChatTicket }));
@@ -236,5 +237,199 @@ describe('RunPanel · 两处人工口的渲染与作答', () => {
     });
     fireEvent.click(screen.getByRole('button', { name: '打开这本书的工作台' }));
     expect(mocks.historyPush).toHaveBeenCalledWith('/novel/book/77/studio');
+  });
+});
+
+const BOOK = { id: 7, title: '代码之隙' };
+const CHAPTERS = [
+  { id: 71, chapterIndex: 1, wordCount: 1200 },
+  { id: 72, chapterIndex: 2, wordCount: 1300 },
+  { id: 73, chapterIndex: 3, wordCount: 1400 },
+];
+/** 作者在第 4 章排了一个待写占位（标题正文都空）：它不进游标，也不该被当成衔接尾段 */
+const WITH_PLACEHOLDER = [
+  ...CHAPTERS,
+  { id: 74, chapterIndex: 4, wordCount: 0 },
+];
+/** 空位夹在已写章之间：游标（有正文的章数=2）会撞上第 3 章的已有正文 */
+const WITH_HOLE = [
+  { id: 71, chapterIndex: 1, wordCount: 1200 },
+  { id: 72, chapterIndex: 2, wordCount: 0 },
+  { id: 73, chapterIndex: 3, wordCount: 1400 },
+];
+
+/** 在工作台里打开抽屉（带当前书与章树）→ 填一句 → 点开始 → 连上并收到 run_started */
+async function startContinueRound(idea: string) {
+  fireEvent.change(screen.getByRole('textbox'), { target: { value: idea } });
+  fireEvent.click(screen.getByRole('button', { name: /开始续写|开始生成/ }));
+  await waitFor(() => expect(sockets.length).toBeGreaterThan(0));
+  const ws = sockets[sockets.length - 1];
+  act(() => {
+    ws.open();
+    ws.emit({ type: 'run_started', payload: { thread_id: 'thread-9' } });
+  });
+  return ws;
+}
+
+const frame0 = (ws: FakeSocket) => ws.frames()[0] as Record<string, unknown>;
+
+describe('RunPanel · 续写本书（一句话直接出章，默认不问）', () => {
+  beforeEach(() => {
+    sockets = [];
+    mocks.getChatTicket.mockResolvedValue({
+      data: { ticket: 'tk-1', expiresIn: 60 },
+    });
+    mocks.historyPush.mockReset();
+    mocks.drawerClose.mockReset();
+    vi.stubGlobal('WebSocket', FakeSocket);
+    render(
+      <RunPanel
+        onArchived={vi.fn()}
+        onClose={mocks.drawerClose}
+        book={BOOK}
+        chapters={CHAPTERS}
+      />,
+    );
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('默认就落在续写模式，并按库里章数预告往后追加的范围', () => {
+    expect(
+      screen.getByRole('button', { name: '开始续写' }),
+    ).toBeInTheDocument();
+    expectText(/已写 3 章/);
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: '接着往下写' },
+    });
+    expectText(/第 4 至 6 章共 3 章/);
+  });
+
+  it('句子里的中文章号会被读成范围，走保留键而不是拼进正文', async () => {
+    const ws = await startContinueRound('开始创作第三至第十章的内容');
+    expect(frame0(ws)).toEqual({
+      type: 'message',
+      content: '开始创作第三至第十章的内容',
+      agent: 'novel',
+      context: {
+        auto: true,
+        bookId: '7',
+        fromChapter: 3,
+        chapterCount: 8,
+        tailChapterId: '73',
+      },
+    });
+  });
+
+  it('勾上「写之前先问我」才保留两处人工口', async () => {
+    fireEvent.click(screen.getByRole('checkbox', { name: '写之前先问我' }));
+    const ws = await startContinueRound('再写两章');
+    const context = frame0(ws).context as Record<string, unknown>;
+    expect(context.auto).toBe(false);
+    expect(context.bookId).toBe('7');
+    expect(context.chapterCount).toBe(2);
+  });
+
+  it('切到「写本新书」：不带 bookId，也不带章号范围', async () => {
+    fireEvent.click(screen.getByText('写本新书'));
+    const ws = await startContinueRound('一个程序员能改写物理法则');
+    expect(frame0(ws)).toEqual({
+      type: 'message',
+      content: '一个程序员能改写物理法则',
+      agent: 'novel',
+      context: { auto: true },
+    });
+  });
+
+  it('续写入库后的出口是回中栏看新章，不去另一本书', async () => {
+    const ws = await startContinueRound('写两章');
+    send(ws, {
+      type: 'thinking',
+      content: '已续写入库（书 7 新增第 4-5 章）',
+      payload: {
+        stage: 'archived',
+        book_id: 7,
+        mode: 'continue',
+        from_chapter: 4,
+        to_chapter: 5,
+      },
+    });
+    expectText(/已续写入库/);
+    expect(
+      screen.queryByRole('button', { name: '打开这本书的工作台' }),
+    ).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: '关掉抽屉看中栏' }));
+    expect(mocks.drawerClose).toHaveBeenCalled();
+  });
+
+  it('连接层的失败把服务端/客户端的原因原样摊开，不只是一句「出错了」', async () => {
+    const ws = await startContinueRound('写两章');
+    send(ws, {
+      type: 'error',
+      content: '续写这本书需要作者身份：先在管理端登录，再重开创作面板',
+    });
+    expect(screen.getByText('这一轮没跑成')).toBeInTheDocument();
+    expect(screen.getByText(/先在管理端登录/)).toBeInTheDocument();
+    // 闸门只拦这一帧、不关连接，所以界面要能立刻重试
+    // （名字用正则：antd 的按钮图标会把 aria-label 拼进可及名）
+    expect(
+      screen.getByRole('button', { name: /重新生成/ }),
+    ).toBeInTheDocument();
+  });
+});
+
+describe('RunPanel · 游标只数有正文的章（待写占位不算已写）', () => {
+  beforeEach(() => {
+    sockets = [];
+    mocks.getChatTicket.mockResolvedValue({
+      data: { ticket: 'tk-1', expiresIn: 60 },
+    });
+    mocks.historyPush.mockReset();
+    mocks.drawerClose.mockReset();
+    vi.stubGlobal('WebSocket', FakeSocket);
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('第 4 章是空位：游标仍是 3，尾段取第 3 章，预告点明这一轮会填掉它', async () => {
+    render(
+      <RunPanel
+        onArchived={vi.fn()}
+        onClose={mocks.drawerClose}
+        book={BOOK}
+        chapters={WITH_PLACEHOLDER}
+      />,
+    );
+    // 按章节行数算会报「已写 4 章」并从第 5 章起写，第 4 章就此永久空着
+    expectText(/这本书已写 3 章，本轮往后追加第 4 至 6 章/);
+    const ws = await startContinueRound('接着往下写三章');
+    expect(frame0(ws)).toEqual({
+      type: 'message',
+      content: '接着往下写三章',
+      agent: 'novel',
+      context: {
+        auto: true,
+        bookId: '7',
+        chapterCount: 3,
+        tailChapterId: '73',
+      },
+    });
+    expectText(/第 4 章是你留的待写占位/);
+  });
+
+  it('空位夹在已写章之间时先报撞号，不让人发起一轮注定失败的续写', () => {
+    render(
+      <RunPanel
+        onArchived={vi.fn()}
+        onClose={mocks.drawerClose}
+        book={BOOK}
+        chapters={WITH_HOLE}
+      />,
+    );
+    expectText(/第 2 章正文为空却排在已写章之前/);
   });
 });

@@ -5,7 +5,7 @@ import {
   SkinOutlined,
 } from '@ant-design/icons';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { history, useParams } from '@umijs/max';
+import { history, useParams, useSearchParams } from '@umijs/max';
 import {
   Button,
   Drawer,
@@ -30,17 +30,24 @@ import StylePanel from './StylePanel';
  * 右＝只谈不写（读正典、出提议卡）。`layout: false` 让这一屏跳出 ProLayout 的
  * mix 菜单，否则三栏会被菜单挤掉。
  *
- * 顶栏两个抽屉是第四个面：文风契约（只读整本书的文体约束）与 AI 生成（`agent: 'novel'`
- * 的长链路入口）。生成不落在三栏里，是因为它写的是**新书**且会连着跑几分钟——
- * 塞进任何一栏都会破坏那一栏「不触发生成」的边界（§10.5 约定 ①）。
+ * 顶栏两个抽屉是第四个面：文风契约（只读整本书的文体约束）与 AI 创作（`agent: 'novel'`
+ * 的长链路入口：给这本书往后追加几章，或从零开一本新书）。
+ * 生成不落在三栏里，是因为它会连着跑几分钟且要写正文——塞进任何一栏都会破坏那一栏
+ * 「不触发生成」的边界（§10.5 约定 ①）。
  */
 const NovelStudio: React.FC = () => {
   const params = useParams<{ bookId: string }>();
   const bookId = Number(params.bookId);
   const validId = Number.isFinite(bookId) && bookId > 0;
+  // 冲突台账点「第 N 章」是带着章号跳过来的：不接住就永远落在第一章，
+  // 作者刚看到的冲突和现在编辑的正文对不上
+  const [searchParams] = useSearchParams();
+  const rawChapterId = Number(searchParams.get('chapterId'));
+  const linkedChapterId =
+    Number.isFinite(rawChapterId) && rawChapterId > 0 ? rawChapterId : null;
 
   const [selectedChapterId, setSelectedChapterId] = useState<number | null>(
-    null,
+    linkedChapterId,
   );
   const [referenceChapterId, setReferenceChapterId] = useState<number | null>(
     null,
@@ -75,11 +82,16 @@ const NovelStudio: React.FC = () => {
     [chaptersRes],
   );
 
+  // 选中章必须落在真实存在的章上：深链带来的 id 可能来自一份已被删改的台账，
+  // 拿不存在的章去编辑会在中栏渲染出一个空白正文
   useEffect(() => {
-    if (selectedChapterId == null && chapters.length > 0) {
-      setSelectedChapterId(chapters[0].id);
-    }
-  }, [chapters, selectedChapterId]);
+    if (chapters.length === 0) return;
+    setSelectedChapterId((current) =>
+      current != null && chapters.some((item) => item.id === current)
+        ? current
+        : chapters[0].id,
+    );
+  }, [chapters]);
 
   const reference =
     chapters.find((item) => item.id === referenceChapterId) ?? null;
@@ -162,7 +174,7 @@ const NovelStudio: React.FC = () => {
             type="primary"
             onClick={() => setRunOpen(true)}
           >
-            AI 生成
+            AI 创作
           </Button>
         </Space>
       </div>
@@ -216,18 +228,39 @@ const NovelStudio: React.FC = () => {
       />
 
       <Drawer
-        title="AI 生成：一句话想法 → 一整本新书"
+        title="AI 创作：续写这本书，或一句话开一本新书"
         size={720}
         open={runOpen}
         onClose={() => setRunOpen(false)}
         destroyOnHidden
       >
         <RunPanel
-          onArchived={() => {
-            // 归档写的是**另一本书**（save_book 新建书目），所以该刷新的是书架而非当前书。
-            // 书籍列表页是 ProTable 自带 request（挂载时自取），这里只需让 react-query
-            // 侧唯一的书架缓存（选题用的 books-all）失效。
+          book={{ id: bookId, title: book.title }}
+          chapters={chapters.map((item) => ({
+            id: item.id,
+            chapterIndex: item.chapterIndex,
+            wordCount: item.wordCount,
+          }))}
+          onClose={() => setRunOpen(false)}
+          onArchived={(archivedId) => {
+            // 书架缓存两条路都要刷：新建一本会多一行，续写会改这本书的章数与字数。
+            // 书籍列表页是 ProTable 自带 request（挂载时自取），这里失效的是选题用的
+            // books-all。
             queryClient.invalidateQueries({ queryKey: ['books-all'] });
+            if (archivedId !== bookId) return;
+            // 续写归档动的是**当前这本书**：正文、章树、进度、正典台账、冲突发现
+            // 全在服务端被连带改写，只刷章树会让中栏停在旧章、右栏停在旧台账。
+            for (const key of [
+              ['book', bookId],
+              ['book-chapters', bookId],
+              ['novel-chapter', bookId],
+              ['novel-canon', bookId],
+              ['novel-progress', bookId],
+              ['novel-findings', bookId],
+              ['novel-search', bookId],
+            ]) {
+              queryClient.invalidateQueries({ queryKey: key });
+            }
           }}
         />
       </Drawer>

@@ -210,6 +210,11 @@ holds(JSON：持有物) / mood / last_seen_chapter`。
 > extract → gate_text ⇄ revise → commit_and_next → archive`）。与本文的差值——包括
 > worldbuild 不新增确认点、plan_scene 缺清单不硬失败、gate_plan 的 `escalate` 形态、
 > 以及 `reflect` 自评节点连同 `Reflection` schema 一并删除——逐条登记在 §15.6。
+>
+> 这条拓扑有**两个入口**（§15.21）：`conceive` 在 `configurable.context` 里看见 `bookId` 时翻成
+> **续写**——游标播种为库里已定稿章数、`worldbuild` 早退、`save_book` 与角色抽取不调，
+> 已定稿章在 `outline` 里只作序号占位；`auto` 为真时 `gate_plan` 与 `archive` 两处 `interrupt`
+> 都不挂起，写完即入库。除弧级摘要按偏移量续编外，整条链路只追加、不改写已有正文。
 
 ```
 START
@@ -584,13 +589,15 @@ GET  /novel/canon/snapshot                 ?bookId&asOf&entities=&kinds=
 SecurityConfig 口径：读 `permitAll` 只对读者端开放，写一律管理客户端），且 `authority` 服务端写死：
 
 ```
-GET    /novel/books/{bookId}/canon          ?entity=&kind=&status=&page=&size=
+GET    /novel/books/{bookId}/canon          ?subjectKey=&kind=&status=&authority=&sourceChapterId=&keyword=&page=&size=
+GET    /novel/canon/{id}                    # 单条断言：中栏点中某一条时按 id 取出处原句
+GET    /novel/books/{bookId}/canon/conflicts ?subjectKey=&predicate=&objectText=&asOfChapter=&excludeId=
 POST   /novel/books/{bookId}/canon          # 服务端强制 authority=author
 PATCH  /novel/canon/{id}                    # 同上；不接受 authority 入参（§10.5-②）
 POST   /novel/canon/{id}/retire             # 停用，非物理删除
 GET    /novel/books/{bookId}/aliases        PUT /novel/books/{bookId}/aliases/{id}
 GET    /novel/books/{bookId}/foreshadows    POST/PATCH 同路径
-GET    /novel/reviews                       ?bookId=&severity=&status=&checker=&page=&size=
+GET    /novel/reviews                       ?bookId=&chapterId=&severity=&status=&checker=&code=&page=&size=
 PUT    /novel/reviews/{findingId}           {action:'adopt'|'reject'|'waive'|'rewrite', basis}
 GET    /novel/progress?bookId=              # 只读：章数/字数/todo/disputed/gen_job 状态
 POST   /novel/proposals                     # 对话面板产出提议卡（§10.3），只入 proposal 表
@@ -599,6 +606,12 @@ PUT    /novel/proposals/{id}/dismiss
 GET    /novel/books/{bookId}/search         ?q=&scope=chapter|canon|alias&page=&size=
 WS     /ws/chat?agent=novel-chat&bookId=&asOfChapter=   # 复用现有 /ws/chat，不新建通道
 ```
+
+`page` 是 **0 基**（`PageRequest.of(page, size)`），前端传 1 会直接跳过第一页——数据不足一页时表现为
+「面板恒空」，是最容易静默坏掉的一处。三个筛子的口径：`sourceChapterId` 与 `chapterId` 都由服务端筛，
+前端拉一页再 filter 会在过 200 条后被截断；`chapterId` 只收闸门真正落在这一章上的冲突，设定级冲突
+（`review_finding.chapter_id IS NULL`）按章筛时天然不出现；`excludeId` 是正在被编辑的那条断言自身，
+不排除就会把「改自己的值」报成「与已生效设定并存」的假警告。
 
 对话面板的上下文与生成同源：`novel-chat` 也走 L1 编译器取 `GET /novel/canon/snapshot?asOf=`，
 不得自行拼历史（§10.3 约定 2）。`proposal` 端点即使被伪造也不构成提权——它写的表不在注入路径上，
@@ -821,7 +834,7 @@ escalate 且 `unreviewed` 为真、`max_plan_repairs=0` 立即升级）；`test_
 | 1 | 「沿用旧 `/books/**` 的 SecurityConfig 口径」 | 单独加一条 `.requestMatchers("/novel/**").access(ADMIN_CLIENT)`，排在 `/novel/internal/**` 那条 permitAll **之后**；`/books/**` 的读者端 `permitAll` 不往 `/novel/**` 扩 | 读 `GET /api/books` 是读者内容，读正典不是——同一口径会把「这个人身上所有已确认事实」开给游客，那既是剧透面也是提权面。**遗留**：无，读者侧要看得见的只有 `book.description` |
 | 2 | §10.5-②「`authority` 服务端写死」 | 除了写死，`PATCH /novel/canon/{id}` 还把 `model`/`text` 级断言**升级**为 `author` 并落 `decidedBy/decidedAt` | 手改即裁定：不升级，下一轮抽取就会按模型置信度把作者刚写的话覆盖回去，而那种覆盖在台账上无痕。`CanonRequest` / `InternalAssertionAppendRequest.AssertionItem` 两侧都用反射钉住「没有 authority 可写属性」 |
 | 3 | `POST /novel/canon/{id}/retire` 只写「停用，非物理删除」 | 只闭 `valid_until_chapter`，不新增 `status='retired'`（status 枚举仍是 confirmed/disputed/todo/rejected）；`untilChapter` 缺省取本书当前最大章号 | as-of 视图靠区间而不是状态位，状态里塞「停用」会让「到某章为止成立」和「从没成立」共用一列。缺省取最大章号是因为写 0 等于伪造记忆——作者没指定就别替他决定。**遗留**：闭得更早得走 PATCH 手填 |
-| 4 | 端点表里没有冲突预览 | 新增 `GET /novel/books/{bookId}/canon/conflicts`（同主同谓、`status=confirmed`、值不同、as-of 可见），前端在保存前调它，撞车就要求二次确认 | §10.6 要求「作者点头前必须看到要覆盖哪条」；用 GET+query 而不是 POST，预览无副作用且能复用列表页的参数。无冲突直接落库，不让作者多点一次确认 |
+| 4 | 端点表里没有冲突预览 | 新增 `GET /novel/books/{bookId}/canon/conflicts`（同主同谓、`status=confirmed`、值不同、as-of 可见、可带 `excludeId`），前端在保存前调它，撞车就要求二次确认 | §10.6 要求「作者点头前必须看到要覆盖哪条」；用 GET+query 而不是 POST，预览无副作用且能复用列表页的参数。无冲突直接落库，不让作者多点一次确认。`excludeId` 是编辑态传的「自己」——不排除的话改一条设定的值会永远看到和自己撞车，而提议卡路径不是既有断言，必须显式传 `null`（用例钉住） |
 | 5 | `PUT /novel/reviews/{id}` 只列了 action 与 basis | adopt 的新断言 `establishedChapter/validFromChapter` 默认取**该 Finding 所属章号**；闭区间目标先全量校验再写（跨书、不存在即整体不落库）；`supersedesId` 只有关闭目标恰好一条时才填 | 作者是就着这一章说「事情是这样的」，用当前最大章号会让一次裁定 retroactively 改掉更早章节的事实。先校验后写把「半途失败」压成「还没开始」，事务回滚只是兜底 |
 | 6 | action 四选一，状态三选一（schema 枚举无 `rewrite`） | `rewrite` 落库后 Finding.status 也是 `adopted`，区分靠 `chapterBackToDraft` 和章节本身退回 `draft` | 不改表（D6「扩表不重构」在这一点上不值得动）：打回的事实性证据是「章节回到草稿」，状态位只是台账视图。**遗留**：要统计「同一章被打回几次」得另加列 |
 | 7 | 未规定 basis 是否必填 | `reject`/`waive` 必填，`adopt`/`rewrite` 选填 | 判误报和放行 blocker 是「不留痕就永远说不清」的两类；采纳已由 assertion 自带的 decidedBy/decidedAt 留痕 |
@@ -829,10 +842,12 @@ escalate 且 `unreviewed` 为真、`max_plan_repairs=0` 立即升级）；`test_
 | 9 | `GET /novel/progress` 注「gen_job 状态」 | 字段是 `jobsByStage`，按 `gen_job.stage` 分组计数（queued/writing/gating/awaiting_review/committed/failed） | `gen_job` 没有 status 列，stage 就是它的状态机；`failed` 在前端显红。同理 `distribute()` 只对章节表拼 `deleted_at IS NULL`——正典层是 append-only，给它们拼软删列 SQL 直接报错 |
 | 10 | 别名面板 | 前端只有「改判归属 + 设主名」，没有新增称谓入口（后端也刻意不开 POST） | 称谓是从原文里长出来的，凭空造一个 key 会让归一结果和正文对不上。**遗留**：某称谓还没被抽到时，作者得先让它出现在正文里 |
 | 11 | 单本书的冲突视图与全站台账 | 共用一个 `FindingTable`，只差 `bookId` 是否固定；`/novel/review` 路由排在 `/novel/book/:bookId` 之前 | 裁定动作两边一模一样，拆两份实现迟早出现「一处能采纳、另一处不能」；Umi 按声明顺序匹配字面段，动态段 `:bookId` 会抢 |
+| 12 | 工作台/台账的筛选面 | 「按章筛」下拉只在单书面板出现，跨书台账不读某本书的章节列表；`/novel/review?bookId=` 与 `/novel/book/:bookId/studio?chapterId=` 两个深链都接住（后者还要校验章号在当前章节列表里真实存在，否则退回第一章） | 章节下拉在跨书台账里筛了会串书——章号属于另一本书；深链是「从冲突跳去改写」的唯一入口，不接住就等于作者每次都要重选作品和章；台账里「第 N 章」的落点是**创作台**（`/novel/book/:bookId/studio`），不是书详情页——详情页只有 Tab，没有章的坐标系。**遗留**：无 |
+| 13 | 裁定/采纳后刷新哪些缓存 | 台账裁定与提议卡采纳都失效 `['novel-canon', bookId]` 与 `['novel-canon-entry']`（台账还失效 `['book-chapters']`） | 采纳写的是 `canon_entry`：不失效就会出现「台账说已采纳、中栏设定卡还停在采纳前」。注意详情页「设定」Tab（`CanonPanel`）的列表走 ProTable 的 `request`，**不在 React Query 缓存里**，跨 Tab 的即时新鲜感只对创作台中栏成立，`CanonPanel` 靠自己那两次 `actionRef.reload()`；用例因此选中栏做消费方，而不是选 Tab。**遗留**：要把 Tab 也纳入同一份缓存，得先把 `CanonPanel` 的列表改成 `useQuery` |
 
-验收：`pnpm api:verify` 全 reactor BUILD SUCCESS（`CanonAuthorityAndAdjudicationTest` 9 例 +
+验收：`pnpm api:verify` 全 reactor BUILD SUCCESS（`CanonAuthorityAndAdjudicationTest` 11 例 +
 `PoApplicationTests.contextLoads` 1 例——后者真起上下文，能兜住重复映射与 Bean 装配）；
-`pnpm admin:typecheck` / `biome lint`（novel 相关 14 个文件 0 issue）/ `pnpm admin:test` 43 例全绿。
+`pnpm admin:typecheck` / `biome lint`（novel 相关 14 个文件 0 issue）/ `pnpm admin:test` 91 例全绿。
 真机点击仍待作者登录管理端：`/novel/review` 未登录会跳登录页，Tab 里的写操作要人眼复核一次。
 
 ### 15.9 实现偏差登记（N5c-1 改稿重校验 + 版本快照，2026-10-04）
@@ -1218,6 +1233,201 @@ agent-novel 只测自己的图，接缝上没人站过。
 **仍未验**：真实浏览器里 `/novel/**` 工作台的渲染与一轮真实归档（需作者 admin 登录，且本机 5090 的 chat 服务当前没起）。
 本轮未 commit / push / 部署。
 
+
+### 15.21 实现偏差登记（N7 续写模式：一句话直接出章，2026-10-11）
+
+**做了什么**：`agent: "novel"` 这条长链路从「一句话 → 一整本新书」扩成**两条入口**：
+带 `context.bookId` 时走**续写**（给库里已有的这本书往后追加章），否则仍是新书。
+新增控制键四个（`fromChapter` / `chapterCount` / `auto` / `tailChapterId`），
+`auto` 为真时两处人工口都不挂起。管理端工作台的「AI 创作」抽屉因此第一次能做到
+「输入『开始创作第三至第十章的内容』→ 直接生成，中途不问」。
+
+**游标怎么翻的（`graph.py::_continue_conceive`）**：`index` 直接播种为「已定稿章数」，
+于是 as-of（`as_of = index`）、`outline[index]`、`ChapterDraft(index = index + 1)` 三处语义
+一行都不用改——续写不是另开一套编号。已定稿的章在 `outline` 里以**占位条目**存在
+（标题写死「第 N 章（已定稿，不在本轮）」），只为对齐序号；`chapters` 只装本轮的章，
+所以 `save_chapters` 永远碰不到旧章。占位条目的 `summary` 不能给空串——
+`ChapterOutline.summary` 有 `min_length=1`，空串会让整张列表在构造那一刻就 ValidationError，
+续写根本进不了图（这条是实测撞出来的）。
+
+**失败不回落**：读库失败时不静默改成「新建一本」——作者点的是这本书的续写，
+产出另一本假书的正文比报错严重得多（那本假书还会带着这次的设定入库）。
+
+**唯一会改写已有行的层是弧级摘要**：Java 侧 `persistArcSummary` 按
+`(book_id, level='arc', scene_no=弧号)` upsert，而 `InternalSummaryView.sceneNo` 对弧行返回的
+就是弧号。本轮大纲的弧号从 1 起算，于是续写的第二段弧会**覆盖**首段弧那行——不可逆。
+所以 `write_canon(continuation_of=written)` 里：先 `_next_arc_no()` 读出既有最大弧号当偏移，
+`arc_no_offset` + `span_offset` 一起交给 `_write_arcs`；**读不到就整段不写弧**（按 0 起编必覆盖），
+并把这句话写进归档回执。其余各层（章级/场景级摘要、断言、角色状态、伏笔）用的都是全局章号，
+天然无需偏移。
+
+**续写不做的三件事**：`worldbuild` 直接早退（发 `worldbuild_skipped`）、`save_book` 不调
+（书已存在）、角色抽取不调（`bible is None` 时 seed 也自动跳过）。正典读侧仍照 as-of 喂进装配，
+另外把库里读回的「已登记实体键」与「最近 6 条章级摘要」带进大纲提示词。
+
+**衔接缝（`context.py` 的新参数 `prior_tail`）**：Tier-2 的上一章尾段取自**本轮** `chapters`，
+续写第一章时本轮还没有定稿章，于是那一格是空的——模型会按「本章为开篇」来写，
+那是续写最典型的失败模式。`_continue_conceive` 从 `load_book(book_id, chapter_id=tailChapterId)`
+读回的最后一章尾 400 字存进 `ns["prev_tail"]`，`_compile` 以 `prior_tail` 传下去补这一格。
+
+**`auto` 的边界**：它只短路 `interrupt(...)`，闸门本身照跑，未审的计划仍记进 `plan_unreviewed`
+并随归档卡展示（放行词表在服务端 `_APPROVE_WORDS`）。续写模式默认 `auto=True`（这条入口的
+存在理由就是别问），新书模式默认 `False`，除非客户端显式带 `auto`。
+
+**chat 侧**：四个新键进 `RESERVED_CONTEXT_KEYS`（`services/chat/app/agent.py`）——只走
+`configurable.context`，不拼进 HumanMessage 文本。「写哪几章、要不要问作者」如果以文本形态出现，
+模型能复述、作者能手填假值去试，而两边不一致时就是「模型说一套、图做一套」。
+
+**管理端**：
+- 新文件 `chapterRange.ts` 只解析不决策：`chineseNumber`（〇零一二两…十百千 + 阿拉伯数字，
+  纯数字串按位拼读、带单位的走位值累加）与 `parseChapterRange`（「第 X 至/到/-/～ 第 Y 章」、
+  「写到第 Y 章」「从第 X 章起」「第 X 章」「写 N 章」）；倒着要的区间不猜意图。
+  `resolveContinueRun` 把「解析结果 + 库里已写章数」算成实际发出去的键**和**同一套算法的人话预告，
+  两边必须同源：界面写着 5 章、图里跑了 8 章，作者读到的就是假账。上限 20 章与
+  `Outline.max_length` / `_CONTINUE_MAX_CHAPTERS` 对齐。
+- `useNovelRun.start(content, context?)`：context 只挂在这条 `message` 帧上（空对象不发，
+  新书路径的字节序与历史一致）。
+- `RunPanel`：`Segmented` 双入口（默认落「续写《书名》」）+「写之前先问我」勾选框（默认不勾）；
+  续写分支发 `{bookId, fromChapter?, chapterCount?, auto: true, tailChapterId}`，
+  尾部章按 `chapterIndex` 找而不按数组下标；归档提示按发起时的模式分「已续写入库」与
+  「新书 ID」两套出口。
+- `studio/index.tsx`：`onArchived(archivedId)` 用 id 判分支——等于当前书时连刷
+  `book` / `book-chapters` / `novel-chapter` / `novel-canon` / `novel-progress` / `novel-findings` /
+  `novel-search`（前缀失效，覆盖各章号），否则只刷书架 `books-all`。
+
+**`MockNovelStore.save_chapters` 跟着改了协议**：原文档写的是「整本覆盖」，实现改成按
+`chapterIndex` append/upsert（同章号覆盖、新章号追加并保序），与 HTTP 实现逐章 POST 显式
+`chapterIndex` 的真实语义对齐。这条不改，续写的单测会绿在一条生产上不存在的行为上。
+
+验收（2026-10-11）：`pnpm agentnovel:test` **309 绿**（新增 4 例：续写+auto 全程无 interrupt 且
+只追加不改旧章、弧行 `{1,2}` 两行且旧弧内容仍在；不带 auto 时仍停在归档卡且确认前不入库；
+已写范围被收敛成 append-only；作者意见与上章尾段逐条进提示词）；`pnpm chat:test` **44 绿**
+（保留键用例扩到四个新键，并钉住 `[theme: dark]` 这类非保留键仍照旧拼进前缀）；
+`pnpm admin:test` **124 绿 / 12 文件**（新增 `chapterRange.test.ts` 与续写入口 5 例：默认落续写、
+中文章号读成范围并走保留键、勾选后 `auto:false`、切新书不带 bookId、入库出口是关抽屉）、
+`pnpm tsc` 0 error、`biome check src/pages/novel` 31 文件零诊断。
+
+**仍未验**：真实浏览器里跑一轮带真实额度的续写归档（本机 5090 未起、需作者 admin 登录）。
+本轮未 commit / push / 部署。
+
+### 15.22 实现偏差登记（续写首跑报错的定位 + 匿名续写写口收口，2026-10-11）
+
+**现象**：管理端点「开始续写」后界面只有一句「生成连接出错：长任务中断后同一条会话仍可续跑，
+重发一次会走 checkpoint」。那句话是 `useNovelRun` 的 `ws.onerror` 兜底文案，**不是服务端说的**——
+所以断点必在连接层，而它被写成了一条关于 checkpoint 的建议，把排查方向整个带偏。
+
+**三条已核实的事实**（都是本轮才钉死的，之前只有代码里没有反证）：
+
+| # | 事实 | 证据 | 后果 |
+|---|---|---|---|
+| 1 | `RUN_ERROR` 映射成 `error` 帧，协议里**没有** `run_error` 这个类型 | `services/chat/app/agent.py` 的 `_EVENT_TO_FRAME` | 服务端错误会原样透到面板（`useNovelRun.ts` 的 `error` 分支存 `errorText`），所以「只看见前端那句」= 一帧都没收到 |
+| 2 | 握手被拒发生在 **accept 之前**：ASGI 层 `close(4401)`，真实 uvicorn 落成 **HTTP 403**，浏览器只拿得到 `onerror` + `close(1006)` | `app/routers/ws.py:_handshake` + 本机对活服务复现（`websockets` 抛 `InvalidStatus`，`response.status_code=403`） | 前端**读不到 4401**，「该换新票」这个信息只能在服务端侧或按「带票却没 open」间接推断 |
+| 3 | 票据**不是一次性**：`ChatTicketService.consume()` 只解析签名与过期，不作废，60 秒内同一张票可重复校验 | `services/api/novel/.../ChatTicketService.java:38-48` | README 原先写的「服务端校验一次即失效」是错的，已订正；重连复用刚取的票成立，而「过期」才是握手被拒最常见的真实原因 |
+
+**本机已排除的**：内网读口健康（book 14 带 3 章读得回，正文长度正常）、两侧令牌同值（长度 48，值不外泄）、
+验票通道可达（假票回 `code=403 握手票据无效`——被拒正是期望），故失败最可能在**部署侧**：
+chat 的 `PY_SERVER_INTERNAL_TOKEN` 与 Java 的 `app.internal-token` 不一致、管理端容器 `ADMIN_CHAT_UPSTREAM`
+指错、或云托管实例无请求缩容（§15.21 那条已确认的默认规则）。
+
+**顺带查出并修掉的安全缺口**（本次改动的真正内容）：`/ws/chat` 原本只强制 `novel-chat` 换票，
+理由是「生成链路读的是本轮自己刚归档的书，不带别人的 bookId 进来」。**续写把这个前提整段换掉了**——
+它按作者从帧里带来的既有书目读回正典与定稿正文，最后还按章**追加写回同一本书**；而 Java 的作者作用域
+是「带 `X-Actor-Uid` 才校验」（`actorUid` 缺省返回 null → `denyUnlessActorOwns` 直接放行），匿名连接等于
+整段跳过。合起来就是：**任何能连上 `/ws/chat` 的对等方，都能拿别人的 bookId 往里塞一章**。
+这条不是理论——本轮实测「不带 actor 头能读、带错 actor 头被 403 拒」，两个方向都验过。
+
+修法（`app/ws_auth.py::requires_actor(agent, context)` + `app/routers/ws.py` 帧级闸门）：闸门判据从
+「插槽名单」改成「插槽 + 定位键」——`novel-chat` 全要身份，`agent=novel` 只在帧里带 `context.bookId` 时要。
+**新书那一轮仍保持匿名可跑**：它读不出别人的数据，强制换票只会把没登录的本地开发一并挡在门外。
+闸门回 `error` 帧而不关连接：客户端可能是「先匿名连上、登录后忘了换票」，关掉整条连接会把它其它插槽
+的会话一起打断。
+
+**前端把连接层失败分成三档**（`useNovelRun.ts` 的 `openedRef` / `ticketedRef` + `connectionErrorText()`）：
+open 过后断开 = 运行中断；带票却从未 open = 握手被拒（说清票据 60 秒 + 该查哪个环境变量）；
+没票又连不上 = 服务不可达（本机查 5090、云上查反代与缩容）。旧的「重发一次会走 checkpoint」删除。
+
+**新增分层探针** `services/chat/scripts/probe_novel_channel.py`（排查任务留脚本不留聊天命令）：
+进程 → WS 反代 → 续写闸门 → 带票握手 → 验票通道 → 内网读口，逐层只打结论，令牌只报长度、
+票据与正文不外泄，**默认不发任何会消耗模型额度的帧**（匿名续写帧进不了图，带真票的连接只验握手不回话）。
+本机对活服务 8 层全绿；服务停掉时第 1、2 层各自 FAIL 并指向正确原因，坏票那一层如实报
+`InvalidStatus HTTP 403`。
+
+验收（2026-10-11）：`pnpm chat:test` **46 绿**（新增 2 例：匿名续写帧在进图之前就被拦且连接不断、
+带身份握手放行到达插槽；把 `requires_actor` 改回 `return False` 时前者拿到 `run_started` 而失败——
+用例钉的正是这条闸门本身）；`pnpm vitest run src/pages/novel/studio/` **68 绿**（新增 3 例：带票却
+never-open 必须说「握手被服务端拒绝」且不再出现 checkpoint 字样、无票连不上必须说「没取到握手票据」并给端口、
+服务端闸门的 `error` 帧原样摊出且界面可立刻重试）；`pnpm tsc --noEmit` 0 error、
+`biome check src/pages/novel` 31 文件零诊断。文档同步：`services/chat/README.md`（三态表 + 票据语义订正 +
+新增「连接出问题时怎么定位」）、`services/agent-novel/链路图.md` §3.4（闸门判据与 4401 的浏览器可见性）。
+
+**仍未验**：① 真实浏览器里带真实额度的一轮续写归档（本机需作者登录）；② 探针第 4 层的 **PASS** 分支——
+它要一张 60 秒内的真票，只能由作者现场从浏览器 DevTools 复制后带 `--ticket` 跑；③ 云上那条
+`/ws/chat` 反代的实测（在部署机上跑同一支探针即可定位）。
+**注意闸门只收了「带 bookId 的生成帧」**：`cooking` / `talk` / 新书 `novel` 仍允许匿名连接，
+所以 #108「收口公网匿名可调的大模型 WS 端点」这条决策仍未决，本轮不是它的替代品。
+
+---
+
+### 15.23 实现偏差登记（章节「待写占位」：标题不必填 + 游标只数有正文的章，2026-10-11）
+
+**原缺口**（作者现场提的：「新建章节那里是不是没有做完，应该不需要必填标题，默认按照当前最后一章
+的下一章开始，并且先提示用户默认为空的话就自己按之前的设定发挥创作」）：
+
+| # | 缺口 | 证据 | 后果 |
+|---|---|---|---|
+| 1 | 标题在两处被当成必填：`ChapterRequest.title` 上有 `@NotBlank`，管理端新建/编辑两个弹窗都挂 `rules={[{required:true}]}` | 改动前的 `dto/ChapterRequest.java`、`ChapterManager.tsx` | 作者「先占个位、回头让链路发挥」这个动作在门口就被拦掉，而 `book_chapter.title` 是 NOT NULL 又不是真不能给值 |
+| 2 | 续写游标取的是**章节行数**（`countByBook` → `chapter_count` → `index=written`） | `NovelInternalController.bookDetail` + `graph.py` 的 `written = snapshot.chapter_count` | 一旦库里有一行正文为空（手工建的占位章），游标跳过它往后写 → 那一章永久空着，而 `prev_tail` 恰好读成这个空串，衔接段也没有原文可接 |
+| 3 | 内网写章只会新增行，没有「按章号落位」这条路 | 改动前 `createChapter` 走 `create()` | 占位章没有任何东西会来填它；续写只能在其后面另起一行，书里留下一个永远的空洞 |
+
+**采用的语义**（作者选定「当待写占位，续写时填掉它」）：空标题落成「第 N 章」；序号留空排在最后一章之后；
+**标题与正文都空 = 排期用的待写占位**，不进续写游标，由续写链路按章号就地填掉；**有正文的章绝不被生成链路
+改写**——同号撞上就整轮报错，而不是静默换掉作者已经定稿、且被正典断言按 `chapter_id` 溯源的那一段。
+
+**三处同一个判据**：`正文非空 ≡ word_count > 0`。选它而不是选 `content IS NOT NULL`，因为 `word_count`
+是正文去空白后的长度、在唯一那条正文写路径（`BookChapterServiceImpl.update`）里连带重算，于是「写进去过」
+这件事在 SQL、服务层守卫与前端三处能用同一个表达式说清，不必各自再判一次正文列。
+
+改动面：
+
+- **Java**：`ChapterRequest.title` 去掉 `@NotBlank`；`BookChapterServiceImpl` 新增 `countWrittenByBook`
+  （`gt("word_count", 0)`）与 `putByIndex`（按章号落位：无该行则插、空行走 `update` 保住行 id、有正文则抛
+  「第 N 章已有正文」），`resolveTitle` 落成「第 N 章」，`resolveChapterIndex` 改成字符串列的 `QueryWrapper`
+  以便纯单测能验「默认最后一章 + 1」；`NovelInternalController` 的写章端点改调 `putByIndex` 并把 actor 传下去，
+  `bookDetail` 的 `chapterCount` 换成 `countWrittenByBook`（`InternalBookView` 的字段注释同步为「有正文的章数」）。
+  `countByBook` 保留但明确标注「含占位行，不能当续写游标」。
+- **agent-novel**：`MockNovelStore._written_count` 只数正文非空的章（`list_books` / `load_book` 都走它），
+  `save_chapters` 的同号写入加拒写守卫（占位行放行、已写正文 `NovelStoreError`），协议 docstring 与
+  `BookSnapshot` 注释同步。**内存实现必须跟住 HTTP 语义**，否则单测会对着一个线上不存在的行为报绿。
+- **admin-web**：`packages/types` 的 `ChapterRequest.title` 改可选；`ChapterManager` 两个弹窗去掉必填、
+  新建预填 `chapterIndex = 最后一章 + 1`、正文框 placeholder 直接写明「留空即排一个待写占位，创作台续写会
+  按已有设定与大纲自行发挥并填掉它，填了就是定稿不会被改写」，正文为空的行标 `待写`；`RunPanel` 的 `written`
+  改成 `wordCount > 0` 的计数，`tailChapterId` 只在「章号等于游标且有正文」那行才带，预告里追加「第 N 章是你
+  留的待写占位，这一轮会把它填掉」，并在发帧之前先报「第 X 章正文为空却排在已写章之前」。
+
+**已知边界（刻意不静默处理）**：空行夹在已写章之间（如 1 有正文、2 空、3 有正文）时，游标 = 2 而起点 = 3
+会撞上第 3 章的已有正文 → 服务端整轮报错。这是设计：静默改写已定稿正文会连带毁掉正典断言的出处，而报错只
+让作者退回管理端补位或删位。前端把这种排期称作 `gaps` 并预先提示，但**不在客户端偷偷收敛**——收敛规则只有
+服务端一份。
+
+验收（2026-10-11）：`mvn -o -pl novel -am clean test` **81 绿**、`pnpm api:verify` 全 reactor BUILD SUCCESS
+（新增 `ChapterPlaceholderWritePathTest` 8 例 + `ChatTicketAndActorScopeTest` 改 2 例：`bookDetail` 带的是
+有正文的章数、写通道按 `putByIndex` 落位）；`pnpm agentnovel:test` **312 绿**（新增 3 例：占位章不进游标且
+回填保 id、同号已写拒写、续写从占位章起写并填掉它且 `chapter_count` 到 6）；`pnpm chat:test` **46 绿**；
+`pnpm admin:test` **133 绿**（新增 6 例：空标题可提交且序号预填、新建表单先说清占位、`待写` 标只打空行、
+编辑清空标题不再被拦、占位不进游标且尾段取第 3 章、空位夹中间先报撞号）；`pnpm admin:typecheck` 0 error，
+`biome check src/pages/novel` 32 文件零诊断。
+
+证伪（每条新用例都要能在旧行为下转红）：Java——把 `countWrittenByBook` 去掉 `word_count` 条件、`putByIndex`
+退回无条件 insert、`resolveTitle` 退回原样返回，`ChapterPlaceholderWritePathTest` **8 例里 5 例转红**
+（自动命名 2 例、游标 SQL 1 例、占位回填保 id 1 例、已写拒写 1 例），另 3 例钉的是旧实现本来就对的排期兜底；
+agent-novel——游标退回 `len(rows)` 时 `test_store` 与 `test_graph` 两条占位用例同时转红，拒写守卫短路时
+`test_refill_of_a_written_chapter_is_refused` 以 `DID NOT RAISE` 转红；admin-web——`written` 退回最大章号时
+那条续写用例转红，`ChapterManager` 退回必填 + 无预填时四条用例全红。四处临时补丁均已还原并按全量绿复验。
+
+**仍未验**：① 真机上「管理端排一个空标题空正文的第 N 章 → 创作台一句话续写 → 第 N 章被填掉且行 id 不变」
+这一条完整回路（本机需作者登录，且要一轮真额度）；② 内部通道写章的失败回执在前端的呈现（`archive` 节点
+拿到 `NovelStoreError` 目前只会让这一轮以数据层失败收尾，没有把「第 N 章已有正文」这句原话抬到卡片上）；
+③ 读者端（`apps/novel-web`）的目录里出现「第 N 章」这种自动命名时的观感。
 
 ---
 

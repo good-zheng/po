@@ -298,6 +298,63 @@ def test_agent_frame_never_reaches_chitchat() -> None:
     assert all(f["type"] != "interrupt" for f in frames)
 
 
+# ---------- 续写帧必须有握手身份（带 bookId 的 novel 帧） ----------
+
+
+def test_continue_frame_without_actor_is_refused_before_the_graph() -> None:
+    """匿名连接上「续写这本书」这一帧不进图：只回一条 error，且没有 run_started。
+
+    ``bookId`` 是客户端带来的既有书目，链路会照它读回正典与已定稿正文、最后按章
+    **追加写回同一本书**；而匿名连接不带 ``X-Actor-Uid``，Java 侧的归属校验整段跳过
+    （只验 ``X-Internal-Token``）。放行等于让任意能连上 ``/ws/chat`` 的对等方往别人的
+    书里塞一章。新建书那条路径不受影响——它读不出任何人的数据。
+    """
+    client = TestClient(create_app(orchestrator=build_agent_slot_orchestrator()))
+
+    with client.websocket_connect("/ws/chat") as websocket:
+        websocket.send_json(
+            {
+                "type": "message",
+                "content": "开始创作第三至第十章的内容",
+                "agent": "novel",
+                "context": {"bookId": "12", "auto": True},
+            }
+        )
+        frame = websocket.receive_json()
+        assert frame["type"] == "error"
+        assert "身份" in frame["content"]
+        # 闸门只拦这一帧、不关整条连接：心跳仍要得到回应
+        websocket.send_json({"type": "ping"})
+        assert websocket.receive_json()["type"] == "pong"
+
+
+def test_continue_frame_with_actor_reaches_the_slot(monkeypatch) -> None:
+    """同一帧带票且校验通过就进插槽：闸门认的是身份，不是 agent 名。
+
+    验票本身由 ``test_ws_handshake.py`` 负责，这里把 ``resolve_actor`` 替身成「校验通过」，
+    要锁的只是「有身份 ⇒ 这一帧放行到编排」。
+    """
+    from app.routers import ws as ws_router
+    from app.ws_auth import WsActor
+
+    async def resolve(ticket, settings=None):
+        return WsActor(uid=7)
+
+    monkeypatch.setattr(ws_router, "resolve_actor", resolve)
+    client = TestClient(create_app(orchestrator=build_agent_slot_orchestrator()))
+
+    with client.websocket_connect("/ws/chat?ticket=t-ok") as websocket:
+        websocket.send_json(
+            {
+                "type": "message",
+                "content": "开始创作第三至第十章的内容",
+                "agent": "novel",
+                "context": {"bookId": "12", "auto": True},
+            }
+        )
+        assert websocket.receive_json()["type"] == "run_started"
+
+
 # ---------- 编排降级链 ----------
 
 
@@ -398,6 +455,10 @@ def test_reserved_context_keys_never_reach_the_prompt(monkeypatch) -> None:
     定位必须只由服务端手里的那份帧决定。非保留键（theme）仍按原样拼进前缀，
     这条豁免不能反过来把旧行为改掉。
 
+    续写的四个控制键（fromChapter / chapterCount / auto / tailChapterId）同属保留键：
+    「写哪几章」与「要不要问作者」是图的行为参数，让模型在文本里看到一份、图里执行
+    另一份，产出就会与承诺分叉。
+
     握手带票据：novel-chat 是需要身份的插槽（``app/ws_auth.AUTH_REQUIRED_AGENTS``），
     匿名连接上这一帧根本不会进图，测不到上下文通道。验票本身由
     ``test_ws_handshake.py`` 负责，这里只把它替身成「校验通过」。
@@ -412,6 +473,16 @@ def test_reserved_context_keys_never_reach_the_prompt(monkeypatch) -> None:
     orchestrator, seen = build_probe_orchestrator()
     client = TestClient(create_app(orchestrator=orchestrator))
 
+    context = {
+        "bookId": "12",
+        "chapterId": "34",
+        "utteranceId": "u-1",
+        "fromChapter": "4",
+        "chapterCount": "3",
+        "auto": True,
+        "tailChapterId": "99",
+        "theme": "dark",
+    }
     with client.websocket_connect("/ws/chat?ticket=t-ok") as websocket:
         websocket.send_json(
             {
@@ -419,23 +490,13 @@ def test_reserved_context_keys_never_reach_the_prompt(monkeypatch) -> None:
                 "content": "主角的眼睛是什么颜色",
                 "agent": "novel-chat",
                 "conversation_id": "conv-probe",
-                "context": {
-                    "bookId": "12",
-                    "chapterId": "34",
-                    "utteranceId": "u-1",
-                    "theme": "dark",
-                },
+                "context": context,
             }
         )
         tokens, _ = drain_until_done(websocket)
 
     assert tokens == "ok"
-    assert seen["context"] == {
-        "bookId": "12",
-        "chapterId": "34",
-        "utteranceId": "u-1",
-        "theme": "dark",
-    }
-    for key in ("bookId", "chapterId", "utteranceId"):
+    assert seen["context"] == context
+    for key in ("bookId", "chapterId", "utteranceId", "fromChapter", "chapterCount", "auto"):
         assert key not in seen["text"]
     assert "[theme: dark]" in seen["text"]

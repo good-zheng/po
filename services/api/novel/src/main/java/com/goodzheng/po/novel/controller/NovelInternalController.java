@@ -323,7 +323,7 @@ public class NovelInternalController {
             view.setTitle(book.getTitle());
             view.setGenre(book.getGenre());
             view.setSummary(book.getSummary());
-            view.setChapterCount(chapterService.countByBook(bookId));
+            view.setChapterCount(chapterService.countWrittenByBook(bookId));
             if (chapterId != null) {
                 // get 自带 book 归属校验：别的书的章号打到这里一样抛「章节不存在」
                 BookChapter chapter = chapterService.get(bookId, chapterId);
@@ -358,8 +358,15 @@ public class NovelInternalController {
         }
     }
 
+    /**
+     * 生成链路写章：按章号落位，不是无条件插一行。
+     *
+     * <p>作者在新建章节里留空排下的「待写占位」就是这一条要填的那一行；同号已有正文时报错而不是
+     * 覆盖——续写的语义是只往后追加，撞上有字的章说明库里的进度和这一轮的判断不一致，
+     * 静默改写会把正典断言的出处换成一份不再存在的正文。
+     */
     @PostMapping("/internal/books/{bookId}/chapters")
-    public Result<BookChapter> createChapter(HttpServletRequest http,
+    public Result<BookChapter> putChapter(HttpServletRequest http,
             @PathVariable Long bookId,
             @RequestBody(required = false) ChapterRequest request) {
         Result<BookChapter> denied = denyUnlessInternal(http);
@@ -369,8 +376,14 @@ public class NovelInternalController {
         if (request == null) {
             return Result.error(400, "请求体缺失");
         }
+        final Long actor;
         try {
-            return Result.success(chapterService.create(bookId, request));
+            actor = actorUid(http);
+        } catch (IllegalArgumentException e) {
+            return Result.error(400, e.getMessage());
+        }
+        try {
+            return Result.success(chapterService.putByIndex(bookId, request, actor));
         } catch (RuntimeException e) {
             return Result.error(400, e.getMessage());
         }

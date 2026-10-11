@@ -84,7 +84,8 @@ public class NovelStudioServiceImpl implements NovelStudioService {
     @Override
     @Transactional(readOnly = true)
     public Page<CanonEntry> canonPage(Long bookId, String subjectKey, String kind,
-            String status, String authority, String keyword, Pageable pageable) {
+            String status, String authority, Long sourceChapterId, String keyword,
+            Pageable pageable) {
         String kw = blankToNull(keyword);
         // 值侧转义交给检索面同一个口径：作者搜「100%」不该命中全书
         String like = NovelSearchServiceImpl.likeValue(orDefault(kw, ""));
@@ -94,6 +95,9 @@ public class NovelStudioServiceImpl implements NovelStudioService {
                 .eq(blankToNull(kind) != null, CanonEntry::getKind, blankToNull(kind))
                 .eq(blankToNull(status) != null, CanonEntry::getStatus, blankToNull(status))
                 .eq(blankToNull(authority) != null, CanonEntry::getAuthority, blankToNull(authority))
+                // 按出处章筛：中栏只关心「标在这一章的断言」，靠前端拉一页再 filter
+                // 会在设定过一页后被静默截断
+                .eq(sourceChapterId != null, CanonEntry::getSourceChapterId, sourceChapterId)
                 .and(kw != null, w -> w.like(CanonEntry::getSubjectKey, like)
                         .or().like(CanonEntry::getPredicate, like)
                         .or().like(CanonEntry::getObjectText, like)
@@ -105,6 +109,12 @@ public class NovelStudioServiceImpl implements NovelStudioService {
         var mpPage = MyBatisPages.<CanonEntry>toMpPage(pageable);
         canonMapper.selectPage(mpPage, wrapper);
         return MyBatisPages.toPage(mpPage, pageable);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public CanonEntry canonById(Long canonId) {
+        return canonOf(canonId);
     }
 
     @Override
@@ -205,7 +215,8 @@ public class NovelStudioServiceImpl implements NovelStudioService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CanonEntry> previewConflicts(Long bookId, CanonRequest req, Integer asOfChapter) {
+    public List<CanonEntry> previewConflicts(Long bookId, CanonRequest req, Integer asOfChapter,
+            Long excludeId) {
         if (blankToNull(req.getSubjectKey()) == null || blankToNull(req.getPredicate()) == null) {
             return List.of();
         }
@@ -216,7 +227,9 @@ public class NovelStudioServiceImpl implements NovelStudioService {
                 .eq(CanonEntry::getPredicate, clip(req.getPredicate(), 64))
                 .eq(CanonEntry::getStatus, "confirmed")
                 .ne(blankToNull(req.getObjectText()) != null, CanonEntry::getObjectText,
-                        clip(req.getObjectText(), 512));
+                        clip(req.getObjectText(), 512))
+                // 编辑自己不算撞车：不然改一条设定的值会永远看到「与已生效设定并存」的假警告
+                .ne(excludeId != null, CanonEntry::getId, excludeId);
         // as-of 只在看得到章号时才有意义；没有章号就退回「凡是没闭掉的」全列出来
         if (asOf != null) {
             wrapper.le(CanonEntry::getValidFromChapter, asOf)
@@ -313,10 +326,11 @@ public class NovelStudioServiceImpl implements NovelStudioService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<FindingView> findingPage(Long bookId, String severity, String status, String checker,
-            String code, Pageable pageable) {
+    public Page<FindingView> findingPage(Long bookId, Long chapterId, String severity, String status,
+            String checker, String code, Pageable pageable) {
         LambdaQueryWrapper<ReviewFinding> wrapper = new LambdaQueryWrapper<ReviewFinding>()
                 .eq(bookId != null, ReviewFinding::getBookId, bookId)
+                .eq(chapterId != null, ReviewFinding::getChapterId, chapterId)
                 .eq(blankToNull(severity) != null, ReviewFinding::getSeverity, blankToNull(severity))
                 .eq(blankToNull(status) != null, ReviewFinding::getStatus, blankToNull(status))
                 .eq(blankToNull(checker) != null, ReviewFinding::getChecker, blankToNull(checker))

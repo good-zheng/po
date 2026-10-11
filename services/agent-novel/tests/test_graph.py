@@ -54,15 +54,21 @@ from po_agent_novel.graph import (
     merge_gate_rules,
 )
 from po_agent_novel.schemas import (
+    AssertionCandidate,
+    BookDraft,
+    ChapterDraft,
+    ChapterExtraction,
     ChapterOutline,
     Finding,
     FindingList,
+    Outline,
     PlannedScene,
     SceneCard,
     WorldBible,
     WorldCharacterEntry,
     WorldRuleEntry,
 )
+from po_agent_novel.store import ExtractionSource, SceneSummary
 
 
 class _StaticRouter:
@@ -1144,3 +1150,290 @@ class TestMergeGateRules:
         contract = StyleContract(genre="玄幻", chapter_words_min=2200)
         rules = merge_gate_rules(GateRules(target_words=1200), None, contract)
         assert (rules.target_words, rules.min_ratio, rules.max_ratio) == (1200, 0.6, 1.6)
+
+
+# ---------- 续写（continue）+ 自动放行（auto）----------
+
+_TAIL_TEXT = "灯下他终于看清那半枚虎符的裂纹。"
+
+
+class _NoNewBookStore(MockNovelStore):
+    """续写链路里「新建一本书」永远不该发生：闸门落下之后调用即失败。
+
+    静默产出一本假书比报错严重得多——那本假书会带着这次的设定进书目，
+    而作者以为自己在往原来那本书里补章。闸门由 `_seed_book` 在铺完数据后落下：
+    seed 本身要建书，所以它不能是构造时就焊死的。
+    """
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.locked = False
+
+    async def save_book(self, draft: BookDraft) -> str:
+        if self.locked:
+            raise AssertionError("续写模式不得新建书目：save_book")
+        return await super().save_book(draft)
+
+
+async def _seed_book(
+    store: MockNovelStore, canon: InMemoryCanonStore, chapters: int = 3
+) -> tuple[str, list[str]]:
+    """库里的一本旧书：N 章正文 + 每章 scene/chapter 摘要 + 第一段弧 + 一条已确立事实。
+
+    四样都要 seed，因为它们各是续写链路的一处读源：正文供衔接尾段、章级摘要供大纲的
+    「已写到哪」、弧摘要供 Tier-0 进度线（也是弧号偏移要避开的那一行）、事实供计划闸门的
+    「这个实体登记过没有」。
+    """
+    book_id = await store.save_book(
+        BookDraft(title="云海孤鸿", genre="玄幻", summary="少年偶得残卷，卷入两宗百年恩怨。")
+    )
+    ids = await store.save_chapters(
+        book_id,
+        [
+            ChapterDraft(index=no, title=f"旧题{no}", content=f"第{no}章旧正文。{_TAIL_TEXT}")
+            for no in range(1, chapters + 1)
+        ],
+    )
+    for no, chapter_id in enumerate(ids, start=1):
+        await canon.save_chapter_summaries(
+            book_id,
+            chapter_id,
+            no,
+            [SceneSummary(scene_no=1, content=f"第{no}章旧场景。")],
+            digest=f"第{no}章旧摘要。",
+        )
+    await canon.save_arc_summary(book_id, 1, 1, chapters, "第一段弧：旧书前半。")
+    await canon.append_assertions(
+        book_id,
+        chapters,
+        ChapterExtraction(
+            assertions=[
+                AssertionCandidate(
+                    kind="character",
+                    subjectKey="char:hero",
+                    predicate="eye_color",
+                    objectText="墨绿色",
+                    restatement="沈昭的瞳色是墨绿色。",
+                    evidenceQuote=_TAIL_TEXT,
+                )
+            ]
+        ),
+        ExtractionSource(
+            chapter_id=ids[-1],
+            content_hash=f"seed-{chapters}",
+            prompt_version="v1",
+            model="m",
+        ),
+    )
+    if isinstance(store, _NoNewBookStore):
+        store.locked = True
+    return book_id, ids
+
+
+def _run_config(thread: str, context: dict[str, Any]) -> dict[str, Any]:
+    """宿主注入运行控制键的形态：configurable.context（见 services/chat 的 Orchestrator）。"""
+    return {"configurable": {"thread_id": thread, "context": context}}
+
+
+async def test_continue_auto_writes_next_batch_without_any_interrupt() -> None:
+    """一句话 + bookId + auto：两处人工口都不挂起，新章接在旧章之后，旧章一个字不动。"""
+    store = _NoNewBookStore()
+    graph, store, canon = _build(store=store)
+    book_id, ids = await _seed_book(store, canon)
+    runner = AgentRunner(timeout_seconds=30)
+
+    events = await _run(
+        runner,
+        graph,
+        {"messages": [HumanMessage(content="接着往下写三章，让师父在第 4 章复活")]},
+        _run_config("novel-cont-auto", {"bookId": book_id, "tailChapterId": ids[-1], "auto": True}),
+    )
+
+    assert _interrupts(events) == [], "auto 模式不允许挂起等人"
+    assert _of(events, EventType.RUN_FINISHED)
+    resumed = _payloads(events, "resumed")[0]
+    assert (resumed["book_id"], resumed["from_chapter"], resumed["existing_chapters"]) == (
+        book_id,
+        4,
+        3,
+    )
+    assert resumed["auto"] is True and resumed["has_tail"] is True
+    assert _stages(events).count("worldbuild_skipped") == 1, "已有书不重建世界圣经"
+    assert [p["chapter"] for p in _payloads(events, "chapter_done")] == [4, 5, 6]
+
+    archived = _payloads(events, "archived")[0]
+    assert (archived["mode"], archived["from_chapter"], archived["to_chapter"]) == (
+        "continue",
+        4,
+        6,
+    )
+    assert archived["book_id"] == book_id
+
+    books = await store.list_books()
+    assert [b.book_id for b in books] == [book_id]
+    assert books[0].chapter_count == 6
+    # 续写不重抽角色：整表覆盖会把首轮归档时那份角色档案换成「这几章里出现的人」
+    assert books[0].character_count == 0
+
+    # 旧章原样保留（load_book 按 id 点名，覆盖写会把这段变成新正文）
+    snap = await store.load_book(book_id, chapter_id=ids[0])
+    assert snap.chapter is not None and snap.chapter.content == f"第1章旧正文。{_TAIL_TEXT}"
+    assert snap.chapter_count == 6
+
+    reply = _text(events)
+    assert "已续写入库" in reply and "新增第 4-6 章" in reply
+
+    # 弧级是唯一会改写既有行的层：旧弧必须原样在，新弧从 2 起编
+    arcs = await canon.load_summaries(book_id, upto_chapter=6, levels=("arc",), limit=10)
+    assert {row.scene_no for row in arcs} == {1, 2}
+    old_arc = next(row for row in arcs if row.scene_no == 1)
+    assert (old_arc.content, old_arc.chapter_no) == ("第一段弧：旧书前半。", 1)
+    new_arc = next(row for row in arcs if row.scene_no == 2)
+    assert new_arc.chapter_no == 4
+
+
+async def test_continue_without_auto_confirms_before_writing_anything() -> None:
+    """auto=False 时续写仍然要拍板：确认之前库里一个字都不变。"""
+    graph, store, canon = _build()
+    book_id, ids = await _seed_book(store, canon)
+    runner = AgentRunner(timeout_seconds=30)
+    config = _run_config("novel-cont-ask", {"bookId": book_id, "auto": False})
+
+    events = await _run(
+        runner, graph, {"messages": [HumanMessage(content="续写三章")]}, config
+    )
+    interrupts = _interrupts(events)
+    assert len(interrupts) == 1, f"续写只保留归档一处人工口：{_stages(events)}"
+    payload = interrupts[0].payload["value"]
+    assert (payload["mode"], payload["from_chapter"], payload["to_chapter"]) == (
+        "continue",
+        4,
+        6,
+    )
+    assert "新增第 4-6 章" in payload["question"]
+    assert (await store.load_book(book_id)).chapter_count == 3
+
+    resumed = await _run(runner, graph, Command(resume="yes"), config)
+    assert "已续写入库" in _text(resumed)
+    assert (await store.load_book(book_id)).chapter_count == 6
+    assert ids and (await store.load_book(book_id, chapter_id=ids[-1])).chapter is not None
+
+
+async def test_continue_clamps_an_already_written_range_to_append_only() -> None:
+    """作者要的第 2-3 章早就写完了：只往下追加，绝不回头覆盖已定稿章。"""
+    store = _NoNewBookStore()
+    graph, store, canon = _build(store=store)
+    book_id, ids = await _seed_book(store, canon)
+    runner = AgentRunner(timeout_seconds=30)
+
+    events = await _run(
+        runner,
+        graph,
+        {"messages": [HumanMessage(content="重写第 2 至第 3 章")]},
+        _run_config(
+            "novel-cont-clamp",
+            {"bookId": book_id, "fromChapter": "2", "chapterCount": "2", "auto": True},
+        ),
+    )
+
+    resumed = _payloads(events, "resumed")[0]
+    assert resumed["requested_chapters"] == [2, 2]
+    assert (resumed["from_chapter"], resumed["existing_chapters"]) == (4, 3)
+    assert _interrupts(events) == []
+    old = await store.load_book(book_id, chapter_id=ids[1])
+    assert old.chapter is not None and old.chapter.index == 2
+    assert old.chapter.content == "第2章旧正文。" + _TAIL_TEXT
+
+
+async def test_continue_fills_the_blank_placeholder_the_author_left() -> None:
+    """库里第 4 章是管理端排下的「待写占位」（标题与正文都空）：续写从它开始并填掉它。
+
+    游标若按章节行数算会把这一章数进去，于是从第 5 章起写——第 4 章永久空着，而读者
+    要的第 4 章从没生成过。行 id 也必须复用，正典断言按 chapter_id 溯源。
+    """
+    store = _NoNewBookStore()
+    graph, store, canon = _build(store=store)
+    book_id, ids = await _seed_book(store, canon)
+    placeholder_id = (
+        await store.save_chapters(book_id, [ChapterDraft(index=4, title="", content="")])
+    )[0]
+    assert (await store.load_book(book_id)).chapter_count == 3, "占位章不进游标"
+    runner = AgentRunner(timeout_seconds=30)
+
+    events = await _run(
+        runner,
+        graph,
+        {"messages": [HumanMessage(content="接着往下写三章")]},
+        _run_config(
+            "novel-cont-placeholder",
+            {"bookId": book_id, "tailChapterId": ids[-1], "auto": True},
+        ),
+    )
+
+    resumed = _payloads(events, "resumed")[0]
+    assert (resumed["from_chapter"], resumed["existing_chapters"]) == (4, 3)
+    assert resumed["has_tail"] is True, "衔接尾段取第 3 章，不能取那行空的占位章"
+    assert [p["chapter"] for p in _payloads(events, "chapter_done")] == [4, 5, 6]
+
+    filled = await store.load_book(book_id, chapter_id=placeholder_id)
+    assert filled.chapter is not None and filled.chapter.index == 4
+    assert filled.chapter.content, "占位那一行被本轮正文填掉"
+    assert (await store.list_books())[0].chapter_count == 6
+
+    # 已定稿的旧章一个字不动
+    old = await store.load_book(book_id, chapter_id=ids[0])
+    assert old.chapter is not None and old.chapter.content == f"第1章旧正文。{_TAIL_TEXT}"
+
+
+class _PromptSpyModel(OfflineNovelModel):
+    """按 schema 分路记录提示词：续写要验「作者原话与已写章进没进三处提示词」。"""
+
+    structured: dict[type, list[str]] = Field(default_factory=dict)
+    prose: list[str] = Field(default_factory=list)
+
+    def with_structured_output(self, schema: type, **kwargs: Any) -> RunnableLambda:
+        inner = super().with_structured_output(schema, **kwargs)
+
+        async def run(prompt: str | list) -> Any:
+            self.structured.setdefault(schema, []).append(str(prompt))
+            return await inner.ainvoke(prompt)
+
+        return RunnableLambda(func=run)  # type: ignore[arg-type]
+
+    async def _agenerate(self, messages, stop=None, run_manager=None, **kwargs):
+        self.prose.append(str(messages[-1].content))
+        return await super()._agenerate(messages, stop, run_manager, **kwargs)
+
+
+async def test_continue_threads_author_note_and_prior_state_into_every_prompt() -> None:
+    """这一句从「开新书的想法」变成「对这本书的意见」：大纲、场景卡、正文三处都吃它。"""
+    model = _PromptSpyModel()
+    store = _NoNewBookStore()
+    graph, store, canon = _build(model=model, store=store)
+    book_id, ids = await _seed_book(store, canon)
+    runner = AgentRunner(timeout_seconds=30)
+
+    await _run(
+        runner,
+        graph,
+        {"messages": [HumanMessage(content="让师父在第 4 章复活，别写雨夜宵禁")]},
+        _run_config(
+            "novel-cont-note",
+            {"bookId": book_id, "tailChapterId": ids[-1], "auto": True},
+        ),
+    )
+
+    note = "让师父在第 4 章复活，别写雨夜宵禁"
+    outline_prompt = model.structured[Outline][0]
+    assert note in outline_prompt
+    assert "第 4 至" in outline_prompt
+    # 已写章的章级摘要进大纲提示词：没有它，续排的大纲会从第 1 章的剧情重新开始
+    assert "第 3 章：第3章旧摘要。" in outline_prompt
+
+    card_prompt = model.structured[SceneCard][0]
+    assert note in card_prompt
+    prose_prompt = model.prose[0]
+    assert note in prose_prompt
+    # 衔接尾段走 L1 的 Tier-2（prior_tail），而不是被「已注入」的大段文本挡在门外
+    assert _TAIL_TEXT in prose_prompt
+

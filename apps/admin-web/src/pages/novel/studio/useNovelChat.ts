@@ -45,7 +45,7 @@ const nextId = (scope: string) => {
  * 没有复用 chatbot 页的 x-sdk 客户端：`ChatWSRequest` 对 thinking/proposal 刻意忽略、
  * 且 `useXChat` 不给出旁听帧的出口，而右栏必须把提议卡和断链痕迹分开渲染。
  *
- * 握手带一次性票据（`?ticket=`）：novel-chat 会按 `context.bookId` 读某本书的正典，
+ * 握手带短效票据（`?ticket=`）：novel-chat 会按 `context.bookId` 读某本书的正典，
  * 服务端只有在认得出「哪位作者」时才允许这次读（§15.13-12）。票据换不到就当作未登录处理
  * 直接停在发送前，不建匿名连接——那条连接上每一帧都会被回 error，看不出真实原因。
  */
@@ -131,8 +131,10 @@ export function useNovelChat(bookId: number, chapterId: number | null) {
   /**
    * 建立（或复用）这条连接。返回 null 表示没连上且原因已写进 errorText。
    *
-   * 票据在这里现取，不缓存：它 60 秒过期、服务端校验一次即失效，而重连是新的一次握手，
-   * 复用旧票等于必拒。
+   * 票据在这里现取，不缓存：它 60 秒过期（服务端只解析签名与过期，同一张票在这 60 秒内
+   * 可重复校验，所以缓存一张票是能用的），但不缓存的代价只是每次握手多一趟内网往返，
+   * 换来的是永远不必判断「这张票还剩几秒」——留一张快过期的票在 ref 里，重连时的必拒
+   * 看起来就像验票通道坏了。
    */
   const ensureConnection = useCallback(async (): Promise<WebSocket | null> => {
     const live = wsRef.current;

@@ -31,7 +31,11 @@ public interface NovelStudioService {
     // ── 正典 ──────────────────────────────────────────────
 
     Page<CanonEntry> canonPage(Long bookId, String subjectKey, String kind,
-            String status, String authority, String keyword, Pageable pageable);
+            String status, String authority, Long sourceChapterId, String keyword,
+            Pageable pageable);
+
+    /** 单条断言：工作台中栏要按 id 取「被点中的那一条」的出处原句，不该为此摊开全书设定 */
+    CanonEntry canonById(Long canonId);
 
     CanonEntry createCanon(Long bookId, CanonRequest req, Long userId);
 
@@ -44,8 +48,10 @@ public interface NovelStudioService {
      *
      * <p>作者点头不能省这一步——「作者已确认」会让污染拿到正名，而同屏列出「要覆盖哪条、
      * 旧区间是否关闭」才让裁定是有信息的裁定。纯比对，不调模型。
+     *
+     * @param excludeId 正在被编辑的那条断言自身：改自己的值不算和自己撞车，传 {@code null} 表示新建
      */
-    List<CanonEntry> previewConflicts(Long bookId, CanonRequest req, Integer asOfChapter);
+    List<CanonEntry> previewConflicts(Long bookId, CanonRequest req, Integer asOfChapter, Long excludeId);
 
     /**
      * 该书当前最大章号，即作者视角里的「现在」。
@@ -71,8 +77,12 @@ public interface NovelStudioService {
 
     // ── 冲突台账 ──────────────────────────────────────────
 
-    Page<FindingView> findingPage(Long bookId, String severity, String status, String checker,
-            String code, Pageable pageable);
+    /**
+     * @param chapterId 只看某一章的冲突；设定级冲突（没有落点章）的 {@code chapter_id} 为 NULL，
+     *                  按章筛时天然不出现，所以中栏「本章冲突」只收闸门真正落在这一章上的那些
+     */
+    Page<FindingView> findingPage(Long bookId, Long chapterId, String severity, String status,
+            String checker, String code, Pageable pageable);
 
     FindingAdjudicationView adjudicate(Long findingId, FindingAdjudicationRequest req, Long userId);
 

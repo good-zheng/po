@@ -29,6 +29,7 @@ import {
   type Finding,
   type FindingAdjudicationRequest,
   getBooks,
+  getChapters,
   getFindings,
 } from '@/services/novel';
 import {
@@ -97,9 +98,28 @@ const FindingTable: React.FC<{ bookId?: number }> = ({ bookId }) => {
   });
   const books = booksRes?.data?.content ?? [];
 
-  const invalidate = () => {
+  // 章节下拉只在单书面板里出现：跨书台账的章号属于另一本书，筛了会串书
+  const { data: chaptersRes } = useQuery({
+    queryKey: ['book-chapters', bookId],
+    queryFn: () => getChapters(bookId as number),
+    staleTime: 60 * 1000,
+    enabled: !crossBook,
+  });
+  const chapters = chaptersRes?.data ?? [];
+
+  const invalidate = (canonBookId?: number) => {
     queryClient.invalidateQueries({ queryKey: ['novel-findings'] });
     queryClient.invalidateQueries({ queryKey: ['novel-progress'] });
+    // 打回会把章节退回草稿，章节列表与工作台左栏读的都是这份缓存
+    queryClient.invalidateQueries({ queryKey: ['book-chapters'] });
+    // 采纳写的就是 canon_entry（插一条新的 + 闭掉被违反的旧区间）：「设定」Tab 与工作台中栏
+    // 的设定卡都挂在这份缓存上，不失效就会出现「台账说已采纳、设定页查无此条」那种假象
+    queryClient.invalidateQueries({
+      queryKey:
+        canonBookId == null ? ['novel-canon'] : ['novel-canon', canonBookId],
+    });
+    // 中栏按 id 单取的那一条，生效区间可能刚被这次裁定闭掉
+    queryClient.invalidateQueries({ queryKey: ['novel-canon-entry'] });
   };
 
   const adjudicateMutation = useMutation({
@@ -115,7 +135,7 @@ const FindingTable: React.FC<{ bookId?: number }> = ({ bookId }) => {
         messageApi.success('裁定已记录');
       }
       setTarget(null);
-      invalidate();
+      invalidate(target?.bookId ?? bookId);
       actionRef.current?.reload();
     },
     onError: (err: Error) => messageApi.error(err.message || '裁定失败'),
@@ -145,7 +165,14 @@ const FindingTable: React.FC<{ bookId?: number }> = ({ bookId }) => {
       render: (_, row) => (
         <Space size={4}>
           <Typography.Link
-            onClick={() => history.push(`/novel/book/${row.bookId}`)}
+            onClick={() =>
+              // 落点是创作台不是书详情页：只有中栏带章节上下文，详情页没有章的坐标系
+              history.push(
+                row.chapterId == null
+                  ? `/novel/book/${row.bookId}/studio`
+                  : `/novel/book/${row.bookId}/studio?chapterId=${row.chapterId}`,
+              )
+            }
           >
             第 {row.chapterIndex ?? '?'} 章 {row.chapterTitle ?? ''}
           </Typography.Link>
@@ -156,6 +183,22 @@ const FindingTable: React.FC<{ bookId?: number }> = ({ bookId }) => {
           )}
         </Space>
       ),
+    },
+    {
+      title: '按章筛',
+      dataIndex: 'chapterId',
+      hideInTable: true,
+      valueType: 'select',
+      fieldProps: {
+        showSearch: true,
+        optionFilterProp: 'label',
+        options: chapters.map((c) => ({
+          label: `第 ${c.chapterIndex} 章 ${c.title}`,
+          value: c.id,
+        })),
+      },
+      // 跨书台账里章号不属于同一本书，筛了会串书
+      search: !crossBook,
     },
     {
       title: '编码',
@@ -250,11 +293,13 @@ const FindingTable: React.FC<{ bookId?: number }> = ({ bookId }) => {
             刷新
           </Button>,
         ]}
-        params={{ bookId }}
+        // 固定筛选放这里（换书时自动重查）；搜索表单里的同名字段会覆盖它
+        params={{ bookId } as { bookId?: number; chapterId?: number }}
         request={async (params) => {
           try {
             const res = await getFindings({
               bookId: params.bookId ?? bookId,
+              chapterId: params.chapterId,
               severity: params.severity,
               status: params.status,
               checker: params.checker,

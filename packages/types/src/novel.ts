@@ -46,7 +46,8 @@ export type BookChapter = {
 };
 
 export type ChapterRequest = {
-  title: string;
+  /** 可留空：服务端统一落成「第 N 章」，落库的 title 永不为空 */
+  title?: string;
   content?: string;
   chapterIndex?: number;
 };

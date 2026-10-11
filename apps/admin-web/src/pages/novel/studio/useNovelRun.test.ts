@@ -68,6 +68,13 @@ class FakeWebSocket {
     for (const cb of this.openListeners) cb();
   }
 
+  /** 握手在 accept 之前被服务端关掉：浏览器只会发 error + close，从不 open */
+  rejectHandshake() {
+    this.onerror?.();
+    this.readyState = FakeWebSocket.CLOSED;
+    this.onclose?.();
+  }
+
   emit(frame: Frame) {
     this.onmessage?.({ data: JSON.stringify(frame) });
   }
@@ -288,5 +295,37 @@ describe('useNovelRun · 生成链路帧归并与时序', () => {
     });
     expect(sockets).toHaveLength(1);
     expect(ws.sent).toHaveLength(1);
+  });
+
+  // 握手层失败与「跑一半断了」必须说成两句：前者这一帧都没进编排器、没有
+  // checkpoint 可续，重发只是再敲一次门；后者才有续跑语义。浏览器里两者的
+  // 事件序列一样（error + close 1006），唯一能分开它们的是「有没有 open 过」。
+  it('带了票据却在 accept 前被关：报成握手被拒并提示换新票', async () => {
+    // 刻意不调 ws.open()：握手被拒的真实形态就是连接从没 open 过
+    const view = renderHook(() => useNovelRun(onArchived));
+    await act(async () => {
+      await view.result.current.start('开始创作第三至第十章的内容');
+    });
+    expect(latest().url).toContain('ticket=tk-1');
+    act(() => latest().rejectHandshake());
+    expect(view.result.current.phase).toBe('failed');
+    expect(view.result.current.errorText).toContain('握手被服务端拒绝');
+    expect(view.result.current.errorText).toContain('一帧都没发出');
+    expect(view.result.current.errorText).toContain('60 秒');
+    // 不该出现「同一条会话仍可续跑」这类暗示 checkpoint 还在的话术
+    expect(view.result.current.errorText).not.toContain('checkpoint');
+  });
+
+  it('换不到票据又连不上：报成连不上生成服务，并点出没登录/服务没起两种可能', async () => {
+    mocks.getChatTicket.mockRejectedValueOnce(new Error('401 未登录'));
+    const view = renderHook(() => useNovelRun(onArchived));
+    await act(async () => {
+      await view.result.current.start('一句话想法');
+    });
+    // 取不到票就走匿名握手：URL 不能带空 ticket
+    expect(latest().url).toBe('ws://localhost:5090/ws/chat');
+    act(() => latest().rejectHandshake());
+    expect(view.result.current.errorText).toContain('没取到握手票据');
+    expect(view.result.current.errorText).toContain('5090');
   });
 });

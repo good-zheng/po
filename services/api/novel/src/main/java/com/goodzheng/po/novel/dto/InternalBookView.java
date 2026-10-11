@@ -22,7 +22,12 @@ public class InternalBookView {
     /** 主线梗概（Tier-0 的「世界观与主线」行） */
     private String summary;
 
-    /** 已定稿章数：对话据此判断参照章号是否越界 */
+    /**
+     * 有正文的章数：对话据此判断参照章号是否越界，续写据此定本轮起点。
+     *
+     * <p>不含正文留空的占位章——那一行是「排给下一轮的位子」，把它算进游标会让续写跳过它
+     * 往后写，于是它永久空着，而衔接用的「上一章结尾」读成空串。
+     */
     private Integer chapterCount;
 
     /** 参照章；请求没带 chapterId 或那一章不属于这本书时为 null */

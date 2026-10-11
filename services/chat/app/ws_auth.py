@@ -1,4 +1,4 @@
-"""WS 握手的身份层：把一次性票据换成「这一连接代表哪位作者」。
+"""WS 握手的身份层：把一张短效票据换成「这一连接代表哪位作者」。
 
 为什么需要这一层：``/ws/chat`` 的 novel-chat 插槽会把某本书的正典拼进注入块，而 ``bookId``
 是客户端在帧里提供的——握手不认人时，任意 WS 对等方都能拿别人的 bookId 读到别人的正典
@@ -7,7 +7,9 @@
 为什么是票据而不是把用户 JWT 直接拼在 query 上：浏览器与微信小程序都不能给 WebSocket 握手
 带请求头，而 query 会被网关访问日志原样留存——把 24 小时有效期的会话令牌放进日志，等于把
 长期凭据交给日志系统。口径与 talk 模块的 ASR 票据一致：客户端先用会话令牌换一张 60 秒的
-一次性票（``GET /api/novel/chat-ticket``），握手只带票。
+短效票（``GET /api/novel/chat-ticket``），握手只带票。Java 侧 ``consume()`` 只解析签名与过期，
+**同一张票在 60 秒内可重复校验**（不作废），所以「票据过期」才是握手被拒最常见的真实原因，
+而不是「这张票已经被用过」。
 
 为什么交回 Java 验而不是本服务自验：票据与用户 JWT 同钥签名，让 Python 自己校验就意味着把
 ``jwt.secret`` 分发到第二个进程（多一处密钥，且两处都能签）。本服务已经持
@@ -32,10 +34,26 @@ logger = logging.getLogger(__name__)
 
 # 需要身份的插槽。刻意只收 novel-chat：其余插槽（cooking / talk / chitchat）的现网客户端
 # 还没有发票据的流程，一刀切强制会在它们重新发版之前直接断掉聊天（PRD §15.16）。
-# 生成用的 novel 插槽不在这里——它读的是本轮自己刚归档的书，不带别人的 bookId 进来。
 AUTH_REQUIRED_AGENTS: frozenset[str] = frozenset({"novel-chat"})
 
+# 生成链路的插槽名。它整体**不**进上面那个集合——新建一本书读不出别人的数据，
+# 强制换票只会把没登录的本地开发一并挡在门外。但续写那一半是例外，见 :func:`requires_actor`。
+NOVEL_AGENT = "novel"
+
 VERIFY_PATH = "/novel/internal/chat-ticket/verify"
+
+
+def requires_actor(agent: str | None, context: dict[str, object] | None) -> bool:
+    """这一帧要不要握手身份。除固定名单外，带 ``bookId`` 的生成帧也算。
+
+    续写把「生成链路只读本轮刚建的那本书」这个前提改掉了：``bookId`` 现在是作者从帧里
+    带来的既有书目，链路会按它读回正典与已定稿正文，最后还按章**追加写回同一本书**。
+    而匿名连接上 Java 侧的归属校验是整段跳过的（它只在看见 ``X-Actor-Uid`` 时才判归属），
+    于是任何能连上 ``/ws/chat`` 的对等方都能拿别人的 bookId 往里塞一章。
+    """
+    if agent in AUTH_REQUIRED_AGENTS:
+        return True
+    return agent == NOVEL_AGENT and bool((context or {}).get("bookId"))
 
 
 @dataclass(frozen=True, slots=True)

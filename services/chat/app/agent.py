@@ -66,8 +66,20 @@ logger = logging.getLogger(__name__)
 # bookId/chapterId 同属这一类：它们是「本轮读哪本书、截至哪一章」的定位键，
 # 由下面 :meth:`Orchestrator._config` 经 ``configurable`` 交给领域侧，模型不需要、
 # 也不应该在文本里看到一个能照着复述的 id（打字进去的假 id 决定不了任何库读）。
+# 续写的四个控制键同理，而且更要紧：fromChapter/chapterCount 是「这一轮写哪几章」的
+# 范围，auto 是「要不要问作者」。拼进文本会让模型以为作者在跟它商量这些数字，
+# 而真正决定链路的是 configurable 里的那份——两边不一致时模型说一套、图做一套。
 RESERVED_CONTEXT_KEYS: frozenset[str] = frozenset(
-    {"utteranceId", "sessionId", "bookId", "chapterId"}
+    {
+        "utteranceId",
+        "sessionId",
+        "bookId",
+        "chapterId",
+        "fromChapter",
+        "chapterCount",
+        "auto",
+        "tailChapterId",
+    }
 )
 
 

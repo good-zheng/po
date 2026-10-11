@@ -19,9 +19,9 @@ import {
 import { useEffect, useMemo, useState } from 'react';
 import {
   type BookChapter,
-  type CanonEntry,
   type ChapterRevision,
   getCanon,
+  getCanonEntry,
   getChapter,
   getChapterImpact,
   getChapterRevisions,
@@ -76,34 +76,47 @@ const CenterPanel: React.FC<{
     setTitle(chapter?.title ?? '');
   }, [chapter?.id, chapter?.content, chapter?.title]);
 
+  // 出处章交给服务端筛：拉一页再前端 filter 会在设定过 200 条后被静默截断，
+  // 作者会以为「本章没有设定引用」
   const { data: canonRes } = useQuery({
-    queryKey: ['novel-canon', bookId, 'source'],
-    queryFn: () => getCanon(bookId, { page: 1, size: 200 }),
+    queryKey: ['novel-canon', bookId, 'source', chapterId],
+    queryFn: () =>
+      getCanon(bookId, {
+        sourceChapterId: chapterId as number,
+        page: 0,
+        size: 200,
+      }),
+    enabled: chapterId != null,
+  });
+  // 左栏点「某条设定被本章引用」时，那条的出处未必在本章，要按 id 单独取才拿得到依据原句
+  const { data: focusRes } = useQuery({
+    queryKey: ['novel-canon-entry', focusCanon?.canonId],
+    queryFn: () => getCanonEntry(focusCanon?.canonId as number),
+    enabled: focusCanon?.canonId != null,
   });
   const chapterAssertions = useMemo(() => {
-    const rows = canonRes?.data?.content ?? [];
-    const fromChapter = rows.filter(
-      (item: CanonEntry) => item.sourceChapterId === chapterId,
-    );
-    if (!focusCanon) return fromChapter;
-    const picked = rows.find((item) => item.id === focusCanon.canonId);
-    const merged =
-      picked && !fromChapter.some((item) => item.id === picked.id)
-        ? [picked, ...fromChapter]
-        : fromChapter;
-    return merged;
-  }, [canonRes, chapterId, focusCanon]);
+    const fromChapter = canonRes?.data?.content ?? [];
+    const picked = focusRes?.data;
+    if (!picked || fromChapter.some((item) => item.id === picked.id)) {
+      return fromChapter;
+    }
+    return [picked, ...fromChapter];
+  }, [canonRes, focusRes]);
 
   const { data: findingsRes } = useQuery({
-    queryKey: ['novel-findings', bookId],
-    queryFn: () => getFindings({ bookId, page: 1, size: 200 }),
+    queryKey: ['novel-findings', bookId, chapterId],
+    queryFn: () =>
+      getFindings({
+        bookId,
+        chapterId: chapterId as number,
+        page: 0,
+        size: 100,
+      }),
+    enabled: chapterId != null,
   });
   const chapterFindings = useMemo(
-    () =>
-      (findingsRes?.data?.content ?? []).filter(
-        (f) => f.chapterId === chapterId,
-      ),
-    [findingsRes, chapterId],
+    () => findingsRes?.data?.content ?? [],
+    [findingsRes],
   );
 
   const { data: impactRes } = useQuery({

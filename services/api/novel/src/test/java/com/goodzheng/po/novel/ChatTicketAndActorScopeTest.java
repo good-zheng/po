@@ -222,6 +222,22 @@ class ChatTicketAndActorScopeTest {
                 internalRequest(List.of("X-Actor-Uid", String.valueOf(FOREIGNER))), BOOK_ID, null);
 
         assertEquals(403, result.getCode());
+        verify(chapterService, never()).countWrittenByBook(anyLong());
+    }
+
+    /**
+     * 读回的章数必须是「有正文的章数」：它是续写链路的游标，而作者可以留一行空章节排期。
+     * 空行进游标 = 续写跳过它往后写，那一章永久空着、衔接尾段读成空串。
+     */
+    @Test
+    void bookDetailCarriesTheWrittenCountNotTheRowCount() {
+        when(bookService.getById(BOOK_ID)).thenReturn(book(OWNER));
+        when(chapterService.countWrittenByBook(BOOK_ID)).thenReturn(3);
+
+        Result<InternalBookView> result = controller.bookDetail(
+                internalRequest(List.of("X-Actor-Uid", String.valueOf(OWNER))), BOOK_ID, null);
+
+        assertEquals(3, result.getData().getChapterCount().intValue());
         verify(chapterService, never()).countByBook(anyLong());
     }
 
@@ -246,12 +262,14 @@ class ChatTicketAndActorScopeTest {
     /** 写通道不受作者作用域影响：生成链路写的就是它自己刚建的书，不带该头 */
     @Test
     void writeChannelDoesNotCheckTheActor() {
-        controller.createChapter(
+        ChapterRequest body = new ChapterRequest();
+        controller.putChapter(
                 internalRequest(List.of("X-Actor-Uid", String.valueOf(FOREIGNER))),
-                BOOK_ID, new ChapterRequest());
+                BOOK_ID, body);
         // 断言的方式是「不查库」：写口没有 denyUnlessActorOwns，所以 bookService 一次都不该被调
         verify(bookService, never()).getById(any());
-        verify(chapterService).create(BOOK_ID, new ChapterRequest());
+        // 身份只作为 revision 的记账人传下去，不参与授权判定
+        verify(chapterService).putByIndex(BOOK_ID, body, FOREIGNER);
     }
 
     // ── 夹具 ──────────────────────────────────────────────

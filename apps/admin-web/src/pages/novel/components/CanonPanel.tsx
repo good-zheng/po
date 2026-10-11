@@ -94,6 +94,8 @@ const CanonPanel: React.FC<{ bookId: number }> = ({ bookId }) => {
         subjectKey: body.subjectKey,
         predicate: body.predicate,
         objectText: body.objectText,
+        // 编辑自己不算撞车：库里存的还是旧值，不排除就会把这一条报成「与自己并存」
+        excludeId: targetId,
       }),
     onSuccess: async (res, body) => {
       const rows = res.data ?? [];

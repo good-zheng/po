@@ -275,6 +275,7 @@ export async function getCanon(
     kind?: string;
     status?: string;
     authority?: string;
+    sourceChapterId?: number;
     keyword?: string;
   },
   options?: Record<string, unknown>,
@@ -285,10 +286,27 @@ export async function getCanon(
   );
 }
 
-/** 写入前的确定性冲突预览：同主同谓且值不同的已生效断言 */
+/** 单条断言：工作台中栏点中某一条时按 id 取它的出处原句，不必摊开整本设定 */
+export async function getCanonEntry(
+  id: number,
+  options?: Record<string, unknown>,
+) {
+  return request<Result<CanonEntry>>(`/api/novel/canon/${id}`, {
+    method: 'GET',
+    ...(options || {}),
+  });
+}
+
+/** 写入前的确定性冲突预览：同主同谓且值不同的已生效断言（excludeId=正在编辑的那条，不参与撞车） */
 export async function getCanonConflicts(
   bookId: number,
-  params: { subjectKey?: string; predicate?: string; objectText?: string; asOfChapter?: number },
+  params: {
+    subjectKey?: string;
+    predicate?: string;
+    objectText?: string;
+    asOfChapter?: number;
+    excludeId?: number;
+  },
   options?: Record<string, unknown>,
 ) {
   return request<Result<CanonEntry[]>>(
@@ -410,10 +428,11 @@ export async function updateForeshadow(
   );
 }
 
-/** 冲突台账：bookId 省略即跨书 */
+/** 冲突台账：bookId 省略即跨书，chapterId 只看落在这一章上的冲突 */
 export async function getFindings(
   params: {
     bookId?: number;
+    chapterId?: number;
     severity?: string;
     status?: string;
     checker?: string;
@@ -632,11 +651,12 @@ export async function updateStyleProfile(
 // ── 对话握手票据（§15.13-12） ─────────────────────────────────────────────────
 
 /**
- * 换一张一次性票据，拼进 `/ws/chat?ticket=` 用于握手鉴权。
+ * 换一张 60 秒短效票据，拼进 `/ws/chat?ticket=` 用于握手鉴权。
  *
  * 不能把会话 JWT 直接拼在 WS URL 上：浏览器与小程序都握不了 WebSocket 的请求头，而 query
  * 会被网关访问日志原样留存——把 24 小时有效的令牌写进日志等于把长期凭据交给日志系统。
- * 服务端每次校验即失效，因此**每次（重）连接都要重新取一张**，不要把返回值缓存复用。
+ * 服务端只解析签名与过期，**同一张票在 60 秒内可重复校验**（不是用一次即废），但每次（重）连接
+ * 仍现取一张：攥着一张快过期的票，握手被拒时看起来就像验票通道坏了。
  */
 export async function getChatTicket(options?: Record<string, unknown>) {
   return request<Result<ChatTicket>>('/api/novel/chat-ticket', {

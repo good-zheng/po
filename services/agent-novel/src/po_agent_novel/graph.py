@@ -58,6 +58,7 @@ from typing import Any
 
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages import AIMessage, HumanMessage
+from langchain_core.runnables import RunnableConfig
 from langgraph.config import get_stream_writer
 from langgraph.graph import END, START, StateGraph
 from langgraph.graph.state import CompiledStateGraph
@@ -317,6 +318,133 @@ def _approved(value: Any) -> bool:
     if isinstance(value, str):
         return value.strip().lower() in _APPROVE_WORDS
     return bool(value)
+
+
+# 上行 ``context`` 里本轮生成认得的键（其余一概不读，口径同 chat._context_of）：
+# ``bookId`` 决定「续写哪一本已有的书」；``fromChapter`` / ``chapterCount`` 是作者
+# 要的范围（进图后会按库里真实章数收敛）；``auto`` 表示「不要问我」——跳过计划闸门
+# 升级与归档确认两处 interrupt；``tailChapterId`` 只用来取上一章结尾原文。
+_RUN_KEYS = ("bookId", "fromChapter", "chapterCount", "auto", "tailChapterId")
+
+
+def _run_context(config: RunnableConfig | None) -> dict[str, Any]:
+    """从 ``configurable.context`` 取本轮的运行控制键。
+
+    走 configurable 而不是提示词前缀是必要的：宿主会把非保留键拼进用户消息文本
+    （见 ``services/chat/app/agent.py`` 的 ``RESERVED_CONTEXT_KEYS``），而「续写哪本书、
+    要不要问作者」这类决定不能交给一段模型看得见、也可能照抄的文本。
+    """
+    raw = (config or {}).get("configurable") or {}
+    context = raw.get("context")
+    if not isinstance(context, dict):
+        return {}
+    picked: dict[str, Any] = {}
+    for key in _RUN_KEYS:
+        if key not in context:
+            continue
+        value = context[key]
+        if key == "auto":
+            picked[key] = bool(value)
+        elif isinstance(value, bool):
+            continue
+        elif isinstance(value, str) and value.strip():
+            picked[key] = value.strip()
+        elif isinstance(value, int):
+            picked[key] = value
+    return picked
+
+
+def _as_positive_int(value: Any) -> int | None:
+    """控制键取正整数：客户端可能把数字发成字符串（WS 帧是 JSON，两种都出现过）。"""
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, int):
+        return value if value > 0 else None
+    if isinstance(value, str) and value.strip().isdigit():
+        number = int(value.strip())
+        return number if number > 0 else None
+    return None
+
+
+def _prev_tail(ns: dict[str, Any], chars: int = 200) -> str:
+    """「上一章结尾」原文：本轮定稿的最后一章优先。
+
+    续写时本轮还没有定稿章，退回本轮开始时从库里读到的那一段（``prev_tail``）——
+    缺了它，续写的第一章会按「本章为开篇」来写，那是续写最典型的失败模式。
+    """
+    chapters = ns.get("chapters") or []
+    tail = chapters[-1].content if chapters else str(ns.get("prev_tail") or "")
+    return tail[-chars:] if tail else ""
+
+
+# 续写一轮最多规划几章：Outline.chapters 的 max_length=20 是 schema 侧的硬约束，
+# 这里同步一个软上限，让「一次要 50 章」在装配阶段就被收敛而不是在校验里炸。
+_CONTINUE_MAX_CHAPTERS = 20
+
+
+def _fresh_namespace() -> dict[str, Any]:
+    """一轮生成的领域状态起点（两条入口共用，缺键即后续节点按默认值走）。"""
+    return {
+        # mode：``new``（从零开一本）/ ``continue``（给库里已有的书补章）。
+        # auto：为真时两处人工口（计划闸门升级、归档确认）不再挂起，按「yes」的语义走。
+        "mode": "new",
+        "auto": False,
+        "brief": "",
+        "idea": None,
+        # bible：书级圣经（WorldBible）；world_rows：它派生的读侧断言行（进 Tier-0）；
+        # style：由圣经落成的文风契约——三者都在 worldbuild 一次写定。
+        "bible": None,
+        "world_rows": [],
+        "style": None,
+        # outline：全书大纲（续写时前段是已定稿章的占位条目，只用于序号对齐）；
+        # chapters：本轮已定稿的章（不含库里已有的那些，否则归档会把旧章再写一遍）。
+        "outline": [],
+        "chapters": [],
+        # index 是 0 基的「正在写」章游标；draft 是当前章稿（定稿前不进 chapters）。
+        "index": 0,
+        "draft": "",
+        "action": "",
+        "book_id": "",
+        # 续写专用：本轮第一章的全书章号、计划章数、已定稿章数、衔接用的上一章结尾原文、
+        # 作者本轮的原话（进大纲/计划/正文提示词）、已写章节的章级摘要行。
+        "start_chapter": 1,
+        "new_count": 0,
+        "existing_chapters": 0,
+        "prev_tail": "",
+        "author_note": "",
+        "prior_lines": [],
+        # plan：当前章的场景卡；plan_view：计划那次装配的产物；
+        # plan_repairs/plan_feedback/plan_action：计划回环的轮数、退回意见与路由键；
+        # plan_stats：最近一次计划闸门的判据快照（只上浮，不落 review_finding 表）；
+        # plan_unreviewed：作者拍板「照这张卡写」的章号（1 基），归档卡片要显式交代；
+        # plan_new：历轮场景卡自报的新实体（只上浮给作者，永不进正典）；
+        # halted_at：计划冲突未获放行而停笔的那一章。
+        "plan": None,
+        "plan_view": None,
+        "plan_repairs": 0,
+        "plan_action": "",
+        "plan_feedback": "",
+        "plan_stats": None,
+        "plan_unreviewed": [],
+        "plan_new": [],
+        "halted_at": None,
+        # extractions：各章候选正典增量（键为 1 基章号），只攒不写，
+        # 写库统一留到 archive 的 interrupt 之后。
+        "extractions": [],
+        # entity_keys：已登记的实体键（圣经 + 历轮抽取），回灌给 plan_scene 的可选
+        # 清单与下一章的抽取提示词，压制「同一人物第二个 key」。
+        "entity_keys": [],
+        # gate_repairs：当前章已用正文修补轮数（放行策略的硬上限，闸门每轮自行归零
+        # 或累加，故不在此处重置）；gate_action：正文侧路由键（条件边唯一判据）；
+        # gate_view：写这稿时那一次 L1 装配的产物，闸门沿用它以保持「模型看见的事实」
+        # 与「闸门据以判定的事实」同源，修补轮不覆写；
+        # frozen：修补用尽仍未过闸门的章号（1 基），归档时显式告知用户哪些章的
+        # 事实没有入库。
+        "gate_repairs": 0,
+        "gate_action": "",
+        "gate_view": None,
+        "frozen": [],
+    }
 
 
 def _chapter_heading(index: int, title: str) -> str:
@@ -737,6 +865,9 @@ def build_novel_graph(
                 overlay=overlay_rows,
                 digests=digest_rows,
                 style=ns.get("style"),
+                # 续写第一章的衔接原文在库里（_continue_conceive 读回的上一章尾段），
+                # 而 Tier-2 的尾段取自本轮 chapters——本轮还没定稿章时它就是空的。
+                prior_tail=str(ns.get("prev_tail") or ""),
             )
         except Exception as exc:
             # 记忆读取失败不阻断本节：这一章宁可看不见正典，也不要让整条链路停在读取上。
@@ -800,58 +931,120 @@ def build_novel_graph(
             "digest": digest.digest,
         }
 
-    async def conceive_node(state: CoreState) -> dict[str, Any]:
-        """构思节点（图入口）：一句话想法 → 结构化 BookIdea，并初始化领域状态。"""
-        brief = _last_user_text(state)
-        idea: BookIdea = await conceiver.ainvoke(conceive_prompt(brief))
-        # 首次写入整个 novel 命名空间：下列字段即后续所有节点共享的状态契约。
-        # index 是 0 基的「正在写」章游标；draft 是当前章稿（定稿前不进 chapters）。
+    async def _continue_conceive(context: dict[str, Any], brief: str) -> dict[str, Any]:
+        """续写分支的状态起点：读回库里已有的这本书，本轮只写「还没写的那几章」。
+
+        游标 `index` 直接落在「已定稿章数」上（0 基），于是 as-of、章号、`outline[index]`
+        全部沿用原语义，不需要为续写另开一套编号。已定稿的章在 `outline` 里以占位条目
+        存在——它们是「序号对齐」用的，不是「待写任务」，所以标题写死成「已定稿」。
+
+        失败不回落成「新建一本」：作者点了这本书的续写，静默产出另一本书的正文
+        比报错严重得多（那本假书还会带着这次的设定入库）。
+        """
+        book_id = str(context.get("bookId") or "")
+        tail_chapter_id = str(context.get("tailChapterId") or "") or None
+        snapshot = await store.load_book(book_id, chapter_id=tail_chapter_id)
+        written = int(snapshot.chapter_count or 0)
+        requested_from = _as_positive_int(context.get("fromChapter"))
+        requested_count = _as_positive_int(context.get("chapterCount"))
+        # 只 append：作者要的第 3-10 章如果已经写完，就退到「接着往下写」，
+        # 并在事件里说清实际写了哪几章——覆盖已定稿的章从来不是这条链路的选项。
+        end = (
+            requested_from + requested_count - 1
+            if requested_from and requested_count
+            else written + (requested_count or chapter_count)
+        )
+        new_count = max(1, min(end - written, _CONTINUE_MAX_CHAPTERS))
+        start = written + 1
+        idea = BookIdea(
+            title=snapshot.title,
+            genre=snapshot.genre or "其他",
+            # 库里没存梗概时不能留空串：Tier-0 的第一行就是它，空行会让模型只看见书名
+            summary=snapshot.summary or f"《{snapshot.title}》已写 {written} 章，本轮续写。",
+        )
+        # 衔接用的上一章结尾：只认「它就是最后一章」的那一条。拿中间某一章的尾部
+        # 去衔接，模型会把已写过的情节再走一遍。
+        chapter = snapshot.chapter
+        prev_tail = chapter.content[-400:] if chapter and chapter.index == written else ""
+        entity_keys: list[str] = []
+        try:
+            facts = await canon_store.load_snapshot(book_id, as_of_chapter=written)
+            entity_keys = sorted({fact.subject_key for fact in facts if fact.subject_key})
+        except Exception as exc:
+            logger.error("续写读正典实体失败（书 %s），本轮计划不带已登记清单：%s", book_id, exc)
+        prior_lines: list[str] = []
+        try:
+            digests = await canon_store.load_summaries(
+                book_id, upto_chapter=written, levels=("chapter",), limit=8
+            )
+            for record in sorted(digests, key=lambda item: item.chapter_no or 0)[-6:]:
+                prior_lines.append(f"第 {record.chapter_no} 章：{record.content}")
+        except Exception as exc:
+            logger.error("续写读章级摘要失败（书 %s），大纲只按梗概续排：%s", book_id, exc)
         ns: dict[str, Any] = {
+            **_fresh_namespace(),
             "brief": brief,
+            "mode": "continue",
             "idea": idea,
-            # bible：书级圣经（WorldBible）；world_rows：它派生的读侧断言行（进 Tier-0）；
-            # style：由圣经落成的文风契约——三者都在 worldbuild 一次写定。
-            "bible": None,
-            "world_rows": [],
-            "style": None,
-            "outline": [],
-            "chapters": [],
-            "index": 0,
-            "draft": "",
-            "action": "",
-            "book_id": "",
-            # plan：当前章的场景卡；plan_view：计划那次装配的产物；
-            # plan_repairs/plan_feedback/plan_action：计划回环的轮数、退回意见与路由键；
-            # plan_stats：最近一次计划闸门的判据快照（只上浮，不落 review_finding 表）；
-            # plan_unreviewed：作者拍板「照这张卡写」的章号（1 基），归档卡片要显式交代；
-            # plan_new：历轮场景卡自报的新实体（只上浮给作者，永不进正典）；
-            # halted_at：计划冲突未获放行而停笔的那一章。
-            "plan": None,
-            "plan_view": None,
-            "plan_repairs": 0,
-            "plan_action": "",
-            "plan_feedback": "",
-            "plan_stats": None,
-            "plan_unreviewed": [],
-            "plan_new": [],
-            "halted_at": None,
-            # extractions：各章候选正典增量（键为 1 基章号），只攒不写，
-            # 写库统一留到 archive 的 interrupt 之后。
-            "extractions": [],
-            # entity_keys：已登记的实体键（圣经 + 历轮抽取），回灌给 plan_scene 的可选
-            # 清单与下一章的抽取提示词，压制「同一人物第二个 key」。
-            "entity_keys": [],
-            # gate_repairs：当前章已用正文修补轮数（放行策略的硬上限，闸门每轮自行归零
-            # 或累加，故不在此处重置）；gate_action：正文侧路由键（条件边唯一判据）；
-            # gate_view：写这稿时那一次 L1 装配的产物，闸门沿用它以保持「模型看见的事实」
-            # 与「闸门据以判定的事实」同源，修补轮不覆写；
-            # frozen：修补用尽仍未过闸门的章号（1 基），归档时显式告知用户哪些章的
-            # 事实没有入库。
-            "gate_repairs": 0,
-            "gate_action": "",
-            "gate_view": None,
-            "frozen": [],
+            "book_id": book_id,
+            # 自动放行的默认值与新建书相反：这条入口的存在理由就是「一句话直接出章」，
+            # 每次都要人按 yes 的续写不叫简单，叫没做完。
+            "auto": bool(context.get("auto", True)),
+            "index": written,
+            "start_chapter": start,
+            "new_count": new_count,
+            "existing_chapters": written,
+            "prev_tail": prev_tail,
+            "author_note": brief,
+            "prior_lines": prior_lines,
+            "entity_keys": entity_keys,
+            "outline": [
+                ChapterOutline(
+                    title=f"第 {no} 章（已定稿，不在本轮）",
+                    # summary 有 min_length=1 的契约：占位条目也不能给空串，
+                    # 否则整章列表在构造这一刻就 ValidationError，续写根本进不了图。
+                    summary="已定稿，本轮不写。",
+                    arc="",
+                )
+                for no in range(1, written + 1)
+            ],
         }
+        _emit(
+            EventType.THINKING,
+            f"续写《{snapshot.title}》：已定稿 {written} 章，本轮写第 {start} 至 "
+            f"{start + new_count - 1} 章（{'自动放行' if ns['auto'] else '仍会请你拍板'}）",
+            {
+                "stage": "resumed",
+                "book_id": book_id,
+                "from_chapter": start,
+                "to_chapter": start + new_count - 1,
+                "existing_chapters": written,
+                "requested_chapters": [requested_from, requested_count],
+                "auto": ns["auto"],
+                "entities": len(entity_keys),
+                "has_tail": bool(prev_tail),
+            },
+        )
+        return _update(ns)
+
+    # LangGraph 只把 config 注入「声明了第二个参数且注解为 RunnableConfig」的节点；
+    # 写成 ``RunnableConfig | None`` 会触发它的 typing 警告，而这里永远由图传入。
+    async def conceive_node(state: CoreState, config: RunnableConfig) -> dict[str, Any]:
+        """构思节点（图入口）：一句话想法 → 结构化 BookIdea，并初始化领域状态。
+
+        带 ``bookId`` 时走续写分支：不新建构思、不重建圣经，而是把库里已有的这本书
+        读回成状态起点（书名/题材/梗概 → BookIdea，已定稿章数 → 游标，已登记实体键 →
+        计划可选清单）。用户这一句因此从「开一本新书的想法」变成「对这本书的意见」。
+        """
+        brief = _last_user_text(state)
+        context = _run_context(config)
+        if str(context.get("bookId") or ""):
+            return await _continue_conceive(context, brief)
+        idea: BookIdea = await conceiver.ainvoke(conceive_prompt(brief))
+        # 首次写入整个 novel 命名空间：字段契约见 :func:`_fresh_namespace`。
+        ns: dict[str, Any] = {**_fresh_namespace(), "brief": brief, "idea": idea}
+        # 新书默认仍保留两处人工口：只有客户端显式 auto 才一路写完（行为与历史一致）。
+        ns["auto"] = bool(context.get("auto") or False)
         _emit(
             EventType.THINKING,
             f"构思完成：《{idea.title}》（{idea.genre}）",
@@ -877,8 +1070,18 @@ def build_novel_graph(
         :func:`gap_bible`（全缺口、零已确立设定）并显式发 ``worldbuild_failed``。
         降级可见是硬线（§8-⑧）——「圣经没建起来」与「这本书没有设定」在后续章节的
         表现完全一样，区别只能靠这一条事件留下。
+
+        续写时整节跳过：这本书的设定早就在正典表里（首轮归档时入库），再问一次模型
+        会得到第二份「沈青的眼睛是灰色的」，而两份不一致时闸门谁说的都不算。
         """
         ns = _ns(state)
+        if ns.get("mode") == "continue":
+            _emit(
+                EventType.THINKING,
+                f"续写沿用书 {ns.get('book_id')} 已登记的设定，本轮不重建书级圣经",
+                {"stage": "worldbuild_skipped", "book_id": ns.get("book_id")},
+            )
+            return _update(ns)
         idea: BookIdea = ns["idea"]
         prompt = worldbuild_prompt(idea)
         bible: WorldBible | None = None
@@ -929,9 +1132,39 @@ def build_novel_graph(
         return _update(ns)
 
     async def outline_node(state: CoreState) -> dict[str, Any]:
-        """大纲节点：按 chapter_count 规划全书章节，覆写 ns["outline"]。"""
+        """大纲节点：按 chapter_count 规划章节，覆写 ns["outline"]。
+
+        续写时只规划「还没写的那几章」，并把它们接在已定稿章的占位条目之后——
+        下标即全书章号，plan_scene / write / commit 的取数口径因此一个字都不用改。
+        """
         ns = _ns(state)
         idea: BookIdea = ns["idea"]
+        if ns.get("mode") == "continue":
+            planned: Outline = await outliner.ainvoke(
+                outline_prompt(
+                    idea,
+                    int(ns["new_count"]),
+                    start_chapter=int(ns["start_chapter"]),
+                    author_note=str(ns.get("author_note") or ""),
+                    prior=list(ns.get("prior_lines") or []),
+                )
+            )
+            ns["outline"] = [*(ns.get("outline") or []), *planned.chapters]
+            ns["new_count"] = len(planned.chapters)
+            titles = [chapter.title for chapter in planned.chapters]
+            start = int(ns["start_chapter"])
+            _emit(
+                EventType.PLAN,
+                f"续写大纲（第 {start} 章起）：" + " / ".join(titles),
+                {
+                    "stage": "outlined",
+                    "mode": "continue",
+                    "from_chapter": start,
+                    "chapters": titles,
+                    "arcs": [chapter.arc for chapter in planned.chapters],
+                },
+            )
+            return _update(ns)
         outline: Outline = await outliner.ainvoke(outline_prompt(idea, chapter_count))
         # 只取 chapters 列表入状态：章节序号由列表下标隐含（见 schemas.ChapterOutline），
         # 因此这里不额外存 index 字段。arc（剧情弧名）随章走，弧级摘要按它分组。
@@ -985,7 +1218,8 @@ def build_novel_graph(
                 ),
                 chapter_words=chapter_words,
                 pov=style.pov if style else "",
-                prev_tail=ns["chapters"][-1].content[-200:] if ns["chapters"] else "",
+                prev_tail=_prev_tail(ns),
+                author_note=str(ns.get("author_note") or ""),
                 instruction=str(ns.get("plan_feedback") or ""),
             )
         )
@@ -1089,22 +1323,27 @@ def build_novel_graph(
         if release.action == "escalate":
             # 卡片必须带 card_text：作者要看的不是「有几条冲突」而是「那张卡长什么样」，
             # 没有卡文本的批准等于闭眼放行。
-            answer = interrupt(
-                {
-                    "stage": "plan_approval",
-                    "question": (
-                        f"第 {chapter_no} 章的场景卡有 {len(release.blockers)} 条未平的冲突"
-                        f"（{release.reason}）。照这张卡继续写请回复 yes"
-                        "（本章会标注为「计划未经完整审查」），其他回复视为停笔并转归档。"
-                    ),
-                    "chapter": chapter_no,
-                    "card_text": card_text,
-                    "blockers": [finding.model_dump() for finding in release.blockers],
-                    "unreviewed": release.unreviewed,
-                    "reason": release.reason,
-                    "hint": "照计划继续请回复 yes，其他回复视为停笔",
-                }
-            )
+            # 自动模式（整批创作）把「照这张卡继续写」当作发起时已经给过的授权：不挂起，
+            # 但仍然记进 plan_unreviewed——auto 改变的是「问不问」，不是「审查过没过」。
+            if ns.get("auto"):
+                answer: Any = "yes"
+            else:
+                answer = interrupt(
+                    {
+                        "stage": "plan_approval",
+                        "question": (
+                            f"第 {chapter_no} 章的场景卡有 {len(release.blockers)} 条未平的冲突"
+                            f"（{release.reason}）。照这张卡继续写请回复 yes"
+                            "（本章会标注为「计划未经完整审查」），其他回复视为停笔并转归档。"
+                        ),
+                        "chapter": chapter_no,
+                        "card_text": card_text,
+                        "blockers": [finding.model_dump() for finding in release.blockers],
+                        "unreviewed": release.unreviewed,
+                        "reason": release.reason,
+                        "hint": "照计划继续请回复 yes，其他回复视为停笔",
+                    }
+                )
             if _approved(answer):
                 # 批准 ≠ 通过：把章号记进 plan_unreviewed，归档回执与事件都要说清
                 # 「这一章按计划写了，但计划没走完审查」，否则 §8-⑨ 的假绿灯
@@ -1116,6 +1355,7 @@ def build_novel_graph(
                 ns["halted_at"] = chapter_no
                 ns["action"] = "archive"
             stats["approved"] = _approved(answer)
+            stats["auto"] = bool(ns.get("auto"))
         _emit(
             EventType.THINKING,
             f"第 {chapter_no} 章计划闸门：规则 {stats['rule']} 条 / 裁判 {len(extra)} 条 / "
@@ -1160,9 +1400,16 @@ def build_novel_graph(
         # 初稿路径：取上一章定稿末尾 200 字做衔接参考；开篇无上文则传空串，
         # 由提示词切换为「铺开世界观」的开篇要求。
         # 有注入块时这段尾部已在 Tier-2 里（且更长），prev_tail 会被提示词忽略。
-        prev_tail = ns["chapters"][-1].content[-200:] if ns["chapters"] else ""
+        prev_tail = _prev_tail(ns)
         prompt = write_chapter_prompt(
-            idea, outline, index, prev_tail, chapter_words, context=block, card=card
+            idea,
+            outline,
+            index,
+            prev_tail,
+            chapter_words,
+            context=block,
+            card=card,
+            author_note=str(ns.get("author_note") or ""),
         )
         response = await writer.ainvoke(prompt)
         # 正文走 WRITE 角色模型。提示词要求「直接输出正文」，此处不做清洗，只做类型
@@ -1594,10 +1841,15 @@ def build_novel_graph(
         续跑，本节点从头重放，``interrupt(...)`` 返回 resume 值。
         因此 interrupt 之前的代码必须是无副作用的纯读取（这里只有 _ns），
         全部写库动作都排在它之后——重放一次就是一次真实写入，靠幂等键兜住。
+
+        ``auto``（整批创作）时这一拍板在发起时就已经给出，节点不挂起直接按「是」走；
+        落库动作与留痕口径完全不变，改变的只有「是否等人」。
         """
         ns = _ns(state)
         idea: BookIdea = ns["idea"]
         chapters: list[ChapterDraft] = ns["chapters"]
+        is_continue = ns.get("mode") == "continue"
+        written = int(ns.get("existing_chapters") or 0)
         # 冻结章在确认卡片上就要露头：这些章的正文会入库、事实不会，用户若在看完整本
         # 之后才知道「第 7 章的设定其实没被系统记住」，那是一本书最坏的一种意外。
         frozen = [int(no) for no in (ns.get("frozen") or [])]
@@ -1610,7 +1862,8 @@ def build_novel_graph(
         unreviewed = [int(no) for no in (ns.get("plan_unreviewed") or [])]
         unreviewed_note = (
             f"第 {'、'.join(str(no) for no in unreviewed)} 章按计划写了，"
-            "而那张计划卡没走完审查（你当时批准了继续）。"
+            f"而那张计划卡没走完审查（"
+            f"{'本轮按发起时的授权自动放行' if ns.get('auto') else '你当时批准了继续'}）。"
             if unreviewed
             else ""
         )
@@ -1621,56 +1874,83 @@ def build_novel_graph(
         if not chapters:
             # 一章都没定稿（开篇那张卡就被判停）：不挂确认点，也不建空书——
             # 0 章的书目会占住 book_id 并让后续 as-of 查询从一条空区间起步。
-            _emit(EventType.THINKING, "计划停笔于第一章之前，全书未定稿，未归档", {"stage": "halted"})
+            _emit(
+                EventType.THINKING,
+                "本轮没有定稿章节，未归档" if is_continue else "计划停笔于第一章之前，全书未定稿，未归档",
+                {"stage": "halted", "mode": ns.get("mode")},
+            )
+            idle_note = (
+                f"书 {ns.get('book_id')} 保持原样（已定稿 {written} 章未动）"
+                if is_continue
+                else "已定稿章节为空，故不入库；构思与圣经仍保留在当前会话中。"
+            )
             return {
                 "artifacts": {NOVEL_KEY: ns},
                 "messages": [
                     AIMessage(
                         content=f"《{idea.title}》未能开工：{halted_note or '第 1 章的计划未获放行。'}"
-                        "已定稿章节为空，故不入库；构思与圣经仍保留在当前会话中。"
+                        + idle_note
                     )
                 ],
             }
         # 载荷即前端确认卡片的展示内容，必须可 JSON 序列化（会写进 checkpoint）；
         # question/hint 属协议约定字段：Runner 取 question 作为事件摘要，
         # hint 告知用户什么回复算「确认」（词表见 _APPROVE_WORDS）。
-        approval = interrupt(
-            {
-                "question": (
-                    f"《{idea.title}》共 {len(chapters)} 章已完稿"
-                    + (f"（{len(frozen)} 章待人工裁定），是否归档入库？" if frozen else "，是否归档入库？")
-                ),
-                "title": idea.title,
-                "genre": idea.genre,
-                "chapter_count": len(chapters),
-                "frozen": frozen,
-                "frozen_note": frozen_note,
-                # 计划侧的两类留痕也进卡片：停笔与「批准过的未审查章」都会在书里留下
-                # 长期影响（缺章 / 没有计划依据的正文），只进事件流等于不给作者看。
-                "plan_unreviewed": unreviewed,
-                "unreviewed_note": unreviewed_note,
-                "halted_at": halted,
-                "halted_note": halted_note,
-                "open_questions": list(getattr(ns.get("bible"), "openQuestions", ()) or ()),
-                "hint": "确认归档请回复 yes，其他回复视为暂不归档",
-            }
+        question = (
+            f"《{idea.title}》新增第 {chapters[0].index}-{chapters[-1].index} 章"
+            f"共 {len(chapters)} 章已完稿"
+            if is_continue
+            else f"《{idea.title}》共 {len(chapters)} 章已完稿"
+        ) + (
+            f"（{len(frozen)} 章待人工裁定），是否归档入库？" if frozen else "，是否归档入库？"
         )
+        if ns.get("auto"):
+            approval: Any = "yes"
+        else:
+            approval = interrupt(
+                {
+                    "question": question,
+                    "title": idea.title,
+                    "genre": idea.genre,
+                    "chapter_count": len(chapters),
+                    "mode": ns.get("mode") or "new",
+                    "from_chapter": chapters[0].index,
+                    "to_chapter": chapters[-1].index,
+                    "frozen": frozen,
+                    "frozen_note": frozen_note,
+                    # 计划侧的两类留痕也进卡片：停笔与「批准过的未审查章」都会在书里留下
+                    # 长期影响（缺章 / 没有计划依据的正文），只进事件流等于不给作者看。
+                    "plan_unreviewed": unreviewed,
+                    "unreviewed_note": unreviewed_note,
+                    "halted_at": halted,
+                    "halted_note": halted_note,
+                    "open_questions": list(getattr(ns.get("bible"), "openQuestions", ()) or ()),
+                    "hint": "确认归档请回复 yes，其他回复视为暂不归档",
+                }
+            )
         # 无论是否归档都拼出成稿全文，两种回执都能让用户直接读到结果。
         book_text = _book_text(idea, chapters)
         if _approved(approval):
-            # 先抽角色再落库；save_book 返回的 book_id 是后续两次写入的外键，
-            # 三者顺序不可调换，对应 Java novel 模块 book/chapter/character 的资源划分。
-            extracted: CharacterList = await character_extractor.ainvoke(
-                extract_characters_prompt(idea.title, chapters)
-            )
             try:
-                book_id = await store.save_book(
-                    BookDraft(title=idea.title, genre=idea.genre, summary=idea.summary)
-                )
-                # 章节 id 是正典的溯源键（source_chapter_id）与幂等键的一部分，
-                # 所以必须先拿到才能写正典。
-                chapter_ids = await store.save_chapters(book_id, chapters)
-                await store.save_characters(book_id, extracted.characters)
+                if is_continue:
+                    # 续写只补章：书目与角色表都是这本书首轮归档时的产物，
+                    # 再走一次 save_book 会建出一本同名的重复书，save_characters 会把
+                    # 首轮的角色档案整表覆盖成本轮这几章里出现的人。
+                    book_id = str(ns.get("book_id") or "")
+                    chapter_ids = await store.save_chapters(book_id, chapters)
+                else:
+                    # 先抽角色再落库；save_book 返回的 book_id 是后续两次写入的外键，
+                    # 三者顺序不可调换，对应 Java novel 模块 book/chapter/character 的资源划分。
+                    extracted: CharacterList = await character_extractor.ainvoke(
+                        extract_characters_prompt(idea.title, chapters)
+                    )
+                    book_id = await store.save_book(
+                        BookDraft(title=idea.title, genre=idea.genre, summary=idea.summary)
+                    )
+                    # 章节 id 是正典的溯源键（source_chapter_id）与幂等键的一部分，
+                    # 所以必须先拿到才能写正典。
+                    chapter_ids = await store.save_chapters(book_id, chapters)
+                    await store.save_characters(book_id, extracted.characters)
             except NovelStoreError as exc:
                 # 成稿入库失败（重试已用尽）：把全文还给用户并说明原因，
                 # 让他另起一次归档——正典尚未写入，重投不会双写。
@@ -1686,23 +1966,42 @@ def build_novel_graph(
                     chapters,
                     chapter_ids,
                     ns.get("extractions") or [],
+                    continuation_of=(written if is_continue else 0),
                 )
                 # book_id 回写命名空间：便于中断恢复后的观测与后续续写引用。
                 ns["book_id"] = book_id
                 _emit(
                     EventType.THINKING,
-                    f"已归档：{book_id}",
+                    (
+                        f"已续写入库：书 {book_id} 新增第 {chapters[0].index}-"
+                        f"{chapters[-1].index} 章"
+                        if is_continue
+                        else f"已归档：{book_id}"
+                    ),
                     {
                         "stage": "archived",
                         "book_id": book_id,
+                        "mode": ns.get("mode") or "new",
+                        "from_chapter": chapters[0].index,
+                        "to_chapter": chapters[-1].index,
+                        "auto": bool(ns.get("auto")),
                         "frozen": frozen,
                         "plan_unreviewed": unreviewed,
                         **canon_summary,
                     },
                 )
                 reply = (
-                    f"{book_text}\n\n已归档入库（{book_id}，共 {len(chapters)} 章、"
-                    f"{len(extracted.characters)} 名角色）。{canon_summary['canon_line']}"
+                    (
+                        f"{book_text}\n\n已续写入库（书 {book_id}，新增第 "
+                        f"{chapters[0].index}-{chapters[-1].index} 章共 {len(chapters)} 章）。"
+                        f"{canon_summary['canon_line']}"
+                        if is_continue
+                        else (
+                            f"{book_text}\n\n已归档入库（{book_id}，共 {len(chapters)} 章、"
+                            f"{len(extracted.characters)} 名角色）。"
+                            f"{canon_summary['canon_line']}"
+                        )
+                    )
                     + (f"\n\n{frozen_note}" if frozen_note else "")
                     + (f"\n\n{unreviewed_note}" if unreviewed_note else "")
                     + (f"\n\n{halted_note}" if halted_note else "")
@@ -1723,6 +2022,7 @@ def build_novel_graph(
         chapters: list[ChapterDraft],
         chapter_ids: list[str],
         extractions: list[dict[str, Any]],
+        continuation_of: int = 0,
     ) -> dict[str, Any]:
         """把书级圣经与 extract 攒下的候选增量、层级摘要逐章入库，返回一行用户可见的统计。
 
@@ -1737,6 +2037,12 @@ def build_novel_graph(
 
         单章失败不终止归档：成稿已经落库，回滚反而丢掉用户已确认的成果；
         失败章记进 pending 上浮，交由人工重驱（同一键重投即命中幂等，不会双写）。
+
+        ``continuation_of`` 是续写模式下本轮之前的已定稿章数。本轮的章节对象带的
+        都是**全书**编号，因此各章事实/摘要按原样入库，不需要偏移；只有弧级是例外：
+        它的编号由本轮大纲重新从 1 开始，而 Java 侧按 (book, level='arc', 弧号) 覆盖写，
+        不偏移就会把首轮那段弧摘要整行换掉。所以这里把大纲切成"只看本轮"，
+        并把既有最大弧号读出来当偏移量。
         """
         by_chapter = {
             entry.get("chapter"): entry
@@ -1839,7 +2145,26 @@ def build_novel_graph(
                 logger.error("第 %s 章层级摘要入库失败：%s", chapter.index, exc)
             else:
                 summary_rows += len(scenes) + (1 if digest else 0)
-        arcs = await _write_arcs(book_id, idea, outline, len(chapters), by_chapter)
+        # 弧级是续写里唯一会「改写已有行」的层：Java 侧按 (book, level='arc', 弧号)
+        # 覆盖写，而本轮大纲的弧号从 1 起算。所以先读出既有最大弧号当偏移量；
+        # 读不到就整段不写弧——按 0 起编会把首轮那段弧摘要换成新剧情，不可逆。
+        arc_base = await _next_arc_no(book_id, continuation_of) if continuation_of else 0
+        arc_failed = arc_base is None
+        arcs = (
+            0
+            if arc_failed
+            else await _write_arcs(
+                book_id,
+                idea,
+                # 切片：`_arc_spans` 从 outline[0] 起算位置，而续写模式的 ns["outline"]
+                # 前面挂着「已定稿、不在本轮」的占位章，不切片会把已写章算进本轮跨度。
+                list(outline)[continuation_of:] if continuation_of else outline,
+                len(chapters),
+                by_chapter,
+                span_offset=continuation_of,
+                arc_no_offset=arc_base or 0,
+            )
+        )
         line = f"正典入库 {inserted} 条"
         if seed_rows:
             line += f"（含书级圣经基线 {seed_rows} 条）"
@@ -1849,6 +2174,8 @@ def build_novel_graph(
             line += f"（{skipped} 条因唯一冲突跳过）"
         if summary_rows:
             line += f"；层级摘要 {summary_rows} 行" + (f"、弧级 {arcs} 段" if arcs else "")
+        if arc_failed:
+            line += "；弧级摘要未写入（读不到既有弧号基线，按 1 起编会覆盖首轮那段弧）"
         if finding_rows:
             line += f"；冲突台账 {finding_rows} 条"
         if findings_failed:
@@ -1875,24 +2202,50 @@ def build_novel_graph(
             "canon_line": line,
         }
 
+    async def _next_arc_no(book_id: str, continuation_of: int) -> int | None:
+        """续写前已有的最大弧号，作为本轮弧号的偏移量；读不到返回 ``None``。
+
+        弧号在摘要表里是覆盖写的主键（scene/chapter 级按章号定位，弧级按弧号定位），
+        所以偏移量宁缺毋滥：调用方拿到 None 就不写弧，最坏结果是 Tier-0 少一段进度线，
+        而按 1 起编的最坏结果是把首轮弧摘要整行换成新剧情。
+        """
+        try:
+            existing = await canon_store.load_summaries(
+                book_id, upto_chapter=continuation_of, levels=("arc",), limit=50
+            )
+        except Exception as exc:
+            logger.error("第 %s 章之前的弧摘要读取失败，本轮跳过弧级入库：%s", continuation_of, exc)
+            return None
+        return max((int(row.scene_no or 0) for row in existing), default=0)
+
     async def _write_arcs(
         book_id: str,
         idea: BookIdea,
         outline: list[ChapterOutline],
         total_chapters: int,
         by_chapter: dict[Any, dict[str, Any]],
+        *,
+        span_offset: int = 0,
+        arc_no_offset: int = 0,
     ) -> int:
         """按大纲 arc 分组（缺名时按 ``arc_chapters`` 等分）合成弧级摘要，返回成功段数。
 
-        输入只有章级摘要（正文一律不看）——arc 按定义就是「章摘要往上升一层」，
+        输入只有章级摘要（正文一律不看）——arc 按定义就是「章摘要往上一层」，
         再高就没有下一层可吃了，因此这里不存在套娃路径。
         跨度不越过已知最后一章，尾段不足一整弧照样合成：
         否则尾部章节永远进不了 Tier-0 的进度线，而 Tier-0 是唯一与书长无关的进度载体。
+
+        两个偏移量只在续写模式非 0：``outline`` 此时已切成"只看本轮"，
+        `_arc_spans` 给的因此是本轮内的相对章号，而 ``by_chapter`` 的键是全书章号
+        （抽取条目按全局编号对齐 chapter_ids），所以跨度要抬 ``span_offset``、
+        弧号要抬 ``arc_no_offset``，两处不能混用同一个偏移。
         """
         written = 0
-        for arc_no, (start, end) in enumerate(
+        for rel_no, (rel_start, rel_end) in enumerate(
             _arc_spans(outline, total_chapters, arc_chapters), start=1
         ):
+            arc_no = rel_no + arc_no_offset
+            start, end = rel_start + span_offset, rel_end + span_offset
             pairs = [
                 (no, by_chapter[no].get("digest"))
                 for no in range(start, end + 1)

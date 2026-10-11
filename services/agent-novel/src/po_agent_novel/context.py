@@ -232,6 +232,7 @@ async def compile_context(
     overlay: Sequence[CanonAssertion] = (),
     digests: Sequence[SummaryRecord] = (),
     style: StyleContract | None = None,
+    prior_tail: str = "",
     budgets: Budgets = Budgets(),
     recent_chapters: int = 3,
     tail_chars: int = 300,
@@ -262,6 +263,11 @@ async def compile_context(
         只能从本轮状态里取。同 (level, 章号, 场景号) 以本轮为准
     :param recent_chapters: Tier-2 取前几章的场景摘要（PRD：前 3 章）
     :param tail_chars: Tier-2 上一章末尾原文字数（PRD：300）
+    :param prior_tail: 本轮 ``chapters`` 为空时的「上一章结尾原文」（续写模式的第一章）。
+        续写时上一批章的正文在库里而不在本轮状态里，``chapters[-1]`` 取不到，
+        不传它就会让本轮第一章什么衔接都不带——那是最容易被忽略也最贵的一种漏注入：
+        正文照写，衔接全靠模型猜。已有本轮定稿章时 ``chapters[-1]`` 优先，
+        因为它更新（前一轮的库内尾段此刻已经是「上上一章」）。
     :param task_chapter: 对话侧的「当前参照章」（§10.3 左栏：把任意章设为参照章）。
         设置后它同时改写两处：任务区不再出大纲而是「当前参照章」，近因的原文尾段
         取这一章的末尾。之所以由一个参数同时管两件事——分开传就会出现「任务区说第 5 章、
@@ -433,7 +439,7 @@ async def compile_context(
     tail_source = (
         task_chapter.content
         if task_chapter is not None
-        else (chapters[-1].content if chapters else "")
+        else (chapters[-1].content if chapters else prior_tail)
     )
     tail = tail_source[-tail_chars:]
     # 尾段归属要说对：对话带进来的参照章就是「当前这一章」，标成「上一章」会让模型

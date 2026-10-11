@@ -21,7 +21,7 @@ const { TextArea } = Input;
  * 右栏 · 对话（§10.3）：读正典与已定稿章节，只出提议卡。
  *
  * 这一栏没有任何写正典的入口：卡要经作者点头才成为 `canon_entry(authority=author)`，
- * 正文与生成触发都不在这里（前者在中栏，后者在顶栏「AI 生成」抽屉，且它产出的是新书）。
+ * 正文与生成触发都不在这里（前者在中栏，后者在顶栏「AI 创作」抽屉）。
  * 未采纳的卡也不参与注入——它只活在 `canon_proposal` 与这段会话里。
  */
 const RightPanel: React.FC<{
@@ -41,7 +41,7 @@ const RightPanel: React.FC<{
   const { data: pendingRes } = useQuery({
     queryKey: ['novel-proposals', bookId, 'pending'],
     queryFn: () =>
-      getProposals({ bookId, status: 'pending', page: 1, size: 20 }),
+      getProposals({ bookId, status: 'pending', page: 0, size: 20 }),
   });
   const pending: CanonProposal[] = pendingRes?.data?.content ?? [];
 
@@ -55,6 +55,14 @@ const RightPanel: React.FC<{
     // send 是异步的（要先换握手票据再建连），失败原因已经写进 errorText，这里不接住 Promise
     void send(text);
     setInput('');
+  };
+
+  // 采纳会把卡升成 canon_entry：只失效提议台账的话，中栏「本章设定」和「设定」Tab
+  // 读的那份缓存还停在采纳前，作者看到的就是「点了采纳，设定页查无此条」
+  const onDecided = () => {
+    queryClient.invalidateQueries({ queryKey: ['novel-proposals', bookId] });
+    queryClient.invalidateQueries({ queryKey: ['novel-canon', bookId] });
+    queryClient.invalidateQueries({ queryKey: ['novel-progress', bookId] });
   };
 
   return (
@@ -120,11 +128,7 @@ const RightPanel: React.FC<{
                   <ProposalCard
                     bookId={bookId}
                     payload={card.payload}
-                    onDecided={() =>
-                      queryClient.invalidateQueries({
-                        queryKey: ['novel-proposals', bookId],
-                      })
-                    }
+                    onDecided={onDecided}
                   />
                 </div>
               ))}
@@ -156,11 +160,7 @@ const RightPanel: React.FC<{
                   validFromChapter: item.validFromChapter ?? undefined,
                   basisQuote: item.basisQuote ?? undefined,
                 }}
-                onDecided={() =>
-                  queryClient.invalidateQueries({
-                    queryKey: ['novel-proposals', bookId],
-                  })
-                }
+                onDecided={onDecided}
               />
             </div>
           ))}
@@ -172,7 +172,7 @@ const RightPanel: React.FC<{
           rows={3}
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="讨论设定、人物、桥段…（要整本新书请走顶栏「AI 生成」）"
+          placeholder="讨论设定、人物、桥段…（要成批的正文请走顶栏「AI 创作」）"
           onPressEnter={(e) => {
             if (!e.shiftKey) {
               e.preventDefault();
