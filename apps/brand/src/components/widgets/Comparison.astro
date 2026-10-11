@@ -43,7 +43,10 @@ const hasActions = columns.some((c) => c.callToAction);
     <table class="w-full min-w-[40rem] border-collapse text-left text-sm md:text-base">
       <thead>
         <tr class="border-b border-gray-200 dark:border-slate-700">
-          <th scope="col" class="sticky left-0 z-10 bg-page w-1/3 px-4 py-4 align-bottom font-semibold text-muted">
+          <th
+            scope="col"
+            class="sticky left-0 z-10 bg-page w-1/3 px-4 py-4 align-bottom font-semibold text-muted max-md:shadow-[8px_0_12px_-8px_rgb(15_23_42_/_0.25)] dark:max-md:shadow-[8px_0_12px_-8px_rgb(2_6_23_/_0.7)]"
+          >
             {firstColumnLabel}
           </th>
           {
@@ -76,7 +79,7 @@ const hasActions = columns.some((c) => c.callToAction);
                   <th
                     scope="colgroup"
                     colspan={columns.length + 1}
-                    class="sticky left-0 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-muted"
+                    class="sticky left-0 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-muted max-md:shadow-[8px_0_12px_-8px_rgb(15_23_42_/_0.25)] dark:max-md:shadow-[8px_0_12px_-8px_rgb(2_6_23_/_0.7)]"
                   >
                     {group}
                   </th>
@@ -84,7 +87,10 @@ const hasActions = columns.some((c) => c.callToAction);
               )}
               {groupRows.map(({ label, description, values }) => (
                 <tr class="border-b border-gray-200 last:border-0 dark:border-slate-700">
-                  <th scope="row" class="sticky left-0 z-10 bg-page px-4 py-3 font-medium text-default">
+                  <th
+                    scope="row"
+                    class="sticky left-0 z-10 bg-page px-4 py-3 font-medium text-default max-md:shadow-[8px_0_12px_-8px_rgb(15_23_42_/_0.25)] dark:max-md:shadow-[8px_0_12px_-8px_rgb(2_6_23_/_0.7)]"
+                  >
                     {label}
                     {description && <span class="block text-xs font-normal text-muted">{description}</span>}
                   </th>
@@ -120,7 +126,7 @@ const hasActions = columns.some((c) => c.callToAction);
         hasActions && (
           <tfoot>
             <tr>
-              <td class="sticky left-0 bg-page px-4 py-4" />
+              <td class="sticky left-0 bg-page px-4 py-4 max-md:shadow-[8px_0_12px_-8px_rgb(15_23_42_/_0.25)] dark:max-md:shadow-[8px_0_12px_-8px_rgb(2_6_23_/_0.7)]" />
               {columns.map(({ callToAction, highlight }) => (
                 <td class:list={['px-4 py-4 text-center', highlight ? 'bg-primary/5 dark:bg-primary/10' : '']}>
                   {callToAction && (
