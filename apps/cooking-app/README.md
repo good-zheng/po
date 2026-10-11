@@ -1,20 +1,38 @@
 # PO 做菜
 
 基于 Expo、React Native、expo-router 和 NativeWind 构建的菜谱移动端应用，复用仓库中的 Spring Boot API 与 `@po/types` 共享类型。
+Expo SDK ~57.0.24 / React Native 0.86.3 / React 19.2.3，应用名 `PO 做菜`（slug `po-cooking`，scheme `pocooking`）。
 
 ## 当前功能
 
 - 强制登录：未登录只能看到登录/注册页，登录后才进入标签页
 - 用户名 + 密码登录与注册，token 持久化（原生走 SecureStore，Web 走 localStorage），重启保留登录态
 - 会话失效（后端 `Result.code === 401`）时统一清除会话并跳回登录页
-- 个人中心展示昵称、角色、邮箱与头像，支持退出登录
-- 首页菜谱分页列表、下拉刷新与上拉加载
-- 做菜模式：按步骤计时，计时结束播放上菜铃提示音并震动，提示进入下一步
+- 四个标签页：首页（菜谱分页列表、下拉刷新、上拉加载、搜索历史）、分类、AI 指导、我的
+- 「我的」下的子页：个人资料编辑（昵称/邮箱/手机号 + `expo-image-picker` 选图上传头像）、收藏、浏览历史、我的菜谱
+- 菜谱详情 `recipe/[id]`、分类详情 `category/[id]`；「我的菜谱」可以新建也可以改（同一个 `recipe/form` 页，靠查询参数区分）
+- 做菜模式 `cook/[id]`：按步骤计时，计时结束循环播放上菜铃提示音并震动；进入该页即 `useKeepAwake()` 保持屏幕常亮，切步骤用 `expo-speech` 播报「第 N 步，…」
 - 「AI 指导」标签页：向聊天服务发起流式问答，回复中的菜谱以卡片呈现、可点进详情页；服务不可用时静默回退本地规则
-- 分类、收藏、个人中心标签页骨架
-- 浅色与深色模式
-- Axios API 客户端、统一 `Result` 响应解包与 401 处理
+- 浅色与深色模式（`useColorScheme`，标签页与卡片都跟着切）
+- Axios API 客户端、统一 `Result` 响应解包与 401 处理、`resolveAssetUrl` 把后端返回的相对图片路径补成可访问地址
 - TanStack Query 缓存与请求状态管理
+
+## 页面与路由
+
+`src/app/_layout.tsx:50-68` 用 `Stack.Protected` 按登录态切两组路由，未登录直接访问受保护路由不会渲染。
+
+| 路由文件 | 路径 | 归属 |
+| --- | --- | --- |
+| `(tabs)/index` | 首页 | 登录后 |
+| `(tabs)/categories` | 分类列表 | 登录后 |
+| `(tabs)/ai` | AI 指导（`headerShown: false`） | 登录后 |
+| `(tabs)/profile` | 我的 | 登录后 |
+| `recipe/[id]` | 菜谱详情 | 登录后 |
+| `recipe/form` | 新建 / 编辑菜谱（编辑时带查询参数） | 登录后 |
+| `category/[id]` | 分类下的菜谱列表 | 登录后 |
+| `profile/edit`、`profile/favorites`、`profile/history`、`profile/recipes` | 个人资料 / 收藏 / 历史 / 我的菜谱 | 登录后 |
+| `cook/[id]` | 做菜模式（`slide_from_bottom`） | 登录后 |
+| `login`、`register` | 登录 / 注册 | 仅未登录 |
 
 ## 开发环境
 
@@ -98,6 +116,12 @@ avdmanager list avd          # 确认已创建
 ```
 
 `sdkmanager`/`avdmanager` 默认取 `ANDROID_HOME`（Windows 下为 `%LOCALAPPDATA%\Android\Sdk`）定位 SDK；若装在别处，先导出该变量。`scripts/jdk.mjs` 会自动从 `~/.jdks` 里挑 JDK 17，`scripts/run-mobile.mjs` 会自动定位 SDK 并把 `platform-tools`、`emulator` 加进 PATH，所以日常只需保证组件已安装。
+
+> **上面这串组件版本号会漂移。** 它们是某一次 prebuild 产物里的取值，`android/` 与 `ios/` 都不入库，
+> 所以权威来源是本地跑一次 `pnpm mobile:prebuild:android` 之后生成的 `android/build.gradle`
+> （以及 `node_modules/react-native/ReactAndroid` 声明的 `ndkVersion` / `compileSdkVersion`）。
+> Expo 或 React Native 升级后按报错里的版本号补装即可，装错的表现通常是 Gradle 配置期
+> `Failed to find NDK version` 或 `Failed to find Compile SDK version`。
 
 ### 一键构建、安装并启动
 
@@ -184,24 +208,43 @@ adb reverse tcp:8080 tcp:8080
 
 ```text
 src/
-├─ app/            Expo Router 页面与标签页布局（login/register + (tabs)）
-├─ components/     可复用的界面组件与表单控件
-├─ lib/api/        Axios 客户端、菜谱接口与登录注册接口
-├─ lib/ai/         聊天 WebSocket 客户端与本地规则问答（服务不可用时的降级路径）
-├─ lib/auth/       会话存储、AuthProvider 与路由守卫
-├─ lib/cooking/    做菜会话状态与计时结束的提示音
-├─ lib/            Query Key 与 NativeWind 适配
-└─ __tests__/      Jest 单元与组件测试
+├─ app/            Expo Router 页面：(tabs){index,categories,ai,profile} + recipe/[id]、recipe/form、
+│                  category/[id]、cook/[id]、profile/{edit,favorites,history,recipes}、login、register
+├─ components/     recipe-list / recipe-card / recipe-meta / recipe-filter-bar / recipe-status-badge、
+│                  recipe-chat-card、form（TextField/FormError/SubmitButton）、screen-header、state-views
+├─ lib/api/        Axios 客户端（含 resolveAssetUrl）+ auth / users / recipes 接口
+├─ lib/ai/         agent-chat.ts（/ws/chat WebSocket 客户端）、chat.ts、assistant.ts（本地规则问答，
+│                  服务不可用时的降级路径）
+├─ lib/auth/       session.ts（SecureStore / localStorage）、auth-context.tsx（Provider 与守卫）
+├─ lib/cooking/    cooking-context.tsx（做菜会话状态）、use-cook-alert.ts（循环响铃 + 震动）
+├─ lib/            query-keys.ts、recipe-utils.ts（时长换算等）、use-search-history.ts、
+│                  nativewind.ts、utils.ts（cn）
+└─ __tests__/      Jest 单元与组件测试（14 个文件：screen / context / client / utils / alert）
 ```
+
+顶层还有 `assets/`（图标与 `assets/sounds/step-done.wav`）、`jest/css-mock.js`（样式导入的测试替身）、
+`scripts/reset-project.js`（Expo 模板自带，会把项目重置回空模板，本仓库不要用）、
+`eas.json`（preview / production profile）、`app.json`、`metro.config.js`、`babel.config.js`、
+`biome.json`、`jest.config.js`、`jest.setup.ts`。
 
 路由使用 `src/app/` 下的文件式约定，`_layout.tsx` 通过 `Stack.Protected` 按登录状态切换可访问的路由组。样式通过 NativeWind 类名编写，跨端数据类型从 `@po/types` 导入。
 
-## 提示音
+## 做菜提示
 
-做菜模式的等待计时归零时（自然归零或用户点「跳过等待」）会播放 `assets/sounds/step-done.wav`，非 Web 端同时震动 400ms，提示可以进入下一步。
+做菜模式的等待计时归零时（自然归零，或用户点「跳过等待」——代码里把「跳过」也算作归零，
+见 `src/app/cook/[id].tsx:155`）会响 `assets/sounds/step-done.wav`，非 Web 端同时震动 400ms。
 
 - 声音内容：三声厨房上菜铃（C6 基音加高次不谐和分音），最后一击之后接一段油爆锅气，总长 2.0s
-- 播放逻辑在 `src/lib/cooking/use-cook-alert.ts`：每次调用都从开头重播，并设置 `playsInSilentMode` 与 `duckOthers`，手机按了静音键也听得见
+- 提醒逻辑在 `src/lib/cooking/use-cook-alert.ts`，走 `expo-audio`：
+  - **循环响铃**（`player.loop = true`），不是一遍就停；单遍铃只有 2 秒，没人处理就一直响
+  - `RING_DURATION_MS = 30_000`：默认响满 30 秒自动安静，期间点「停止响铃」、上/下一步、退出做菜页、
+    「收起计时」都会立刻收尾（`stopAlert()` 在这几处都有调用）
+  - 每次 `play()` 先 `seekTo(0)` 再 `play()`——上一次停在末尾的话，直接 `play()` 不出声
+  - `setAudioModeAsync({ interruptionMode: 'duckOthers', playsInSilentMode: true })`：灶台边手机常静音或放着音乐，静音键下也要响，响的时候把背景音压下去
+  - `stop()` 里先关 `loop` 再 `pause()`，并把播放器回到 0 秒，避免下次响铃没声音
+- 屏幕常亮与语音播报在同一个页面：进入 `cook/[id]` 就 `useKeepAwake()`（`expo-keep-awake`），
+  洗手沾油不用反复点亮屏幕；切步骤时 `expo-speech` 播报「第 N 步，…」（`language: 'zh-CN'`），
+  离开页面（含完成、取消）在卸载回调里 `Speech.stop()`
 - 音频文件由 `tools/cook-alert-sound.py` 用 Python 标准库合成，不依赖第三方素材；调整音色就是改脚本里的敲击时刻、分音与锅气参数，然后在仓库根目录重新生成：
 
   ```bash
@@ -209,3 +252,16 @@ src/
   ```
 
   脚本自带分音能量与包络自检，可直接看出修改后的三声铃是否还清晰。换掉音频文件后需重启 Expo 才能生效。
+
+## 已知遗留
+
+登记在这里，动它之前先确认目的；清理与否是单独的决策。
+
+- `@expo/ui` (~57.0.19) 与 `expo-glass-effect` (~57.0.3) 在 `package.json` 里，但 `src/` 没有任何引用，
+  也不是 expo-router 的运行依赖——像是准备做玻璃质感界面时加的，界面没落地。
+- `scripts/reset-project.js` 会把项目重置回空模板，本仓库不要用；`.claude/`、`AGENTS.md`、`CLAUDE.md`、
+  `LICENSE`、`assets/images/*-logo.png` 等是 Expo 模板自带文件。
+- 其余 `expo-device`、`expo-web-browser`、`expo-symbols`、`expo-system-ui`、`expo-font`、`expo-linking`、
+  `expo-constants` 在 `src/` 里也没有直接 import，但它们是 Expo 模板与 expo-router 的运行依赖，
+  **不要按「未使用」删掉**。
+- CI 的 Mobile job 只跑 `mobile:lint`、`mobile:typecheck` 和 `jest --runInBand`，不覆盖 EAS 构建。

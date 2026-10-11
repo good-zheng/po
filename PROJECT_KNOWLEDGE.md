@@ -10,7 +10,9 @@ pnpm workspace monorepo（Node ≥ 22，pnpm ≥ 10）：
 | --- | --- | --- |
 | `apps/admin-web/` | 管理后台 | Umi Max 4、React 19、Ant Design 6、React Query 5、Biome/Vitest |
 | `apps/cooking-app/` | 移动端 App | Expo SDK 57、React Native、expo-router、NativeWind、TanStack Query |
-| `apps/cooking-mini/` | 微信小程序 | Taro 4.2.1、React 18、webpack5（webpack 锁 ~5.95.0） |
+| `apps/cooking-mini/` | 微信小程序 | Taro 4.2.1、React 18、webpack5（webpack 锁 ~5.95.0）；个人主体不带大模型类目，AI 页是本地意图解析 + 只读菜谱接口，不连 `/ws/chat` |
+| `apps/echo-talk/` | 言外微信小程序 | 同一套 Taro 4.2.1 结构；两条 WS（讯飞 ASR + `/ws/chat`）；无 lint/test 脚本、**无 CI job**，dev/prod 共写 `dist/` |
+| `apps/novel-web/` | 小说 Web 阅读端 | Umi Max 4、React 19、Ant Design 6（移动优先三页；无 ProLayout、无 locale、无 Vitest）；独立 Dockerfile 与 `pnpm novel:deploy` |
 | `apps/brand/` | 项目/个人介绍站 | Astro 7 + Tailwind CSS 4，模板 AstroWind（MIT）；静态站点，不与其它端共享组件与路由 |
 | `services/api/` | 主后端 | Java 17、Spring Boot 4.1.1、MyBatis-Plus、MySQL、Redis(Jedis)、jjwt；Maven reactor 多模块：shared/identity/recipe/talk/novel/api-bootstrap |
 | `services/agent-core/` | 编排核心纯库 | Python：Orchestrator + 事件流翻译 + HybridRouter 意图路由 + CheckpointerManager 记忆；**不含任何业务领域知识**，垂直 Agent 经插槽接入 |
@@ -22,7 +24,7 @@ pnpm workspace monorepo（Node ≥ 22，pnpm ≥ 10）：
 | `scripts/` | 启动/部署包装器 | run-service.mjs、run-sh.mjs、run-mobile.mjs、deploy-*.sh |
 | `infra/` | Nginx 网关配置 | docker-compose 部署形态 |
 
-工作流入口：Qoder skills 位于 `.qoder/skills/`（project-router 分流 → frontend-dev / mobile-dev / java-dev / python-dev），上游开源参考是 `.qoder/skill-sources/` 只读镜像。
+工作流入口：Qoder skills 位于 `.qoder/skills/`（project-router 分流 → frontend-dev / mobile-dev / java-dev / python-dev / wiki-capture，brand 由 project-router 直接指向 `apps/brand/README.md`），上游开源参考是 `.qoder/skill-sources/` 只读镜像。那四个镜像目录在 git 里是 gitlink 且仓库没有 `.gitmodules`，被删空时 `git checkout` 取不回内容，需重跑 `.qoder/scripts/sync-skill-sources.ps1`（细节见 `.qoder/skills/project-router/SKILL.md`）。
 
 ## 2. 认证与登录体系
 

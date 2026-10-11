@@ -52,6 +52,30 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 5090 --reload-dir . --reload
 
 会话标识：`conversation_id` 映射 LangGraph `thread_id`，实现多轮记忆与 interrupt 恢复。
 
+### 一轮运行的预算（按插槽给，恢复轮同账）
+
+`AgentRunner` 给每一轮加一个总超时，超了就发 `RUN_ERROR`（内容「运行超时」，映射成 `error`
+帧）。这个数不能是全局一个值：`AGENT_CORE_RUN_TIMEOUT_SECONDS` 默认 300 秒，够一问一答的
+插槽把卡死的模型调用兜住，但**一次写 3 章实测 322 秒**——长批次会在写作中途被掐掉。
+
+所以预算是**每轮**的（`runner.astream(..., timeout_seconds=…)` 覆盖构造值），由宿主按插槽决定：
+
+| 插槽 | 预算 | 依据 |
+| --- | --- | --- |
+| `novel` | 3600 秒 | 领域侧一轮最多 20 章（`_CONTINUE_MAX_CHAPTERS`），按每章约 2 分钟留出的余量 |
+| 其余（`chitchat`/`cooking`/`talk`/`novel-chat`） | 构造值 300 秒 | 一问一答的插槽不需要更久；抬全局默认等于卡死时让客户端空等一小时才见错误帧 |
+
+`resume` 帧不带 `agent`，预算从 checkpoint 的 `forced_agent` 读回来（`Orchestrator._forced_agent`）。
+这一步不是可省的：作者按「先问问我」发起时计划闸门会截断发起轮，**剩下几章全写在恢复轮里**，
+读不回插槽名就等于「只在不用闸门的那条路上修好了超时」。读不到（没挂 checkpointer、存储抖动）
+按默认预算照常恢复——这一层失败不能变成「作者的确认发不出去」。
+
+单测用的是 `InMemorySaver`，线上是 `AsyncRedisSaver`，而装配函数在连不上 Redis 时会**静默降级成
+memory**——「读回插槽名」这件事到底成不成立，只有拿真 Redis 才算数。
+`scripts/verify_resume_budget_redis.py` 用全离线模型（零额度、不落库）跑一遍发起→interrupt→恢复，
+先把 saver 类型钉成 Redis，再断言恢复轮拿到 3600 秒、且陌生线程读回 `None`（反向对照，否则这条
+断言是恒真的）。它不进 pytest，因为 CI 没有 Redis。
+
 ## REST API
 
 资源 `Item` 字段：`name`(必填)、`description`、`price`(>0)、`in_stock`，存储于内存（进程重启后数据丢失）。
@@ -145,6 +169,32 @@ Java 的归属校验只在看见 `X-Actor-Uid` 时才跑，匿名连接等于整
 
 退出码 0 表示链路完整；有 FAIL 时先修最前面那一层——后面各层的失败多半是它的连带。
 
+**长跑被掐在 60 秒**是另一类故障，与上面三行都不同（连接建起来了、图也在跑，只是被服务端
+自己撕掉）。`scripts/probe_ws_keepalive_backpressure.py` 在真实 uvicorn/ws 栈上用桩编排器复现它，
+全程离线、不烧额度：
+
+```powershell
+# cwd 必须是 services/chat；默认「静默 75 秒 + 客户端每 30 秒一帧 JSON 心跳」，复刻管理端形状
+.venv\Scripts\python.exe -X utf8 scripts\probe_ws_keepalive_backpressure.py
+# 对照一：长跑期间客户端一帧都不发（连接能活，说明卡的不是空闲超时而是入站帧）
+.venv\Scripts\python.exe -X utf8 scripts\probe_ws_keepalive_backpressure.py --no-heartbeat
+# 对照二：把服务端保活窗口抬到心跳之上——它能活，但读通道仍停着，是止血带不是修复
+.venv\Scripts\python.exe -X utf8 scripts\probe_ws_keepalive_backpressure.py --server-ping-timeout 300
+```
+
+退出码 0 = 收到 `done`。判据与机制写在脚本开头：uvicorn 0.54 的 websockets-sansio 实现是
+「投一条消息就 `pause_reading()`，直到应用再次 `receive()` 且队列空了才 `resume_reading()`」，
+而 `_loop` 在发帧期间没有人 `receive()`——心跳帧躺在队列里，服务端自己的保活 ping 等不到 PONG，
+20 秒后 `keepalive ping timeout` 以 1011 撕掉这条还在正常生成的连接（关闭码非 1000，前端因此
+只看到「生成连接已断开」而没有任何 `error` 帧）。修复是常驻的入站泵任务 `_pump_inbound`；
+回归用例见 `tests/test_ws_inbound_pump.py`。
+
+要证明修的是真问题、而不是桩编排器碰巧没崩，用 `scripts/probe_ws_long_run.py`：它起真 uvicorn +
+真 `/ws/chat` + 真模型跑一整批（`NOVEL_PERSIST_ENABLED=false` 只在进程内，不写库），按浏览器形状
+每 30 秒发一帧 JSON 心跳，打每帧时刻与最长静默间隔。**它消耗真实模型额度，只在作者要求时跑。**
+2026-10-12 那次实测：3 章 / 361.8 秒 / 57,300 帧 / 最长静默 1.1 秒，以 `done` 收尾（同一批在修复前
+既活不过 60 秒，也会在 300 秒处被「运行超时」掐掉），PRD §15.24 记的是这一条。
+
 ### 日志落盘与「静默断连」四态判读
 
 日志同时写 stderr 与文件（`PY_SERVER_LOG_FILE`，默认 `.tmp/logs/chat.log`，相对进程 cwd；
@@ -159,6 +209,7 @@ Java 的归属校验只在看见 `X-Actor-Uid` 时才跑，匿名连接等于整
 | --- | --- | --- |
 | `RUN_ERROR` / 「运行超时」（会映射成 `error` 帧） | 编排层失败，终态帧已发出 | 前端显示的应是「生成连接出错」；按堆栈查节点 |
 | `WS 连接结束：… code=<码>` 而本轮没有 `done` | 客户端或反代先断，服务端是被打断的一方 | 查前端心跳、nginx `proxy_read_timeout`、票据续期 |
+| 同上，且时刻恰好是 open 之后 60 秒、码 1006 | 服务端自己撕的：长跑期间没人 `receive()`，入站心跳把读通道顶死，保活 ping 超时（1011） | 跑 `scripts/probe_ws_keepalive_backpressure.py`；已修，见上面那条 |
 | `chat 关闭（pid=…）` 且没有本轮的任何结束行 | 进程优雅退出（Ctrl+C、reload、容器收到信号） | 核对是谁重启的；见下面 reload 那条坑 |
 | 既没有连接结束行也没有关闭行，日志戛然而止 | 进程被硬杀或崩溃 | 查系统事件/容器 OOM；用同一 pid 定位断点时刻 |
 
@@ -187,6 +238,50 @@ Java 的归属校验只在看见 `X-Actor-Uid` 时才跑，匿名连接等于整
 pnpm chat:test
 ```
 
+`services/chat/tests/` 有 7 个用例文件（55 个用例）：`test_api`（REST）、`test_config`（宿主设置解析）、
+`test_cooking_wiring` / `test_novel_wiring`（插槽装配）、`test_logging_sink`（落盘）、
+`test_ws` 与 `test_ws_handshake`（帧协议与握手闸门）。全部离线跑，不依赖模型密钥与 MySQL。
+
+CI 的 Chat job 在 `services/chat` 目录下依次跑：`agent-core` → `agent-cooking` → `agent-talk`
+→ `agent-novel` 四套 pytest，再加 novel 的两道门禁（`test_golden.py` 一致性黄金集、
+`test_longrun_metrics.py` 长跑指标，均为零模型消耗的离线断言），最后跑本目录 `tests`。
+安装顺序同样是 agent-* 先装、chat 后装（见「快速开始」）。
+
+## 镜像与部署
+
+完整流程在本目录 [`DEPLOY_CLOUDRUN.md`](./DEPLOY_CLOUDRUN.md)；一键脚本是仓库根的
+`pnpm chat:deploy`（有代理时用 `pnpm chat:deploy:official`）。构建侧的几条硬约束，出错时先按这里对照：
+
+- **构建上下文必须是仓库根**：`docker build -f services/chat/Dockerfile .`。
+  四个本地库包不在 PyPI，只按 `services/chat/` 建上下文会拿不到。
+- **`agent-core` 必须带 `[redis]` extra**：`langgraph-checkpoint-redis` 是可选依赖，
+  不装则 `AGENT_CORE_CHECKPOINTER=redis` 会**静默降级成 memory**——Redis 部署等于白做
+  （本地也要求 `redis-stack-server`，普通 redis 缺 JSON/Search 模块时同样静默降级，见根 README）。
+- **宿主 `app/` 用 COPY 落盘，不走 pip 打包**：曾经按 wheel 装，构建出一堆只有 `dist-info`
+  的空包，镜像看着推成功、容器一起手就 `ModuleNotFoundError`。
+- **不要加 `# syntax=docker/dockerfile:1`**：那会让 BuildKit 去 Docker Hub 拉前端镜像，
+  本地网络直连不通（基础镜像与 PyPI 也都固定走国内加速源，Dockerfile 顶部有注释）。
+- 构建期有一条导入冒烟（`import app.main` + `import langgraph.checkpoint.redis`），失败就让 build 红。
+- 容器 `EXPOSE 5090`，`CMD` 里 host/port 写死为 `0.0.0.0:5090`；要改监听走 `PY_SERVER_*`。
+
+密钥与环境变量：生产值集中在 **`services/chat/deploy-prod.json`**（已入库排除，`.gitignore` +
+`.dockerignore` 都挡着），部署时按它逐条填进云托管控制台，任何 `deploy-prod.json` /
+`application-prod.json` 都不得入库或进镜像。
+
+## 已知缺口
+
+登记在这里，动它之前先确认目的；值以控制台为准，别按命名规律推。
+
+- **`deploy-prod.json` 里没有 `PY_SERVER_INTERNAL_TOKEN`**。若云上控制台就是照这份文件逐条填的，
+  那么线上就缺验票令牌，`app/ws_auth.py` 会走「未配置 → 返回 None → 当作匿名」分支，
+  novel-chat（工作台右栏对话）**一律拒连**，而本机开发因为 `.env` 里有值所以看不出来。
+  实际是否中招要在云托管控制台核对环境变量列表——不要凭这份文件断定线上状态。
+  这条与 `services/api/README.md` 登记的「`application-prod.json` 缺 `APP_INTERNAL_TOKEN`」是
+  同一条链路的两端，补哪一端都要同时核对另一端是否同名等值。
+- 匿名连接上 `cooking` / `talk` 的 `conversation_id` 可被猜测，风险作为遗留项登记在 PRD §15.16；
+  不带 `agent` 的 `resume` 帧不在帧级闸门覆盖范围内，同一编号。
+- REST `/api/items` 是模板期的示例 CRUD，数据在内存、进程重启即丢，没有线上消费者。
+
 ## 配置
 
 环境变量（服务自身前缀 `PY_SERVER_`，编排层前缀 `AGENT_CORE_` 见 `../agent-core/README.md`，
@@ -196,7 +291,10 @@ pnpm chat:test
 | --- | --- | --- |
 | `PY_SERVER_HOST` | `0.0.0.0` | 监听地址 |
 | `PY_SERVER_PORT` | `5090` | 监听端口 |
-| `PY_SERVER_CORS_ORIGINS` | 见 `.env.example` | 逗号分隔的跨域来源 |
+| `PY_SERVER_CORS_ORIGINS` | `http://localhost:8000,http://localhost:5173` | 逗号分隔的跨域来源（`.env.example` 里就是这一行，可带空格/尾逗号） |
+| `PY_SERVER_API_BASE_URL` | `http://localhost:8080/api` | 验票通道指向的 Spring Boot 地址（含 `/api` 前缀），容器内用 `http://api:8080/api` |
+| `PY_SERVER_INTERNAL_TOKEN` | 空 | 调 `POST /api/novel/internal/chat-ticket/verify` 时带的 `X-Internal-Token`；须等于 Spring 侧 `app.internal-token`。**留空 = 没有验票通道**，novel-chat 一律拒连（其余插槽不受影响） |
+| `PY_SERVER_TICKET_TIMEOUT_SECONDS` | `5.0` | 验票那次内网 HTTP 调用的超时；超时必须拒连而不是放行 |
 | `PY_SERVER_LOG_FILE` | `.tmp/logs/chat.log` | 日志落盘路径（相对 cwd）；留空 = 只输出 stderr。判读方式见上文「四态判读」 |
 | `PY_SERVER_LOG_LEVEL` | `INFO` | 落盘与终端的最低级别（启动/装配/WS 生命周期行都是 INFO） |
 | `COOKING_API_BASE_URL` | `http://localhost:8080/api` | 烹饪插槽读取的菜谱接口地址；容器内用 `http://api:8080/api` |

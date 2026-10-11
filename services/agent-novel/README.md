@@ -47,6 +47,31 @@ conceive（构思：标题/摘要/类型）
   `commit_and_next` 因此刻意做成纯状态搬运——放行到下一章之间没有任何副作用，
   重放它只是把游标再推一次。
 
+## 续写模式（`conceive_node` 的第二条入口）
+
+同一张图有两种入口：`configurable.context` 里带 `bookId` 就走续写分支
+（`_continue_conceive`），不带就是从一句话开新书。认得的键只有五个
+（`_RUN_KEYS = ("bookId", "fromChapter", "chapterCount", "auto", "tailChapterId")`），
+其余一概不读。走 `configurable` 而不是提示词前缀是必要的：宿主会把非保留键拼进用户
+消息文本，而「续写哪本书、要不要问作者」不能交给一段模型看得见、也可能照抄的文本。
+
+| 取向 | 做法 | 为什么 |
+| --- | --- | --- |
+| 游标 | `index` 直接落在「已定稿章数」上（0 基），已定稿章在 `outline` 里是标题写死的占位条目 | 于是 as-of、章号、`outline[index]` 全部沿用原语义，不为续写另开一套编号；占位条目是「序号对齐」用的，不是「待写任务」 |
+| 范围 | **只 append**：本轮章数 = `max(1, min(end - written, _CONTINUE_MAX_CHAPTERS))`（20），要的第 3-10 章若已写完就退到「接着往下写」，并在 `resumed` 事件里说清实际写了哪几章 | 覆盖已定稿的章从来不是这条链路的选项；`Outline.chapters` 的 `max_length=20` 是 schema 侧硬约束，这里同步软上限是为了让「一次要 50 章」在装配阶段被收敛而不是在校验里炸 |
+| 人工口 | `auto` **默认 True**（新书默认 False） | 这条入口的存在理由就是「一句话直接出章」，每次都要人按 yes 的续写不叫简单，叫没做完 |
+| 衔接 | `prev_tail` 只认「它就是最后一章」的那一条尾部 | 拿中间某一章的结尾去衔接，模型会把已写过的情节再走一遍；缺了尾段，续写第一章会按「本章为开篇」来写——那是续写最典型的失败模式 |
+| 圣经 | `worldbuild` 整节跳过 | 设定早在首轮归档时进了正典表，再问一次模型会得到第二份「沈青的眼睛是灰色的」，两份不一致时闸门谁说的都不算 |
+| 归档 | 只 `save_chapters`，不 `save_book` 也不 `save_characters` | 书目与角色表是首轮产物：重走 `save_book` 建出一本同名重复书，重走 `save_characters` 会把首轮角色档案整表覆盖成本轮这几章里出现的人 |
+| 弧号 | `continuation_of` 抬 `arc_no_offset`，先 `_next_arc_no` 读回库里已有弧号 | 本轮相对号与库里绝对号不能混用同一条偏移，否则 Tier-0 进度线会拿半截弧充数 |
+
+失败**不回落成「新建一本」**：读库异常直接抛。作者点了这本书的续写，静默产出另一本书
+的正文比报错严重得多——那本假书还会带着这次的设定入库。
+
+`tail_chapter_id` 只用来取衔接尾段，不改变「写到哪」的判定；已登记实体键与章级摘要
+读失败时不抛，降级为「计划不带已登记清单 / 大纲只按梗概续排」并 `logger.error`——
+这两样缺了只影响质量，而 `load_book` 缺了影响的是「写进哪本书」。
+
 ## L1 记忆装配（`context.compile_context`）
 
 每章**两次**装配，同一套预算与过滤，只是收窄范围不同：
@@ -105,7 +130,13 @@ tiktoken 的词表是运行时从外网拉的。所以预算与 P95 都要按同
 | --- | --- | --- |
 | `scene` | extract 节点内，随本章定稿 | `(chapter_id, level, scene_no)`，序号从 1 起 |
 | `chapter` | 同上 | 同键，**`scene_no` 恒 0**（NULL 与 NULL 在 MySQL 唯一索引里不算重复，写 NULL 等于把约束从库层让给代码层） |
-| `arc` | archive 入库后，按 `_arc_spans` 切分 | `(book_id, level='arc', scene_no=弧号)`，同弧号重写按覆盖处理 |
+| `arc` | archive 入库后，按 `_arc_spans` 切分 | 弧号落到 `scene_no` 列充当该层级的排序位 |
+
+三级的库层唯一键是同一条：`uk_summary_level (book_id, chapter_id, level, scene_no)`
+（`schema.sql`）。arc 级不挂在单章上，`chapter_id` 为 NULL，于是这条键对它**形同不存在**
+（MySQL 不判 NULL 相等）——重复写 arc 只能由 Java 侧 `CanonTxWriter` 按
+`(book_id, level='arc', scene_no=arcNo)` 查回来覆盖，库层拦不住。
+chapter 级因此选择写 `scene_no=0` 而不是留空：宁可占一个常量位，也不把去重责任推给代码。
 
 弧的切分优先认**大纲点名的弧名**（`ChapterOutline.arc`）：连续同名即一段弧，
 作者换了弧名就是换了一段剧情，这时不再受 `arc_chapters`（默认 10）跨度约束——
@@ -196,6 +227,27 @@ extract 刻意用规划脑而非审稿脑：抽取者与被审者同源会有盲
 
 协议是 `typing.Protocol`（结构性子类型）：实现方无需继承，签名匹配即可被子图使用；
 方法全为 async，让 HTTP 与内存实现在调用侧完全同形。
+
+### 题材码值契约（`schemas.GENRES`）
+
+库里存 **value**（`fantasy`），提示词与卡片用**中文 label**（「玄幻」），两侧各有一道转换：
+写侧 `normalize_genre`（中文原话 → value），读侧 `genre_label`（value → 中文）。
+归一口径是刻意的：复合词取**中心词**（「都市科幻」→ `scifi`、「科幻都市」→ `urban`），
+括号说明不参与取词，对不上字典落 `other` 而不是抛错——「赛博朋克」是能筛的真实分类。
+`genre_label` 认不出的值**原样返回**：展示映射没有资格改数据（历史脏行、Mock 里的中文都在这档）。
+
+`GENRES` 是 Java `NovelGenres.ALL` 的镜像，而**镜像会漂**。#44 那次是库里先漂
+（写 label 也能存成功，筛选按 value 查就凭空少一本），第二次是真机跑通三章后被
+「无效的小说类型」挡在归档最后一步。所以加改任何一个题材要**三处同改**：
+
+| 位置 | 角色 |
+| --- | --- |
+| `services/api/novel/.../constant/NovelGenres.java` | 字典的真源（也是 `GET /books/genres` 的返回） |
+| `schemas.GENRES` | Python 侧镜像，写库前的白名单 |
+| `apps/admin-web/src/pages/novel/list/index.tsx` 的 `genreColorMap` | 显示层硬编码（下拉选项来自 `GET /books/genres`，本地只写死颜色） |
+
+前两条由 `test_genre_contract.py` 用正则读 Java 源文件逐条比对钉死（第三条是显示层，
+新题材漏了颜色只是 Tag 变灰，不影响筛选）。改字典前先跑它。
 
 ## 书级圣经与种子正典（`worldbuild` + `graph.bible_extraction`）
 
@@ -442,6 +494,7 @@ token（§9.1/§9.2 的分工本来就是按成本切的）。合并只有一条
 | `NOVEL_API_BASE_URL` | `http://localhost:8080/api` | 容器里覆盖成 `http://api:8080/api` |
 | `NOVEL_INTERNAL_TOKEN` | 空 | **必须等于** Spring 侧 `app.internal-token`，否则写入 403 |
 | `NOVEL_AUTHOR_ID` | `1` | 内部通道建书要落到某个用户名下（`book.author_id NOT NULL`） |
+| `NOVEL_REQUEST_TIMEOUT_SECONDS` | `30.0` | 单次 HTTP 超时；归档那一次要连着写几十条断言与摘要，比对话链路的读接口宽 |
 | `NOVEL_MAX_RETRIES` / `NOVEL_RETRY_BACKOFF_SECONDS` | `3` / `1.5` | 整本成稿只落一次库，一次抖动就丢书不可接受；有终态 `NovelStoreError` |
 
 成稿与正典**同源切换**（要么都打 Java，要么都留内存）是刻意的：一半持久一半内存会
@@ -560,7 +613,9 @@ stage 名与发射方是**字面耦合**（改一处即指标归零且不报错�
 改名没同步到 metrics，转红的是这条而不是那份全零报告。
 
 离线半程实测（`InMemoryCanonStore` + 真 `compile_context`，50 章 × 3 路径 = 150 样本，
-零模型、零 MySQL，token 口径 `context.approx_tokens`）：
+零模型、零 MySQL，token 口径 `context.approx_tokens`）。下表是**某次离线运行的快照，
+不是不变量**——被用例钉住的是「P95 与最大值 ≤ 4000 且 `over_limit` 为空」和「走平」这两个
+形状，数字本身会随离线占位模板改动而变，不要拿它当回归基线去 diff：
 
 | 装配路径 | 样本 | P50 | P95 | 最大 | 超限 | 降级 |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -579,6 +634,7 @@ as-of 50 时快照 247 条断言。注入块随章数**增长然后贴顶走平*
 pnpm agentnovel:test   # 仓库根目录；复用 services/chat/.venv，离线零网络
 ```
 
+`tests/` 下 15 个 `test_*.py`，共 312 条用例（2026-10 实测），零模型、零 MySQL、零网络。
 串行跑，不并发。黄金集与长测监控各另有一个独立入口（CI 里各自一条 step：红了要能立刻
 分清是「判据/预算退化」还是「用例本身坏了」）：
 
@@ -616,6 +672,9 @@ services/chat/.venv/Scripts/python.exe -m pytest services/agent-novel/tests/test
 | 文件 | 锁住的行为 |
 | --- | --- |
 | `test_store.py` | 成稿 + 正典协议语义：id 顺序、按书隔离、追加→快照 `authority=model`、重放不重复、四类计数口径、as-of 闭区间、todo 不注入、称谓唯一冲突跳过、台账内容键去重（换幂等键不翻倍、NULL span 也算重复、跨来源各留一行、缺 code/checker 硬失败、按列宽截断） |
+| `test_agent.py` | 装配工厂：插槽契约（`VerticalAgent` 的 name/description/`utterances == NOVEL_UTTERANCES` 且无空白语料）、十一节点齐备、有 key 与无 key 两条装配分支都出插槽；**分阶段模型**三条（`STAGE_ROLES` 由 `NODE_MODEL_ROLES` 推导且声明的节点名真实存在于图内、角色槽位逐个生效且未声明的角色回落默认槽位、任一角色不可用时**整体**降级为 `OfflineNovelModel` 而不是只降那一颗） |
+| `test_genre_contract.py` | 题材码值契约：用正则读 `NovelGenres.java` 并逐条比对 `GENRES`（镜像漂移的活体检测，见「题材码值契约」）、`normalize_genre` 的十条归一（复合词取中心词、括号说明不参与、对不上字典落 `other`）、`genre_label` 只翻译已知 value 且认不出的原样返回 |
+| `test_resume_state.py` | resume 后的命名空间复原：检查点把 pydantic 模型存成 LangChain constructor 信封，信封能拆回实例且**嵌套**逐层拆（`SceneCard` 里每个 `PlannedScene` 各带一份）、值本来就是实例时是空操作（冻结 dataclass 原样回来）、`None` 与形状不对的值不许被捏成模型。真机（`checkpointer=redis`）在第 1 章计划闸门确认后就报过 `'dict' object has no attribute 'wordsLow'` |
 | `test_extract.py` | 逐字证据闸门（保留/丢弃/空白容忍）、抽取失败不 commit、正典只在确认后写、实体键跨章累积、**圣经种子四条口径**（todo 原样透传 + 「书级圣经：」证据、人物 → anchor + 一条主别名、`is_alive` 只为死人写、关系落复合键 `rel:a:b`） |
 | `test_gates.py` | 规则闸门：字数带与空白计数、引号遮蔽与语句 span 的坐标回归、七条规则各自的**命中与不命中**两侧（对话内的「我」、可变谓词、`todo` 候选、正常死亡、只提及姓名不发言）、`pending:` 编号解析、`skipped` 三类计数、`validate_findings` 四条作废路径、`per_code_limit` 取舍与顺序确定性；**计划闸门**四条规则各自的命中/跳过两侧（无登记表时 `no_registry`、`newEntities` 显式声明过不算违规、引不出编号时 `no_ref`、卡文本坐标落在**整行**）与 `run_plan_rules` 共用验收口 |
 | `test_judge.py` | 语义裁判：编号渲染与注入块同构、span 由证据反推与 `relocated` 计数、`checker` 强制归位、三类丢弃计数、调用失败/返回类型异常都记 `failed=True`（**不当成空集**）、无编号判定被验收口作废、提示词只带编号表与已命中编码；**计划裁判**三条（定位落在卡文本而非正文、证据不在卡上即 `unlocatable`、失败在计划侧同样是不可判定） |

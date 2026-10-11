@@ -38,6 +38,22 @@ pnpm wiki:site:install    # 单独重装它的依赖
 
 端口优先级 `PORT` > `config.json.port`（本机为 80）> 3150。Windows 下覆盖端口用 PowerShell：`$env:PORT=3150; pnpm wiki:site`，或改 `config.json`（本地副本，不进仓库）。`config.json` 里的 `gitRepo`、`mdPath`、`siteUrl`、`autoSyncInterval` 等同样是本地配置，站点每 180 秒拉的就是上面那个仓库，所以推送成功后最多等 3 分钟本地/线上都能看到新内容。
 
+### 上游 README 里不要照做的几处
+
+`apps/power-wiki/README.md`（及 `README_ZH.md`）是上游自带的文档，与这份本地副本的实际状态有偏差，
+按它操作会踩空。改动要在上游仓库做，重新解压即覆盖，所以这里只登记「本地该怎么做」：
+
+| README 的说法 | 本地实际 |
+| --- | --- |
+| `npm run test:env` | **这个脚本不存在**。`package.json` 里只有 `test`（= `node --test tests/*.test.js`，当前 2 个文件 2 条用例，全绿） |
+| 访问 `http://localhost:3150`、`"port": 3150` | 本机 `config.json` 是 **80**（`docker-compose.yml` 也映射 `80:80`，healthcheck 探 `/` 于 80），3150 只是代码里的兜底默认 |
+| `git clone … && npm install`、`docker run … sayunchuan/powerwiki` | 本地不是 clone 来的（没有 `.git`），依赖由仓库根 `pnpm wiki:site:install` 装进 workspace；上游镜像不是本站的部署通道 |
+| `cp config.example.json config.json` | `config.json` 已存在且是**本地真配置**（指向 `good-zheng/goodzheng-dev-wiki`），照 README 覆盖等于把站点内容源清空 |
+| 项目结构树 | 缺 `src/utils/seoHelper.js`、`src/utils/shortlink.js`、`public/admin.html`（`/stats` 页用它渲染）、`tests/`、`docs/`、`assets/`，以及本地文件 `.env`、`config.json`、`.git-cache/`、`.stats.json`、`.access-log.json` |
+
+`.env` 只有一行 `LANG`，四个可选变量（`CONFIG_PATH` / `DATA_DIR` / `GIT_CACHE_DIR` / `LANG`）
+的读取点在 `src/config/env.js`，README 这一段是准的。
+
 ## 闸门（`scripts/wiki-lib.mjs`，人工与定时共用一套）
 
 - 只发布白名单扩展名：`.md .txt .json .yaml .yml .js .cjs .mjs .py .sh`，其余跳过并在日志里告警；隐藏文件一律不取
@@ -46,6 +62,8 @@ pnpm wiki:site:install    # 单独重装它的依赖
 - 本地真源为空而站点有内容时拒绝执行（否则会删光线上 Skill），确认无误再加 `--force`
 
 ## 定时任务
+
+**当前是关的**：2026-10-02 按要求 `Disable-ScheduledTask -TaskName goodzheng-wiki-sync`（未删除；2026-10-12 复核 State 仍为 `Disabled`）。所以站点上的 `其他/skills` 不会自己更新，别按「半小时后会自动同步」推断——要立刻上站就手工 `pnpm wiki:sync`（先 `pnpm wiki:sync:dry` 看清单），要恢复定时就重跑下面的注册脚本（`-Force` 语义，会重新注册并启用）。
 
 每 30 分钟跑一次，日志追加到 `C:\Users\Administrator\.qoder-cn\wiki-sync.log`（每行一次运行；无变化也记一行）。注册与卸载用同一个脚本：
 

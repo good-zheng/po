@@ -2,7 +2,9 @@
 
 po 的烹饪助手垂直 Agent（纯库）。把「找菜 → 看细节 → 报分类」封装成一个
 ReAct 子图，经 agent-core 的插槽协议交给 `services/chat` 宿主编排，
-最终由 `apps/cooking-app` 的「AI 指导」聊天页消费。
+最终由 `apps/cooking-app` 的「AI 指导」聊天页消费——该页不显式指定 `agent`，
+靠 Layer1 意图路由委托过来。`apps/cooking-mini` 不再消费本插槽：小程序因个人主体禁 AI 类目
+已在编译期摘除大模型 WS 链路（commit `6e70944`），全仓 `apps/cooking-mini/src` 里没有 `/ws/chat`。
 
 - **不独立部署**：本包没有 FastAPI / 路由 / 端口，只提供 `build_cooking_agent`
   一个装配入口；宿主在 `services/chat/app/agent.py` 的 `_builtin_agents`
@@ -18,8 +20,8 @@ ReAct 子图，经 agent-core 的插槽协议交给 `services/chat` 宿主编排
              未命中 → chitchat 兜底
 ```
 
-`COOKING_AGENT_NAME`（`cooking`）必须与路由的 Route 名一致，命中后
-supervisor 才委托过来。子图只认 `CoreState.messages`，菜谱数据不进
+`COOKING_AGENT_NAME`（`agent.py:39` 的模块常量，值为 `cooking`，不是环境变量）必须与路由的
+Route 名一致，命中后 supervisor 才委托过来。子图只认 `CoreState.messages`，菜谱数据不进
 `artifacts`——工具结果文本就是前端渲染菜谱卡片的唯一数据源。
 
 ## 模块
@@ -65,17 +67,21 @@ RUN_ERROR 终止，用户只看到一句「运行出错」。装配期同理不�
 
 ```powershell
 # 在 services/chat 下（复用宿主的 .venv，本包无独立虚拟环境）
-pip install -e "../agent-core"        # 先装底座
+pip install -e "../agent-core[dev]"      # 先装底座
 pip install -e "../agent-cooking[dev]"
 ```
 
 或直接用仓库根命令：
 
 ```powershell
-pnpm chat:install        # 按依赖序安装 agent-core → agent-cooking → chat
-pnpm agentcooking:test   # 运行本包 pytest
-pnpm chat:test           # 含宿主的插槽装配测试
+pnpm chat:install        # 按依赖序装 agent-core → agent-cooking → agent-talk → agent-novel → chat
+pnpm agentcooking:test   # 运行本包 pytest（当前 34 个用例）
+pnpm chat:test           # 含宿主的插槽装配测试（test_cooking_wiring.py）
 ```
+
+`pnpm chat:install` 会连 talk / novel 一起装（`scripts/run-service.mjs` 里是固定五条），
+单独装本包时也要先有 `agent-core`，否则 import 就失败。CI 的 Chat job 同样按这个顺序，
+再依次跑四个包的 pytest。
 
 测试不依赖外部服务与模型：数据源用 `MockRecipeStore`，模型用假模型或
 `OfflineCookingModel`。
