@@ -47,6 +47,14 @@ class Settings(BaseSettings):
     internal_token: str = ""
     ticket_timeout_seconds: float = 5.0
 
+    # 日志落盘（见 app/logging_setup.py）。默认开：事故里「进程静默退出」之所以
+    # 无从判定，就是因为服务端磁盘上零记录——靠 .env 才开等于把坑留给下一个环境。
+    # 相对路径按进程 cwd 解析：本机是 services/chat，容器里是 /app。
+    # 留空即关闭落盘、只输出到 stderr（测试用它）。根 .gitignore 的 .tmp/ 与 *.log
+    # 已覆盖默认路径，不会把日志带进提交。
+    log_file: str = ".tmp/logs/chat.log"
+    log_level: str = "INFO"
+
     @property
     def cors_origin_list(self) -> list[str]:
         """把逗号分隔的配置拆成 CORS 中间件需要的列表，并丢弃空项。

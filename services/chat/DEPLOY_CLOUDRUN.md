@@ -221,6 +221,12 @@ WS 路径是 `/ws/chat`，**不带** `/api` 前缀（与 `app/main.py` 的挂载
   基本是镜像用成了普通 `redis`（缺 RedisJSON/RediSearch）。换 `redis/redis-stack-server` 重建 Redis 服务；
   临时应急可把 `AGENT_CORE_CHECKPOINTER` 设为 `sqlite`（单机、需持久化目录），**不要**默默换成别的中间件，先定方向再改。
 - **一问就冷启动**：最小副本数设 0 时每次 WS 连接都要等新版本拉起，保持 ≥1。
+- **长跑中途「连接断开」却查不到原因**：云托管控制台只收 stdout/stderr，实例缩容或重启后
+  那几行就翻不到了。容器内还有一份落盘副本 `/app/.tmp/logs/chat.log`（`PY_SERVER_LOG_FILE`，
+  相对容器 cwd；目录不可写时只降级成一条 WARNING，不影响启动），进
+  「实例详情 → 登录容器 / WebShell」`tail -200 /app/.tmp/logs/chat.log` 看最后停在哪个节点、
+  有没有 `chat 关闭（pid=…）`——判读表见 `README.md`「日志落盘与静默断连四态判读」。
+  落盘不会替掉平台日志采集，两者是同一批记录的两个去处。
 - **CORS**：小程序请求不受浏览器 CORS 约束，`PY_SERVER_CORS_ORIGINS` 只服务于 admin-web；
   管理端上线时把生产域名加进去即可。
 - **密钥**：任何 `deploy-prod.json` / `application-prod.json` / `application-*.yaml` 都不得入库或进镜像，一律控制台环境变量注入。

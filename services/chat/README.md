@@ -123,6 +123,49 @@ Java 的归属校验只在看见 `X-Actor-Uid` 时才跑，匿名连接等于整
 帧级闸门判的是帧里的 `agent`（所以报了 `novel-chat` 的 `resume` 帧同样被拦），
 不带 `agent` 的 `resume` 不在它覆盖范围内——收它需要宿主侧记 `thread_id → uid`，同一条遗留项。
 
+### 连接出问题时怎么定位（分层探针）
+
+管理端创作面板的连接错误分三种情形，各自指向不同进程，浏览器侧看不出区别：
+
+| 界面那句话 | 断在哪 | 先查 |
+| --- | --- | --- |
+| 连不上生成服务（且没取到握手票据） | chat 进程 / 反代 | chat 是否在跑（本机 5090）、管理端容器 `location ^~ /ws/chat` 与 `ADMIN_CHAT_UPSTREAM`、云托管实例是否缩容 |
+| 握手被服务端拒绝（连接没建起来） | 验票通道 | chat 的 `PY_SERVER_INTERNAL_TOKEN` 是否等于 Java 的 `app.internal-token`、Java 是否可达（票据 60 秒过期也会走这条） |
+| 生成连接已断开 | 跑起来之后 | 这一轮停在中断处，属运行期而非连接期，按下面的四态判读表查落盘日志 |
+
+`scripts/probe_novel_channel.py` 一次把这四层跑完并只打结论（内部令牌只报长度，票据值与正文不外泄；
+默认不发任何会消耗模型额度的帧）：
+
+```powershell
+# cwd 必须是 services/chat；--book-id 用于验内网读口与续写闸门
+.venv\Scripts\python.exe scripts\probe_novel_channel.py --book-id 14
+# 云上那条反代：换 --ws；真实票据只能现场从浏览器 DevTools 复制（60 秒过期）
+.venv\Scripts\python.exe scripts\probe_novel_channel.py --book-id 14 --ws wss://<管理端域名>/ws/chat --ticket <票据>
+```
+
+退出码 0 表示链路完整；有 FAIL 时先修最前面那一层——后面各层的失败多半是它的连带。
+
+### 日志落盘与「静默断连」四态判读
+
+日志同时写 stderr 与文件（`PY_SERVER_LOG_FILE`，默认 `.tmp/logs/chat.log`，相对进程 cwd；
+5MB × 5 份滚动）。落盘是刻意要的：uvicorn 只给 `uvicorn*` 配 handler，`app.*` 的日志
+原本靠 logging 的 lastResort 打到终端，进程一没就零记录——2026-10-12 那次 novel 长跑
+「连接 open 后无终态帧就断」，事后完全无法判定是谁结束了进程。
+
+看到「生成连接已断开」时，按落盘日志区分四态（`scripts/verify_log_sink.py` 可在不监听
+端口的前提下把启动/装配/关闭三行验一遍）：
+
+| 日志里最后出现的 | 结论 | 下一步 |
+| --- | --- | --- |
+| `RUN_ERROR` / 「运行超时」（会映射成 `error` 帧） | 编排层失败，终态帧已发出 | 前端显示的应是「生成连接出错」；按堆栈查节点 |
+| `WS 连接结束：… code=<码>` 而本轮没有 `done` | 客户端或反代先断，服务端是被打断的一方 | 查前端心跳、nginx `proxy_read_timeout`、票据续期 |
+| `chat 关闭（pid=…）` 且没有本轮的任何结束行 | 进程优雅退出（Ctrl+C、reload、容器收到信号） | 核对是谁重启的；见下面 reload 那条坑 |
+| 既没有连接结束行也没有关闭行，日志戛然而止 | 进程被硬杀或崩溃 | 查系统事件/容器 OOM；用同一 pid 定位断点时刻 |
+
+一个会自己制造第四态的坑：`scripts/run-service.mjs chat start` 用 `--reload` 且
+`--reload-dir .` 覆盖整个 `services/chat`，所以长跑期间在这个目录里保存任何 `.py`
+（包括临时探针脚本）都会重启子进程、掐断正在跑的那一轮。
+
 出站帧：
 
 | 帧类型 | 说明 |
@@ -154,6 +197,8 @@ pnpm chat:test
 | `PY_SERVER_HOST` | `0.0.0.0` | 监听地址 |
 | `PY_SERVER_PORT` | `5090` | 监听端口 |
 | `PY_SERVER_CORS_ORIGINS` | 见 `.env.example` | 逗号分隔的跨域来源 |
+| `PY_SERVER_LOG_FILE` | `.tmp/logs/chat.log` | 日志落盘路径（相对 cwd）；留空 = 只输出 stderr。判读方式见上文「四态判读」 |
+| `PY_SERVER_LOG_LEVEL` | `INFO` | 落盘与终端的最低级别（启动/装配/WS 生命周期行都是 INFO） |
 | `COOKING_API_BASE_URL` | `http://localhost:8080/api` | 烹饪插槽读取的菜谱接口地址；容器内用 `http://api:8080/api` |
 | `TALK_INTERNAL_TOKEN` | 空 | 言外建议回写 `/talk/internal/**` 的令牌；须等于 Spring 侧 `app.internal-token`，否则该插槽不落库 |
 | `NOVEL_API_BASE_URL` | `http://localhost:8080/api` | 小说成稿与正典写入的内网地址（含 `/api` 前缀） |

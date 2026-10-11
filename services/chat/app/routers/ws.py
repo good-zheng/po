@@ -291,8 +291,15 @@ async def _loop(websocket: WebSocket, orchestrator: Orchestrator, actor: WsActor
                 settings=orchestrator.settings,
                 latency_ms=int((time.monotonic() - started) * 1000),
             )
-    except (WebSocketDisconnect, _ClientGone):
-        # 客户端正常关闭 / 发送时发现已断开：结束协程即可，不记录错误。
+    except (WebSocketDisconnect, _ClientGone) as exc:
+        # 客户端正常关闭 / 发送时发现已断开：不当错误处理，但必须落一行——
+        # 「有这行而本轮没有 done」= 链路或客户端先断；「日志里没有这行」= 服务端
+        # 进程自己没了（事故里唯一的区分依据，见 app/logging_setup.py）。
+        logger.info(
+            "WS 连接结束：%s code=%s",
+            type(exc).__name__,
+            getattr(exc, "code", "-"),
+        )
         return
     except Exception:
         # 其余异常（含非 JSON 文本导致的解析错误）先落日志再上抛，
