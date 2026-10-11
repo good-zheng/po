@@ -43,6 +43,7 @@ vi.mock('@ant-design/pro-components', () => ({
 
 vi.mock('@ant-design/icons', () => ({
   LinkOutlined: () => null,
+  UserOutlined: () => null,
 }));
 
 vi.mock('./requestErrorConfig', () => ({
@@ -242,5 +243,53 @@ describe('app getInitialState', () => {
       '该账号无管理端权限（当前角色：user）',
     );
     expect(mockReplace).not.toHaveBeenCalled();
+  });
+});
+
+/**
+ * 顶栏头像：ProLayout 在 src/icon/children 全空时渲染 null，
+ * 所以「账号没上传过头像」曾经表现为右上角整块头像消失而不是空圆圈。
+ */
+describe('app layout avatarProps', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  /** avatarProps 的类型是「可关掉的插槽」（`… | false`），这里只取回它对象化的一面 */
+  type RenderedAvatar = {
+    src?: string;
+    srcSet?: string;
+    icon?: unknown;
+    children?: unknown;
+    title?: string;
+  };
+
+  const render = async (currentUser: any): Promise<RenderedAvatar> => {
+    const { layout } = await import('./app');
+    return layout({
+      initialState: { currentUser },
+      setInitialState: vi.fn(),
+      loading: false,
+    } as any).avatarProps as RenderedAvatar;
+  };
+
+  it('gives the header a default avatar when the account has none', async () => {
+    const props = await render({ username: 'root', nickname: '管理员' });
+    expect(props.src).toBeTruthy();
+    // 库里那条判据的原文，avatar 节点只有在至少一项非空时才存在
+    expect(
+      Boolean(props.src || props.srcSet || props.icon || props.children),
+    ).toBe(true);
+    expect(props.title).toBe('管理员');
+  });
+
+  it('keeps a uploaded avatar as the header image', async () => {
+    const props = await render({ avatar: 'https://cdn.example.com/me.png' });
+    expect(props.src).toBe('https://cdn.example.com/me.png');
+  });
+
+  it('still offers the icon fallback when a stored avatar url dies', async () => {
+    const props = await render({ avatar: 'https://cdn.example.com/gone.png' });
+    expect(props.icon).toBeTruthy();
   });
 });

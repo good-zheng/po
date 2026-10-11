@@ -21,6 +21,7 @@ import {
   VersionDropdown,
 } from '@/components';
 import { currentUser as queryCurrentUser } from '@/services/ant-design-pro/api';
+import { headerAvatarProps } from '@/utils/avatar';
 import {
   isAdminRole,
   noAdminPermissionMessage,
@@ -148,8 +149,7 @@ export const layout: RunTimeLayoutConfig = ({
       ].filter(Boolean);
     },
     avatarProps: {
-      src: initialState?.currentUser?.avatar,
-      title: initialState?.currentUser?.nickname,
+      ...headerAvatarProps(initialState?.currentUser),
       render: (_, avatarChildren) => (
         <AvatarDropdown>{avatarChildren}</AvatarDropdown>
       ),

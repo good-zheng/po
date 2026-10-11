@@ -11,10 +11,8 @@ import {
   updateCurrentUser,
   uploadAvatar,
 } from '@/services/user';
+import { DEFAULT_AVATAR } from '@/utils/avatar';
 import useStyles from './index.style';
-
-const DEFAULT_AVATAR =
-  'https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png';
 
 /** 头像大小上限（与后端一致）：2MB */
 const MAX_AVATAR_SIZE = 2 * 1024 * 1024;
