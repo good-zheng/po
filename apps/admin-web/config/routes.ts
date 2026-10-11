@@ -136,13 +136,13 @@ export default [
       },
     ],
   },
-  {
-    path: '/chatbot',
-    name: 'chatbot',
-    icon: 'robot',
-    access: 'canAdmin',
-    component: './chatbot',
-  },
+  // {
+  //   path: '/chatbot',
+  //   name: 'chatbot',
+  //   icon: 'robot',
+  //   access: 'canAdmin',
+  //   component: './chatbot',
+  // },
   {
     path: '/users',
     name: 'users',
