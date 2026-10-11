@@ -9,26 +9,27 @@ import Features3 from '~/components/widgets/Features3.astro';
 import Projects from '~/components/widgets/Projects.astro';
 import CallToAction from '~/components/widgets/CallToAction.astro';
 import { CONTACT } from '~/contact';
+import { LIVE } from '~/links';
 
 const metadata = {
   title: '简历 — goodzheng',
-  description: '独立开发者的简历：能独立把一条链路从表结构写到真机上。技术栈与代表项目可核查；教育与任职经历留位待填。',
+  description:
+    '全栈开发工程师，2016.06 入行：前端工程化出身，近四年把 Java 与 Python 服务端一起接过来。最长的一段在腾讯系做了三年全栈、连续 3 年 A+；现在独立开发三件可直接访问的作品。',
   ignoreTitleTemplate: true,
 };
 ---
 
 <Layout metadata={metadata}>
-  <!-- TODO 简历：结构已就位，只需替换文案，不必改组件。
-       待填位置：#career 时间线里三条标着「待补充」的 ghost 条目（工作经历两段、教育经历一段），
-       填好后去掉 ghost 字段即可恢复实心节点；PDF 附件位见下方 Note 与 CallToAction。
-       联系方式统一取自 src/contact.ts，改一处全站生效。 -->
+  <!-- 任职、教育与业绩数字按本人 2026-10 版简历 PDF 填写。年龄、性别、籍贯、期望薪资有意不上这一页：
+       公开页会被搜索引擎与 HR 系统长期抓取，薪资写死还会削掉议价空间。PDF 原件同样不放进 public/，
+       需要时来信单独发——这样换简历不必重建镜像，也不会把不公开的字段带进 dist。 -->
 
   <!-- Hero Widget ******************* -->
 
   <Hero
     id="top"
     tagline="简历"
-    badge="持续更新"
+    badge="2026-10 版"
     actions={[
       { variant: 'primary', text: '看作品', href: '/#products', icon: 'tabler:apps' },
       { text: '给我写信', href: `mailto:${CONTACT.email}` },
@@ -40,8 +41,9 @@ const metadata = {
 
     <Fragment slot="subtitle">
       一个人做完三件作品：菜谱平台的三端与双后端，一条从录音到话术的实时 AI 链路，
-      以及第三件「言外书斋」——把长篇小说的一致性做成可核验记录的正典链路。
-      不写概念，只写能被代码仓库、构建产物和线上接口验证的东西。
+      以及第三件「言外书斋」——把长篇小说的一致性做成可核验记录的正典链路。 在这之前是 2016
+      年起的六段任职：前端工程化出身，带过小组，近四年把后端服务与 AI 链路一起接了过来。
+      不写概念，作品里每一项都能指出文件、接口与构建产物。
     </Fragment>
 
     <Fragment slot="content">
@@ -51,15 +53,16 @@ const metadata = {
         <span class="font-medium text-heading">{CONTACT.wechat}</span> · 手机
         <a class="underline" href={`tel:${CONTACT.phoneE164}`}>{CONTACT.phone}</a>
       </p>
+      <p class="max-w-2xl mx-auto mt-2 text-sm text-muted">意向：全栈开发工程师 · 期望城市：长沙</p>
     </Fragment>
   </Hero>
 
   <!-- Note Widget ******************* -->
 
   <Note
-    variant="warning"
-    title="简历区块预留"
-    description="教育经历、任职公司、在职时间段与证书由本人补充；下方已按投递场景把结构占好位，替换文案即可。PDF 版暂未挂出下载入口——public/ 下还没有对应文件，需要的话邮件里说，我单独发。"
+    variant="info"
+    title="这一页的数字分两类"
+    description="三件作品的数字能在仓库、构建产物和线上接口里核对；任职期间的百分比与绩效来自我本人的工作总结与考核结果，公开仓库查不到，需要佐证来信索取。PDF 版暂未挂出下载入口——public/ 下没有对应文件，需要的话邮件里说，我单独发。"
   />
 
   <!-- Features Widget *************** -->
@@ -94,6 +97,18 @@ const metadata = {
         icon: 'tabler:writing',
         description: '部署台账、脚本入口、知识文档与建表语句都是工程件。密钥值永不进仓库，平台常量永不凭记忆填写。',
       },
+      {
+        title: 'AI 落地这条线是从 Prompt 工程走过来的',
+        icon: 'tabler:sparkles',
+        description:
+          '在腾讯时做的是可计量的场景：智能测试用例生成把覆盖率提了 25%、测试周期缩短 20%；游戏多语言翻译工具用多线程加 LLM，把 100 万字从 4-6 小时压到 30 分钟，累计实际翻译量到数千万字；还做过本地化 LLM 部署，让组内用自然语言查指标。近两年转向自研 Agent 编排——意图路由、结构化输出、多级降级、人在环校验。',
+      },
+      {
+        title: '带过小组，也当过技术方案的第一责任人',
+        icon: 'tabler:users',
+        description:
+          '带过 1 年前端小组，负责技术方案制定与任务分配；更早的段落里参与任务拆分与分配管理，关键需求零延期、无致命缺陷。连续 3 年 A+ 绩效与超 2 个月年终，是在腾讯系那三年从零到一主导一个平台交付期间拿到的。',
+      },
     ]}
   >
     <Fragment slot="bg">
@@ -106,38 +121,78 @@ const metadata = {
   <Timeline
     id="career"
     tagline="经历"
-    title="最近一段可核查，更早的留位待填"
-    subtitle="教育与任职经历按倒序补齐即可；填好后去掉条目的 ghost 字段，就会恢复成实心节点。"
+    title="2016 年至今，按倒序"
+    subtitle="六段任职加两段教育与一段自主投入期。公司名用工商注册全称，时间段取自本人简历，可以拿去背调。"
     layout="vertical"
     items={[
       {
         date: '2026-09 ~ 现在',
         title: '独立开发 · 叮叮厨、言外 EchoTalk 与言外书斋',
         description:
-          '三件作品共用一条工程底座：TypeScript 三端、Java 业务后端、Python AI 服务，部署在微信云托管。架构设计、实现、测试、部署与文档全部一人完成。',
+          '三件作品共用一条工程底座：TypeScript 三端、Java 业务后端、Python AI 服务，部署在微信云托管。架构设计、实现、测试、部署与文档全部一人完成。<br><br>起点是 2026-09-20 的第一次提交，那个月还在职，十月起全职投入；三端加 AI 链路从空仓库到能上真机用了 10 天，如今叮叮厨落着 146 条自动化测试、言外书斋 305 条。',
         icon: 'tabler:rocket',
         highlight: true,
       },
       {
-        date: '待补充',
-        title: '工作经历 · 第一段',
-        description: '占位：公司 / 职位 / 起止时间 / 负责内容与可量化结果。请只写能被材料佐证的部分。',
-        icon: 'tabler:briefcase',
-        ghost: true,
+        date: '2026-07 ~ 2026-10',
+        title: '爱奇迹（深圳）创新科技有限公司 · 全栈开发',
+        description:
+          '外网品牌站的电子烟动效页面，以及 soms 的全栈需求。<br><br>从 0 搭建 AI Skill 工程化体系：把产品页面拆成标准化楼层 Skill 单元，配编排调度与楼层精准命中策略，让 AI 生成结果稳定对齐团队设计规范，一次通过率从 40% 提到 80%；同时沉淀可复用 Skill 组件库，同类需求接入成本下降 80%。另一件事是用 AI 工作流在 1 周内完成原定 1 个月排期的核心需求，交付周期压缩 75%、效率约 4 倍，保住 soms 按期上线。<br><br>这段结束后回到独立开发。',
+        icon: 'tabler:sparkles',
       },
       {
-        date: '待补充',
-        title: '工作经历 · 更早段落',
-        description: '占位：同上，按倒序继续添加条目。',
-        icon: 'tabler:briefcase',
-        ghost: true,
+        date: '2025-05 ~ 2026-06',
+        title: '暂离全职 · 家庭原因，期间持续技术投入',
+        description:
+          '2025 年 3 月因家庭原因（照顾孩子）离开全职岗位，到 2026 年 6 月为止。这期间没有停手：往 AI 应用方向精进，把 vibe coding 工作流真正用在自己的项目上——上面那三件作品就是这段时间长出来的。',
+        icon: 'tabler:home-2',
       },
       {
-        date: '待补充',
-        title: '教育经历',
-        description: '占位：学校 / 专业 / 学历 / 起止时间；如有奖学金、竞赛或论文，另起一条描述。',
+        date: '2022-02 ~ 2025-04',
+        title: '深圳市腾娱互动科技有限公司 · 全栈开发',
+        description:
+          '从 0 到 1 主导质量效率管理平台的架构设计：前端 TypeScript + Vue3 + Element Plus，用 Composition API 收拢组件逻辑复用；后端 Python + Flask，用 WebSocket 做实时日志监控面板。<br><br>AI 能力落地以 Prompt 工程为核心：智能测试用例生成让覆盖率提升 25%、测试周期缩短 20%；游戏多语言自动化翻译工具用多线程加 LLM 调用，把 100 万字从 4-6 小时压到 30 分钟，实际累计翻译量到数千万字；另外做过 LLM 本地化部署，落地组内指标数据的自然语言查询。<br><br>其余是些不好吹但确实难啃的部分：2GB 大文件下载用分片传输加断点续传把成功率做到 99.5%、耗时缩短 60%；后台批量处理改多线程后执行效率提升 3 倍；CDN、代码拆分与 HTTP 缓存把核心文件响应压进 50ms 以内；Nginx 反向代理加负载均衡让 Flask 服务能横向扩展；Docker 标准化前后端环境，一键部署把环境配置效率提了 80%。<br><br>带过 1 年前端小组，负责技术方案制定与任务分配。连续 3 年 A+ 绩效、超 2 个月年终。',
+        icon: 'tabler:flask',
+      },
+      {
+        date: '2020-03 ~ 2022-02',
+        title: '深圳一种黑科技有限公司 · 前端开发 / Java 开发',
+        description:
+          '从 0 搭前端工程体系：Vue2 + Webpack 环境集成、小程序环境集成、移动端适配方案的设计与实施，并落地前端自动化部署流水线。<br><br>这一段开始往后端走：承担业务模块的 Java CRUD 与接口开发，完成业务逻辑实现与前后端联调，前后端边界是在这里打通的。同时参与开发任务拆分与分配管理，关键需求零延期、无致命缺陷。',
+        icon: 'tabler:code',
+      },
+      {
+        date: '2019-03 ~ 2020-03',
+        title: '深圳市点购电子商务控股股份有限公司 · 前端工程师',
+        description:
+          '负责小程序端、微信 H5 端与后台管理系统的核心模块，包括登录体系和 IM 即时通讯。结合百度语音识别做了领红包营销活动，用 v-charts 写可复用的数据监控组件；用 vue-cli 3.0 重构后台管理系统，并落地用户行为数据埋点。',
+        icon: 'tabler:message-2',
+      },
+      {
+        date: '2017-08 ~ 2019-03',
+        title: '深圳超级金店有限公司（增长极客）· 前端工程师',
+        description:
+          'uni-app 核心代码开发：环境搭建、页面路由、微信 SDK 集成，以及 Git / GitLab 分支规范建设。制定团队编码规范、开发流程、Flex 布局方案与分支管理，负责任务分配与技术难点攻坚。<br><br>啃下来的两块：仿短视频上下滑动的交互体验（示例已开源）；性能与数据安全——CDN、图片与代码压缩、路由懒加载、分包、缓存、防抖节流，加上 RSA / MD5 加密方案。',
+        icon: 'tabler:device-mobile',
+      },
+      {
+        date: '2016-06 ~ 2017-08',
+        title: '心悦云端 · Web 前端工程师',
+        description:
+          '入行的第一段：用 Foundation 6 写响应式页面，配合 sea.js 做模块化开发，jQuery + Ajax 完成页面渲染；实现登录态拦截与页面重定向。',
+        icon: 'tabler:world',
+      },
+      {
+        date: '2013 ~ 2017',
+        title: '湖南农业大学 · 本科 · 牧医',
+        description: '专业名称按本人简历原文填写。转行做前端之后没有再回到本专业，但跨专业这条路是自己走完的。',
         icon: 'tabler:school',
-        ghost: true,
+      },
+      {
+        date: '2013 ~ 2016',
+        title: '湖南生物机电职业技术学院 · 大专 · 牧医',
+        description: '与上一段年份有重叠，是同一时期在读的两张文凭，照简历原样列出。',
+        icon: 'tabler:school',
       },
     ]}
   />
@@ -148,24 +203,32 @@ const metadata = {
     id="capabilities"
     tagline="能力"
     title="岗位视角下的能力清单"
-    subtitle="按在这三件作品里真实承担过的程度排列；没做过的不写。"
-    columns={4}
+    subtitle="按真实承担过的程度排列，前端这条线的起点是 2016 年，后端与 AI 是后来一路补上的；没做过的不写。"
+    columns={3}
     items={[
       {
         title: '前端 / 多端',
-        description: 'Taro 微信小程序、Expo React Native、Umi Max + Ant Design 管理后台、Astro 静态站。',
+        description:
+          'Vue3 + Element Plus + Composition API、Vue2 + Webpack、uni-app、微信小程序与微信 H5；现在是 Taro 小程序、Expo React Native、Umi Max + Ant Design 管理后台、Astro 静态站。',
         icon: 'tabler:device-mobile-share',
       },
       {
         title: '后端',
-        description: 'Spring Boot + MyBatis-Plus 的业务 API、认证与审批；FastAPI 的 WebSocket 流式服务。',
+        description:
+          'Java + Spring Boot + MyBatis-Plus 的业务 API、认证与审批；Python + Flask 的高并发服务与 WebSocket 实时推送；FastAPI 的流式接口。',
         icon: 'tabler:server-2',
       },
       {
         title: 'AI 应用',
         description:
-          'Agent 编排、意图路由、结构化输出与检查点式会话记忆；正典式长程记忆（带出处与生效区间）加确定性规则与语义裁判的双闸门，以及各层的降级设计。',
+          'LangChain / LangGraph 上的 Agent 编排、意图路由、结构化输出与检查点式会话记忆；正典式长程记忆（带出处与生效区间）加确定性规则与语义裁判的双闸门，以及各层的降级设计。',
         icon: 'tabler:sparkles',
+      },
+      {
+        title: 'AI 辅助研发',
+        description:
+          '把重复的页面与需求拆成标准化 Skill 单元，用编排调度让生成结果对齐团队规范——上一段工作里把一次通过率从 40% 做到 80%。日常以 vibe coding 工作流为主，人工把关卡在契约与验收上。',
+        icon: 'tabler:wand',
       },
       {
         title: '实时音视频',
@@ -179,12 +242,14 @@ const metadata = {
       },
       {
         title: '工程化',
-        description: 'pnpm workspace monorepo、跨端类型契约、跨平台脚本包装、提交规范与静态检查。',
+        description:
+          'pnpm workspace monorepo、跨端类型契约、Vite / Webpack 工程化与前端自动化部署流水线、跨平台脚本包装、提交规范与静态检查。',
         icon: 'tabler:settings',
       },
       {
         title: '部署运维',
-        description: 'Docker 镜像构建、容器编排、Nginx 网关形态、云托管上线与部署台账。',
+        description:
+          'Docker 镜像构建与容器编排、Nginx 反向代理与负载均衡、Linux / Shell 排障、微信云托管上线与部署台账。',
         icon: 'tabler:cloud-upload',
       },
       {
@@ -242,9 +307,9 @@ const metadata = {
           alt: '插画：左侧是一章正文，中间是规则与裁判两道闸门，右侧是带出处的正典断言台账',
           format: 'svg',
         },
-        href: '/novel',
-        linkText: '看这条链路',
-        result: '305 个测试用例，一致性黄金集进 CI 门禁',
+        href: LIVE.novel,
+        linkText: '打开阅读端',
+        result: '305 个测试用例，一致性黄金集进 CI 门禁；阅读端游客可直接浏览',
       },
     ]}
   />
@@ -256,12 +321,12 @@ const metadata = {
     layout="card"
     tagline="联系"
     title="需要 PDF 版、项目细节或某段代码的走查"
-    subtitle="邮件里说一声，当天回复；也可以直接约一次屏幕共享，边看代码边讲。"
+    subtitle="邮件里说一声，当天回复。代码仓库对未登录访客返回 404，可以开协作者权限，也可以直接约一次屏幕共享，边看代码边讲。"
     actions={[
       { variant: 'primary', text: '给我写信', href: `mailto:${CONTACT.email}`, icon: 'tabler:mail' },
       { text: '填写联系表单', href: '/contact' },
-      { text: '看言外 EchoTalk', href: '/yanwai' },
-      { text: '看言外书斋', href: '/novel' },
+      { text: '打开管理后台（需登录）', href: LIVE.admin, target: '_blank' },
+      { text: '看言外书斋这条链路', href: '/novel' },
     ]}
   />
 </Layout>
