@@ -57,7 +57,7 @@ description: 任务收尾时把已验证、反直觉、下次还会踩的经验�
 
    `publish` 拒收非 `.md` 改动，并对新增行和未跟踪新文件做密钥扫描（`sk-`、`ghp_`、`-----BEGIN PRIVATE KEY-----`、`appsecret=`、长凭据赋值），命中即中止，不会先把脏内容推上 GitHub。
 
-4. 收尾提醒一句：PowerWiki 每 180 秒自动同步该仓库，站点根为 `goodzheng`，`项目` / `其他` 两个分区直接来自仓库目录结构；本地预览用仓库根 `pnpm wiki:site`。通用 Skill 那一侧另有每 30 分钟的定时镜像任务（`goodzheng-wiki-sync`），不需要人工推送。
+4. 收尾提醒一句：PowerWiki 每 180 秒自动同步该仓库，站点根为 `goodzheng`，`项目` / `其他` 两个分区直接来自仓库目录结构；本地预览用仓库根 `pnpm wiki:site`。通用 Skill 那一侧的定时镜像任务 `goodzheng-wiki-sync` **当前处于 Disabled**（2026-10-02 关掉，未卸载），所以 `其他/skills` 不会自己更新——要上站就手工 `pnpm wiki:sync`，细节见 `scripts/WIKI_SYNC.md`。
 
 ## 写作规范
 
@@ -69,6 +69,6 @@ description: 任务收尾时把已验证、反直觉、下次还会踩的经验�
 ## Resources
 
 - `scripts/wiki-capture.mjs` — `prepare`（复用/克隆工作副本 + 快进 + 大纲）、`status`（待提交清单）、`publish`（md-only + 密钥闸门 → commit → push，`--dry-run` 只校验不写）。工作副本按 `--dir` → `WIKI_DIR` → `../goodzheng-dev-wiki` → `.tmp/wiki` 顺序解析。
-- `D:\dev\po\scripts\sync-dev-wiki.mjs` — 每 30 分钟把本机用户级 Skill 镜像到站点 `其他/skills/`（`pnpm wiki:sync` / `wiki:sync:dry` / `wiki:sync:bootstrap`）。
+- `D:\dev\po\scripts\sync-dev-wiki.mjs` — 把本机用户级 Skill 镜像到站点 `其他/skills/`（`pnpm wiki:sync` / `wiki:sync:dry` / `wiki:sync:bootstrap`）；驱动它的计划任务当前 Disabled，默认要走手工命令。
 - `D:\dev\po\scripts\wiki-lib.mjs` — 两条链路共用的闸门：git 包装、待提交清单、扩展名白名单、密钥扫描。
 - `D:\dev\po\scripts\WIKI_SYNC.md` — 真源/镜像归属表、计划任务注册与卸载、故障排查。
