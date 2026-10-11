@@ -61,6 +61,7 @@ Dockerfile 里有一道构建期自证：`dist/index.html`、`favicon.svg`、`um
 | 健康检查路径 | `/healthz`（返回 `ok`，不查上游）                                            |
 | 环境变量     | `NOVEL_API_UPSTREAM` 可留空                                                 |
 | 启动命令     | **留空**。渲染 nginx 配置靠镜像自带 entrypoint，填了执行命令就跳过 envsubst  |
+| 最小副本数   | `≥ 1`（不设就是 0，约半小时无请求平台直接缩容到零，下次访问要等冷启动）      |
 | 公网访问     | 按需开启                                                                     |
 
 `NOVEL_API_UPSTREAM` **可留空**：生产产物里 api 域名是烘进 JS 的（第 3 节），浏览器并不走这条同源
@@ -146,6 +147,7 @@ TAG=v2 pnpm novel:deploy
 
 ## 7. 坑位记录
 
+- **最小副本数没进部署表，于是「过段时间再访问像重启了一次」**（2026-10-11）。云托管不显式设这项就是 0，约半小时无请求实例直接被回收，下一次访问付一次冷启动（拉镜像 + 起容器），控制台表现为新实例创建，用户看到的就是「站点重启了」。api 和 chat 早就写死了 `≥ 1`（WS 长连接会被缩容打断），静态站因为没有长连接，这个洞一直没被当回事——但首字节多等几秒一样是线上体验。要复现或核对：`node scripts/cloudrun-idle-probe.mjs IDLE=2400`（静默期内别再从别处访问，否则实例被焐热，这轮作废）。
 - **上游主机名最终落在 `proxy_pass` 的字面量里 = 平台上的「创建版本失败」**（2026-10-10 实录）。老模板写的是 `proxy_pass http://$NOVEL_API_UPSTREAM;`，看着像变量，其实 envsubst 在 nginx 读配置之前就把 `$NOVEL_API_UPSTREAM`（镜像默认值 `api:8080`）替换成了字面量 `http://api:8080`，于是解析发生在加载那一刻，云托管的 pod 网络里没有 `api` 这个名字，直接 `nginx: [emerg] host not found in upstream "api" in /etc/nginx/conf.d/novel.conf:33`，进程退出。平台把这件事伪装成生命周期钩子的报错打给你看：
   ```
   Exec lifecycle hook ([/bin/sh /app/cert/initenv.sh]) ... exited with 137

@@ -42,6 +42,7 @@ Windows 下必须走 `pnpm admin:deploy`：`node scripts/run-sh.mjs` 会定位 G
 | 健康检查路径 | `/healthz`（返回 `ok`，不查上游）                                         |
 | 环境变量     | `ADMIN_API_UPSTREAM`、`ADMIN_CHAT_UPSTREAM` **都要填**                    |
 | 启动命令     | **留空**。渲染 nginx 配置靠镜像自带 entrypoint，填了执行命令就跳过 envsubst |
+| 最小副本数   | `≥ 1`。不设就是 0，约半小时无请求实例被回收，下次打开管理端要等一次冷启动；`/ws/chat` 的长连接更会被缩容直接打断 |
 
 两个值的来源：api / chat 各自「服务信息 → 内网访问域名」的 `host:port`，**原样复制，不要凭规律拼**
 （去掉 `http://` 前缀；端口非 80 时要带上）。docker compose 里则填服务名 `api:8080` / `chat:5090`。
